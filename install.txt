@@ -1,0 +1,17 @@
+npm i @nestjs/cli
+nest new
+cd <название проекта>
+nest g module <название модуля>
+nest g resource <название пачки> --no-spec (без тестов)
+npm install @nestjs/typeorm typeorm pg
+npm install @nestjs/jwt
+npm install @nestjs/config
+npm install @nestjs/swagger
+npm install class-validator class-transformer
+
+
+migrations:
+nest build
+npm run migration:generate - для создания ts файлов миграций
+nest build
+npm run migration:run - для запуска ts файлов миграций
