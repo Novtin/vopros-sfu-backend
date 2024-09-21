@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SearchUserDto } from '../dtos/search-user.dto';
+import { ExistUserDto } from '../dtos/exist-user.dto';
+import { SaveUserDto } from '../dtos/save-user.dto';
 
 @Injectable()
 export class UserRepository {
@@ -10,7 +13,15 @@ export class UserRepository {
     private readonly dbRepository: Repository<UserEntity>,
   ) {}
 
-  getById(id: number): Promise<UserEntity> {
-    return this.dbRepository.findOneBy({ id });
+  existBy(dto: ExistUserDto): Promise<boolean> {
+    return this.dbRepository.existsBy({ ...dto });
+  }
+
+  create(dto: SaveUserDto): Promise<UserEntity> {
+    return this.dbRepository.save({ ...dto });
+  }
+
+  getBy(dto: SearchUserDto): Promise<UserEntity> {
+    return this.dbRepository.createQueryBuilder().where(dto).getOne();
   }
 }

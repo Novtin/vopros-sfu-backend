@@ -12,9 +12,6 @@ export class UserEntity extends AbstractTimeEntity {
   @Column()
   passwordHash: string;
 
-  @Column({ unique: true })
-  nickname: string;
-
   @Column({ nullable: true })
   description: string;
 }
