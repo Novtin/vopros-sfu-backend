@@ -5,6 +5,7 @@ import jwtConfig from '../config/jwt.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import typeOrmConfig from '../config/typeorm.config';
 import httpConfig from '../config/http.config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import httpConfig from '../config/http.config';
         configService.get('typeorm'),
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

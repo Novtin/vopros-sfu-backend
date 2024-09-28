@@ -1,8 +1,10 @@
 import { DataSource } from 'typeorm';
 import * as process from 'process';
 import * as dotenv from 'dotenv';
+import { UserEntity } from '../modules/user/entities/user.entity';
+import { RoleEntity } from '../modules/user/entities/role.entity';
 
-dotenv.config();
+dotenv.config({ path: '.env' });
 export default new DataSource({
   type: <any>process.env.DB_TYPE,
   host: process.env.DB_HOST,
@@ -10,9 +12,9 @@ export default new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
+  logging: process.env.DB_LOGGING === 'true',
   synchronize: process.env.DB_SYNCHRONIZE === 'true',
-  entities: [process.env.DB_ENTITIES],
+  entities: [RoleEntity, UserEntity],
   migrations: [process.env.DB_MIGRATIONS],
-  migrationsRun: process.env.DB_MIGRATIONS_RUN === 'true',
   migrationsTableName: process.env.DB_MIGRATIONS_TABLE_NAME,
 });

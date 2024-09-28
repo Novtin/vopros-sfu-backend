@@ -12,11 +12,14 @@ import { HashService } from './hash.service';
 import { IJwtPayload } from '../interfaces/jwt.payload.interface';
 import { RegisterDto } from '../dtos/register.dto';
 import { RefreshJwtDto } from '../dtos/refresh-jwt.dto';
+import { RoleService } from '../../user/services/role.service';
+import { RoleEnum } from '../../user/enum/role.enum';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
+    private readonly roleService: RoleService,
     private readonly hashService: HashService,
     private readonly tokenService: TokenService,
   ) {}
@@ -43,7 +46,10 @@ export class AuthService {
     registerDto.passwordHash = await this.hashService.makeHash(
       registerDto.passwordHash,
     );
-    return await this.userService.create(registerDto);
+    return await this.userService.create({
+      ...registerDto,
+      roles: [await this.roleService.getBy({ name: RoleEnum.USER })],
+    });
   }
 
   async refresh(refreshDto: RefreshJwtDto): Promise<JwtDto> {

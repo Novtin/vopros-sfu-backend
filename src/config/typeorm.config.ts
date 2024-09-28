@@ -1,6 +1,8 @@
 import { registerAs } from '@nestjs/config';
 import * as process from 'process';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { RoleEntity } from '../modules/user/entities/role.entity';
+import { UserEntity } from '../modules/user/entities/user.entity';
 
 export default registerAs(
   'typeorm',
@@ -11,10 +13,10 @@ export default registerAs(
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
+    logging: process.env.DB_LOGGING === 'true',
     synchronize: process.env.DB_SYNCHRONIZE === 'true',
-    entities: [process.env.DB_ENTITIES],
+    entities: [RoleEntity, UserEntity],
     migrations: [process.env.DB_MIGRATIONS],
-    migrationsRun: process.env.DB_MIGRATIONS_RUN === 'true',
     migrationsTableName: process.env.DB_MIGRATIONS_TABLE_NAME,
   }),
 );

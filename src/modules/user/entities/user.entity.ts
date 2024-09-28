@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { AbstractTimeEntity } from '../../../common/entities/abstract-time.entity';
+import { RoleEntity } from './role.entity';
 
 @Entity('user')
 export class UserEntity extends AbstractTimeEntity {
@@ -14,4 +21,8 @@ export class UserEntity extends AbstractTimeEntity {
 
   @Column({ nullable: true })
   description: string;
+
+  @ManyToMany(() => RoleEntity, (role) => role.users, { cascade: true })
+  @JoinTable({ name: 'user_role' })
+  roles: RoleEntity[];
 }
