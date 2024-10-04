@@ -20,6 +20,6 @@ export class UserController {
   @ApiOkResponse({ type: UserSchema })
   @UseInterceptors(new TransformInterceptor(UserSchema))
   getById(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
-    return this.userService.getBy({ id });
+    return this.userService.getOneBy({ id });
   }
 }

@@ -12,7 +12,7 @@ export class RoleRepository {
     private readonly dbRepository: Repository<RoleEntity>,
   ) {}
 
-  getBy(dto: SearchRoleDto): Promise<RoleEntity> {
+  getOneBy(dto: SearchRoleDto): Promise<RoleEntity> {
     return this.dbRepository.createQueryBuilder().where(dto).getOne();
   }
 

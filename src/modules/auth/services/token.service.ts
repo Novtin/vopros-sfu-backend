@@ -34,7 +34,7 @@ export class TokenService {
         secret: this.configService.get('jwt.refreshSecret'),
         algorithms: this.configService.get('jwt.algorithm'),
       });
-    } catch (error: unknown) {
+    } catch {
       throw new UnauthorizedException('JWT has expired');
     }
     return payload;

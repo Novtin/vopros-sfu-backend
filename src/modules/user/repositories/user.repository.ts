@@ -21,7 +21,7 @@ export class UserRepository {
     return this.dbRepository.save({ ...dto });
   }
 
-  getBy(dto: SearchUserDto): Promise<UserEntity> {
+  getOneBy(dto: SearchUserDto): Promise<UserEntity> {
     return this.dbRepository.createQueryBuilder().where(dto).getOne();
   }
 }

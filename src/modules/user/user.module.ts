@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UserService } from './services/user.service';
 import { UserController } from './controllers/user.controller';
 import { UserRepository } from './repositories/user.repository';
@@ -8,9 +8,13 @@ import { RoleEntity } from './entities/role.entity';
 import { RoleRepository } from './repositories/role.repository';
 import { RoleService } from './services/role.service';
 import { UniqueUserEmailValidator } from './validators/unique-user-email.validator';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, RoleEntity])],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity, RoleEntity]),
+    forwardRef(() => AuthModule),
+  ],
   controllers: [UserController],
   providers: [
     UserService,

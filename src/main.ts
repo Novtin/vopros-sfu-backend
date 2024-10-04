@@ -16,6 +16,7 @@ async function bootstrap() {
     .setTitle(`ВопроСФУ`)
     .setDescription('API Documentation')
     .addServer(url)
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, configSwagger);
   SwaggerModule.setup('/api/v1/docs', app, document);

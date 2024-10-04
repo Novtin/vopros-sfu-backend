@@ -9,11 +9,11 @@ import { SaveUserDto } from '../dtos/save-user.dto';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async getBy(dto: SearchUserDto): Promise<UserEntity> {
+  async getOneBy(dto: SearchUserDto): Promise<UserEntity> {
     if (!(await this.existBy(dto))) {
       throw new NotFoundException();
     }
-    return this.userRepository.getBy(dto);
+    return this.userRepository.getOneBy(dto);
   }
 
   existBy(dto: ExistUserDto): Promise<boolean> {

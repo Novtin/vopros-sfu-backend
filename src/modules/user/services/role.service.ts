@@ -8,11 +8,11 @@ import { ExistRoleDto } from '../dtos/exist-role.dto';
 export class RoleService {
   constructor(private readonly roleRepository: RoleRepository) {}
 
-  async getBy(dto: SearchRoleDto): Promise<RoleEntity> {
+  async getOneBy(dto: SearchRoleDto): Promise<RoleEntity> {
     if (!(await this.existBy(dto))) {
       throw new NotFoundException();
     }
-    return this.roleRepository.getBy(dto);
+    return this.roleRepository.getOneBy(dto);
   }
 
   existBy(dto: ExistRoleDto): Promise<boolean> {

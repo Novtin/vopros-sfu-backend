@@ -25,7 +25,7 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto): Promise<JwtDto> {
-    const user: UserEntity = await this.userService.getBy({
+    const user: UserEntity = await this.userService.getOneBy({
       email: loginDto.email,
     });
     const isPasswordValid: boolean = await this.hashService.compareTextAndHash(
@@ -39,6 +39,7 @@ export class AuthService {
     return await this.tokenService.makeTokens({
       email: user.email,
       userId: user.id,
+      roles: user.roles.map((role) => role.name),
     });
   }
 
@@ -48,7 +49,7 @@ export class AuthService {
     );
     return await this.userService.create({
       ...registerDto,
-      roles: [await this.roleService.getBy({ name: RoleEnum.USER })],
+      roles: [await this.roleService.getOneBy({ name: RoleEnum.USER })],
     });
   }
 
@@ -62,6 +63,7 @@ export class AuthService {
     const newPayload: IJwtPayload = {
       email: payloadFromToken.email,
       userId: payloadFromToken.userId,
+      roles: payloadFromToken.roles,
     };
     return await this.tokenService.makeTokens(newPayload);
   }
