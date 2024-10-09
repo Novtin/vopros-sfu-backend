@@ -13,7 +13,7 @@ export class RoleRepository {
   ) {}
 
   getOneBy(dto: SearchRoleDto): Promise<RoleEntity> {
-    return this.dbRepository.createQueryBuilder().where(dto).getOne();
+    return this.dbRepository.createQueryBuilder().where(dto).limit(1).getOne();
   }
 
   existBy(dto: ExistRoleDto): Promise<boolean> {

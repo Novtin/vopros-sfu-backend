@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SearchUserDto } from '../dtos/search-user.dto';
 import { ExistUserDto } from '../dtos/exist-user.dto';
 import { SaveUserDto } from '../dtos/save-user.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
+import { RelationUserDto } from '../dtos/relation-user.dto';
 
 @Injectable()
 export class UserRepository {
@@ -21,7 +23,22 @@ export class UserRepository {
     return this.dbRepository.save({ ...dto });
   }
 
+  async update(id: number, dto: UpdateUserDto) {
+    await this.dbRepository.update(id, { ...dto });
+    return this.getOneBy({ id });
+  }
+
+  async updateRelations(id: number, dto: RelationUserDto) {
+    await this.dbRepository.update(id, { ...dto });
+    return this.getOneBy({ id });
+  }
+
   getOneBy(dto: SearchUserDto): Promise<UserEntity> {
-    return this.dbRepository.createQueryBuilder().where(dto).getOne();
+    return this.dbRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.avatar', 'avatar')
+      .where(dto)
+      .limit(1)
+      .getOne();
   }
 }

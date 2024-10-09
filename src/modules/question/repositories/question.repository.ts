@@ -6,6 +6,8 @@ import { SearchQuestionDto } from '../dtos/search-question.dto';
 import { ExistQuestionDto } from '../dtos/exist-question.dto';
 import { SaveQuestionDto } from '../dtos/save-question.dto';
 import { UpdateQuestionDto } from '../dtos/update-question.dto';
+import { RelationUserDto } from '../../user/dtos/relation-user.dto';
+import { RelationQuestionDto } from '../../file/dtos/relation-question.dto';
 
 @Injectable()
 export class QuestionRepository {
@@ -19,7 +21,7 @@ export class QuestionRepository {
   }
 
   getOneBy(dto: SearchQuestionDto): Promise<QuestionEntity> {
-    return this.dbRepository.createQueryBuilder().where(dto).getOne();
+    return this.dbRepository.createQueryBuilder().where(dto).limit(1).getOne();
   }
 
   existBy(dto: ExistQuestionDto): Promise<boolean> {
@@ -51,6 +53,14 @@ export class QuestionRepository {
     }
 
     return query.getMany();
+  }
+
+  async updateRelations(id: number, dto: RelationQuestionDto) {
+    await this.dbRepository.save({
+      ...dto,
+      id,
+    });
+    return this.getOneBy({ id });
   }
 
   async delete(id: number) {

@@ -9,11 +9,13 @@ import { RoleRepository } from './repositories/role.repository';
 import { RoleService } from './services/role.service';
 import { UniqueUserEmailValidator } from './validators/unique-user-email.validator';
 import { AuthModule } from '../auth/auth.module';
+import { FileModule } from '../file/file.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity, RoleEntity]),
     forwardRef(() => AuthModule),
+    FileModule,
   ],
   controllers: [UserController],
   providers: [
