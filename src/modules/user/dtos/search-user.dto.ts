@@ -24,12 +24,12 @@ export class SearchUserDto {
 
   @ApiProperty({
     type: String,
-    description: 'Пароль',
+    description: 'Хэш маила',
     required: true,
   })
   @IsString()
   @Type(() => String)
-  passwordHash?: string;
+  emailHash?: string;
 
   @ApiProperty({
     type: String,

@@ -35,6 +35,10 @@ export class UserService {
     return this.userRepository.update(id, dto);
   }
 
+  async confirmEmail(id: number) {
+    return this.userRepository.confirmEmail(id);
+  }
+
   async throwNotFoundExceptionIfNotExist(dto: ExistUserDto) {
     if (!(await this.existBy(dto))) {
       throw new NotFoundException();

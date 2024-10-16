@@ -25,6 +25,12 @@ export class UserEntity extends AbstractTimeEntity {
   @Column({ nullable: true })
   description: string;
 
+  @Column({ default: false })
+  isConfirmed: boolean;
+
+  @Column()
+  emailHash: string;
+
   @ManyToMany(() => RoleEntity, (role) => role.users, { cascade: true })
   @JoinTable({ name: 'user_role' })
   roles: RoleEntity[];

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, Get, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TransformInterceptor } from '../../../common/interceptors/transform.interceptor';
 import { UserEntity } from '../../user/entities/user.entity';
@@ -29,6 +29,14 @@ export class AuthController {
   @Post('register')
   register(@Body() registerDto: RegisterDto): Promise<UserEntity> {
     return this.authService.register(registerDto);
+  }
+
+  @ApiOkResponse({
+    type: Boolean,
+  })
+  @Get('confirm-email')
+  confirmEmail(@Query('emailHash') emailHash: string) {
+    return this.authService.confirmEmail(emailHash);
   }
 
   @ApiOkResponse({

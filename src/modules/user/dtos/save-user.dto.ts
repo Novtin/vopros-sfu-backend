@@ -8,4 +8,6 @@ export class SaveUserDto {
   description: string;
 
   roles: RoleEntity[];
+
+  emailHash: string;
 }

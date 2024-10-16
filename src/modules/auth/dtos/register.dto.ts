@@ -22,7 +22,7 @@ export class RegisterDto {
   })
   @IsString()
   @Type(() => String)
-  passwordHash: string;
+  password: string;
 
   @ApiProperty({
     type: String,
