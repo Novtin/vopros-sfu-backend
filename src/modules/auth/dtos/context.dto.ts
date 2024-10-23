@@ -1,5 +1,5 @@
 export class ContextDto {
   email: string;
-  id: number;
+  userId: number;
   roles: string[];
 }

@@ -39,8 +39,11 @@ export class QuestionController {
   })
   @UseInterceptors(new TransformInterceptor(QuestionSchema))
   @Post()
-  create(@Body() dto: SaveQuestionDto): Promise<QuestionEntity> {
-    return this.questionService.create(dto);
+  create(
+    @Body() dto: SaveQuestionDto,
+    @Context() context: ContextDto,
+  ): Promise<QuestionEntity> {
+    return this.questionService.create(context.userId, dto);
   }
 
   @ApiOkResponse({
@@ -55,17 +58,10 @@ export class QuestionController {
   ): Promise<QuestionEntity> {
     await this.questionService.throwNotFoundExceptionIfNotExist({ id });
     await this.questionService.throwForbiddenExceptionIfNotBelong(
-      context.id,
+      context.userId,
       id,
     );
     return this.questionService.update(id, dto);
-  }
-
-  @Get('/:id')
-  @ApiOkResponse({ type: QuestionSchema })
-  @UseInterceptors(new TransformInterceptor(QuestionSchema))
-  getById(@Param('id', ParseIntPipe) id: number): Promise<QuestionEntity> {
-    return this.questionService.getOneBy({ id });
   }
 
   @ApiOkResponse({
@@ -78,6 +74,13 @@ export class QuestionController {
     return this.questionService.search(dto);
   }
 
+  @Get('/:id')
+  @ApiOkResponse({ type: QuestionSchema })
+  @UseInterceptors(new TransformInterceptor(QuestionSchema))
+  getById(@Param('id', ParseIntPipe) id: number): Promise<QuestionEntity> {
+    return this.questionService.getOneBy({ id });
+  }
+
   @ApiOkResponse({ status: HttpStatus.NO_CONTENT })
   @UseInterceptors(new TransformInterceptor(QuestionSchema))
   @Delete(':id')
@@ -87,7 +90,7 @@ export class QuestionController {
   ): Promise<void> {
     if (!context.roles.includes(RoleEnum.ADMIN)) {
       await this.questionService.throwForbiddenExceptionIfNotBelong(
-        context.id,
+        context.userId,
         id,
       );
     }
@@ -120,7 +123,7 @@ export class QuestionController {
     }
     if (!context.roles.includes(RoleEnum.ADMIN)) {
       await this.questionService.throwForbiddenExceptionIfNotBelong(
-        context.id,
+        context.userId,
         id,
       );
     }

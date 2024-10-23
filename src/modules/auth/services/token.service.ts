@@ -27,10 +27,10 @@ export class TokenService {
     return { accessToken, refreshToken };
   }
 
-  async verify(refreshToken: string): Promise<IJwtPayload> {
+  async verify(token: string): Promise<IJwtPayload> {
     let payload: IJwtPayload = null;
     try {
-      payload = this.jwtService.verify(refreshToken, {
+      payload = this.jwtService.verify(token, {
         secret: this.configService.get('jwt.refreshSecret'),
         algorithms: this.configService.get('jwt.algorithm'),
       });

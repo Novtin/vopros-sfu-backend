@@ -18,4 +18,13 @@ export class SaveQuestionDto {
   @IsString()
   @Type(() => String)
   description: string;
+
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    description: 'Список тэгов',
+  })
+  @IsString({ each: true })
+  @Type(() => Array<string>)
+  tagNames: string[];
 }

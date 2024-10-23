@@ -59,7 +59,7 @@ export class UserController {
       throw new BadRequestException('Файл не найден');
     }
     if (!context.roles.includes(RoleEnum.ADMIN)) {
-      if (context.id !== id) {
+      if (context.userId !== id) {
         throw new ForbiddenException();
       }
     }

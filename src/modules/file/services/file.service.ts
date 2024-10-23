@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { FileRepository } from '../repositories/file.repository';
 import { SaveFileDto } from '../dtos/save-file.dto';
 import { FileEntity } from '../entities/file.entity';
 import { SearchFileDto } from '../dtos/search-file.dto';
 import { ExistQuestionDto } from '../../question/dtos/exist-question.dto';
 import { ExistFileDto } from '../dtos/exist-file.dto';
+import { join } from 'path';
+import * as process from 'process';
+import * as fs from 'fs';
 
 @Injectable()
 export class FileService {
@@ -22,6 +25,20 @@ export class FileService {
   async getOneBy(dto: SearchFileDto): Promise<FileEntity> {
     await this.throwNotFoundExceptionIfNotExist(dto);
     return this.fileRepository.getOneBy(dto);
+  }
+
+  async getFileById(id: number) {
+    const fileEntity: FileEntity = await this.getOneBy({ id });
+    const path: string = join(
+      ...process.env.FILE_SAVE_PATH.split('/'),
+      fileEntity.name,
+    );
+    if (fs.existsSync(path)) {
+      const imageStream = fs.createReadStream(path);
+      return new StreamableFile(imageStream);
+    } else {
+      throw new NotFoundException();
+    }
   }
 
   async delete(id: number): Promise<void> {

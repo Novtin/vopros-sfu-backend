@@ -10,6 +10,7 @@ import {
 import { UserEntity } from '../../user/entities/user.entity';
 import { AbstractTimeEntity } from '../../../common/entities/abstract-time.entity';
 import { FileEntity } from '../../file/entities/file.entity';
+import { TagEntity } from '../../tag/entities/tag.entity';
 
 @Entity('question')
 export class QuestionEntity extends AbstractTimeEntity {
@@ -36,9 +37,11 @@ export class QuestionEntity extends AbstractTimeEntity {
   @JoinTable({ name: 'question_image' })
   images: FileEntity[];
 
-  //views: numbers;
+  @ManyToMany(() => TagEntity)
+  @JoinTable({ name: 'question_tag' })
+  tags: TagEntity[];
 
-  //tags: TagEntity[];
+  //views: numbers;
 
   //answers: AnswersEntity[];
 }

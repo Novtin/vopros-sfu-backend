@@ -11,12 +11,15 @@ import { QuestionEntity } from '../entities/question.entity';
 import { UpdateQuestionDto } from '../dtos/update-question.dto';
 import { FileService } from '../../file/services/file.service';
 import { RelationQuestionDto } from '../../file/dtos/relation-question.dto';
+import { TagService } from '../../tag/services/tag.service';
+import { TagEntity } from '../../tag/entities/tag.entity';
 
 @Injectable()
 export class QuestionService {
   constructor(
     private readonly questionRepository: QuestionRepository,
     private readonly fileService: FileService,
+    private readonly tagService: TagService,
   ) {}
 
   async getOneBy(dto: SearchQuestionDto): Promise<QuestionEntity> {
@@ -28,8 +31,23 @@ export class QuestionService {
     return this.questionRepository.existBy(dto);
   }
 
-  create(dto: SaveQuestionDto): Promise<QuestionEntity> {
-    return this.questionRepository.create(dto);
+  async create(
+    authorId: number,
+    dto: SaveQuestionDto,
+  ): Promise<QuestionEntity> {
+    const tags: TagEntity[] = [];
+    for (const tagName of dto.tagNames) {
+      let tagEntity = await this.tagService.getOneBy({ name: tagName });
+      if (!tagEntity) {
+        tagEntity = await this.tagService.create({ name: tagName });
+      }
+      tags.push(tagEntity);
+    }
+    return this.questionRepository.create({
+      ...dto,
+      tags,
+      authorId,
+    });
   }
 
   async update(id: number, dto: UpdateQuestionDto): Promise<QuestionEntity> {

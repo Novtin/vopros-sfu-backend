@@ -33,16 +33,16 @@ export class UserRepository {
     return this.getOneBy({ id });
   }
 
-  async confirmEmail(id: number){
+  async confirmEmail(id: number) {
     await this.dbRepository.update(id, { isConfirmed: true });
     return this.getOneBy({ id });
   }
-
 
   getOneBy(dto: SearchUserDto): Promise<UserEntity> {
     return this.dbRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.avatar', 'avatar')
+      .leftJoinAndSelect('user.roles', 'roles')
       .where(dto)
       .limit(1)
       .getOne();

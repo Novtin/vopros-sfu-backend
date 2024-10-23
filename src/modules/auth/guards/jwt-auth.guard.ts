@@ -23,7 +23,7 @@ export class JwtAuthGuard implements CanActivate {
         });
         if (isUserExistsByEmail) {
           req.user = {
-            id: payload.userId,
+            userId: payload.userId,
             email: payload.email,
             roles: payload.roles,
           };

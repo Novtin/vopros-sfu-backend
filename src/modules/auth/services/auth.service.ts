@@ -52,31 +52,28 @@ export class AuthService {
     const emailHash = await this.hashService.makeHash(registerDto.email);
     const confirmationUrl = `http://localhost:9311/api/v1/auth/confirm-email?emailHash=${emailHash}`;
 
-    await this.mailerService.sendMail({
-      to: registerDto.email,
-      subject: 'Подтверждение почты',
-      template: './confirmation',
-      context: {
-        confirmationUrl,
-      },
-    });
+    //await this.mailerService.sendMail({
+    //  to: registerDto.email,
+    //  subject: 'Подтверждение почты',
+    //  template: './confirmation',
+    //  context: {
+    //    confirmationUrl,
+    //  },
+    //});
     return await this.userService.create({
       ...registerDto,
-      passwordHash: await this.hashService.makeHash(
-          registerDto.password,
-      ),
+      passwordHash: await this.hashService.makeHash(registerDto.password),
       emailHash,
       roles: [await this.roleService.getOneBy({ name: RoleEnum.USER })],
     });
   }
 
-  async confirmEmail(emailHash: string){
-    await this.userService.throwNotFoundExceptionIfNotExist({ emailHash })
+  async confirmEmail(emailHash: string) {
+    await this.userService.throwNotFoundExceptionIfNotExist({ emailHash });
     const user = await this.userService.getOneBy({ emailHash });
     await this.userService.confirmEmail(user.id);
     return true;
   }
-
 
   async refresh(refreshDto: RefreshJwtDto): Promise<JwtDto> {
     const payloadFromToken = await this.tokenService.verify(
