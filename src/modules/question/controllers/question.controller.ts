@@ -10,7 +10,7 @@ import {
   Post,
   Put,
   Query,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { QuestionService } from '../services/question.service';
@@ -115,11 +115,11 @@ export class QuestionController {
   @Post('/:id/images')
   async uploadImages(
     @Param('id', ParseIntPipe) id: number,
-    @UploadedFile() imageFiles: Array<Express.Multer.File>,
+    @UploadedFiles() imageFiles: Express.Multer.File[],
     @Context() context: ContextDto,
   ) {
     if (!imageFiles) {
-      throw new BadRequestException('Файл не найден');
+      throw new BadRequestException('Файлы не найдены');
     }
     if (!context.roles.includes(RoleEnum.ADMIN)) {
       await this.questionService.throwForbiddenExceptionIfNotBelong(

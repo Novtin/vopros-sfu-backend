@@ -33,7 +33,7 @@ export class QuestionEntity extends AbstractTimeEntity {
   @Column({ default: 0 })
   rating: number;
 
-  @ManyToMany(() => QuestionEntity)
+  @ManyToMany(() => FileEntity)
   @JoinTable({ name: 'question_image' })
   images: FileEntity[];
 

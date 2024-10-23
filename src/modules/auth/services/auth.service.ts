@@ -15,6 +15,7 @@ import { RefreshJwtDto } from '../dtos/refresh-jwt.dto';
 import { RoleService } from '../../user/services/role.service';
 import { RoleEnum } from '../../user/enum/role.enum';
 import { MailerService } from '@nestjs-modules/mailer';
+import { TokenEnum } from '../enums/token.enum';
 
 @Injectable()
 export class AuthService {
@@ -78,6 +79,7 @@ export class AuthService {
   async refresh(refreshDto: RefreshJwtDto): Promise<JwtDto> {
     const payloadFromToken = await this.tokenService.verify(
       refreshDto.refreshToken,
+      TokenEnum.REFRESH,
     );
     if (!payloadFromToken) {
       throw new UnauthorizedException('JWT has expired');
