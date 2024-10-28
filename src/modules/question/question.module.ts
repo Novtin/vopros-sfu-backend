@@ -19,5 +19,6 @@ import { TagModule } from '../tag/tag.module';
   ],
   controllers: [QuestionController],
   providers: [QuestionService, QuestionRepository],
+  exports: [QuestionService],
 })
 export class QuestionModule {}

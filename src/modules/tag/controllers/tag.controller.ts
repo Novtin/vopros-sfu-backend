@@ -11,12 +11,11 @@ import { TransformInterceptor } from '../../../common/interceptors/transform.int
 import { TagEntity } from '../entities/tag.entity';
 import { TagSchema } from '../schemas/tag.schema';
 import { Authorized } from '../../auth/decorators/authorized.decorator';
-import { RoleEnum } from '../../user/enum/role.enum';
 import { TagService } from '../services/tag.service';
 import { SearchTagDto } from '../dtos/search-tag.dto';
 
 @ApiTags('tag')
-@Authorized(...Object.values(RoleEnum))
+@Authorized()
 @Controller('tag')
 export class TagController {
   constructor(private readonly tagService: TagService) {}

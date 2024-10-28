@@ -21,6 +21,7 @@ import { Context } from '../../auth/decorators/context.decorator';
 import { Authorized } from '../../auth/decorators/authorized.decorator';
 import { RoleEnum } from '../enum/role.enum';
 
+@Authorized()
 @Controller('/user')
 @ApiTags('user')
 export class UserController {
@@ -33,7 +34,6 @@ export class UserController {
     return this.userService.getOneBy({ id });
   }
 
-  @Authorized(...Object.values(RoleEnum))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {

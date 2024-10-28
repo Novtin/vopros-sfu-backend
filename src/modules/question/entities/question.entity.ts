@@ -5,12 +5,14 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import { AbstractTimeEntity } from '../../../common/entities/abstract-time.entity';
 import { FileEntity } from '../../file/entities/file.entity';
 import { TagEntity } from '../../tag/entities/tag.entity';
+import { AnswerEntity } from '../../answer/entities/answer.entity';
 
 @Entity('question')
 export class QuestionEntity extends AbstractTimeEntity {
@@ -40,6 +42,9 @@ export class QuestionEntity extends AbstractTimeEntity {
   @ManyToMany(() => TagEntity)
   @JoinTable({ name: 'question_tag' })
   tags: TagEntity[];
+
+  @OneToMany(() => AnswerEntity, (answer) => answer.question)
+  answers: AnswerEntity[];
 
   //views: numbers;
 

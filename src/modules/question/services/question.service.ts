@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -13,6 +14,8 @@ import { FileService } from '../../file/services/file.service';
 import { RelationQuestionDto } from '../../file/dtos/relation-question.dto';
 import { TagService } from '../../tag/services/tag.service';
 import { TagEntity } from '../../tag/entities/tag.entity';
+import { ContextDto } from '../../auth/dtos/context.dto';
+import { RoleEnum } from '../../user/enum/role.enum';
 
 @Injectable()
 export class QuestionService {
@@ -50,7 +53,13 @@ export class QuestionService {
     });
   }
 
-  async update(id: number, dto: UpdateQuestionDto): Promise<QuestionEntity> {
+  async update(
+    userId: number,
+    id: number,
+    dto: UpdateQuestionDto,
+  ): Promise<QuestionEntity> {
+    await this.throwNotFoundExceptionIfNotExist({ id });
+    await this.throwForbiddenExceptionIfNotBelong(userId, id);
     return this.questionRepository.update(id, dto);
   }
 
@@ -58,11 +67,24 @@ export class QuestionService {
     return this.questionRepository.search(dto);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(context: ContextDto, id: number): Promise<void> {
+    if (!context.roles.includes(RoleEnum.ADMIN)) {
+      await this.throwForbiddenExceptionIfNotBelong(context.userId, id);
+    }
     await this.questionRepository.delete(id);
   }
 
-  async uploadImages(id: number, imageFiles: Array<Express.Multer.File>) {
+  async uploadImages(
+    context: ContextDto,
+    id: number,
+    imageFiles: Array<Express.Multer.File>,
+  ) {
+    if (!imageFiles) {
+      throw new BadRequestException('Файлы не найдены');
+    }
+    if (!context.roles.includes(RoleEnum.ADMIN)) {
+      await this.throwForbiddenExceptionIfNotBelong(context.userId, id);
+    }
     let questionEntity: QuestionEntity = await this.getOneBy({ id });
     const fileIdsForDelete: number[] = questionEntity.images?.map(
       (file) => file.id,

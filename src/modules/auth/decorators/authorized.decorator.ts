@@ -3,10 +3,11 @@ import { Roles } from './roles.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesAuthGuard } from '../guards/roles-auth.guard';
+import { RoleEnum } from '../../user/enum/role.enum';
 
-export const Authorized = (...roles: string[]) =>
+export const Authorized = () =>
   applyDecorators(
     ApiBearerAuth(),
-    Roles(...roles),
+    Roles(...Object.values(RoleEnum)),
     UseGuards(JwtAuthGuard, RolesAuthGuard),
   );

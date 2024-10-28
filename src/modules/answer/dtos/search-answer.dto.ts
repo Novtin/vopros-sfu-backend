@@ -3,7 +3,7 @@ import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PaginationDto } from '../../../common/dtos/pagination.dto';
 
-export class SearchQuestionDto extends PaginationDto {
+export class SearchAnswerDto extends PaginationDto {
   @ApiProperty({
     type: Number,
     description: 'ID',
@@ -25,32 +25,32 @@ export class SearchQuestionDto extends PaginationDto {
   authorId?: number;
 
   @ApiProperty({
-    type: String,
-    description: 'Заголовок',
+    type: Number,
+    description: 'ID вопроса',
     required: false,
   })
-  @IsString()
-  @Type(() => String)
+  @IsInt()
+  @Type(() => Number)
   @IsOptional()
-  title?: string;
+  questionId?: number;
 
   @ApiProperty({
     type: String,
-    description: 'Описание',
+    description: 'Текст ответа',
     required: false,
   })
   @IsString()
   @Type(() => String)
   @IsOptional()
-  description?: string;
+  text?: string;
 
   @ApiProperty({
     type: Boolean,
-    description: 'Решён?',
+    description: 'Решение?',
     required: false,
   })
   @IsBoolean()
   @Type(() => Boolean)
   @IsOptional()
-  isResolved?: boolean;
+  isSolution?: boolean;
 }

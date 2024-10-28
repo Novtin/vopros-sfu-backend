@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
-import { PaginationDto } from '../../../common/dtos/pagination.dto';
 
-export class SearchQuestionDto extends PaginationDto {
+export class ExistAnswerDto {
   @ApiProperty({
     type: Number,
     description: 'ID',
@@ -25,32 +24,22 @@ export class SearchQuestionDto extends PaginationDto {
   authorId?: number;
 
   @ApiProperty({
+    type: Number,
+    description: 'ID вопроса',
+    required: false,
+  })
+  @IsInt()
+  @Type(() => Number)
+  @IsOptional()
+  questionId?: number;
+
+  @ApiProperty({
     type: String,
-    description: 'Заголовок',
+    description: 'Текст ответа',
     required: false,
   })
   @IsString()
   @Type(() => String)
   @IsOptional()
-  title?: string;
-
-  @ApiProperty({
-    type: String,
-    description: 'Описание',
-    required: false,
-  })
-  @IsString()
-  @Type(() => String)
-  @IsOptional()
-  description?: string;
-
-  @ApiProperty({
-    type: Boolean,
-    description: 'Решён?',
-    required: false,
-  })
-  @IsBoolean()
-  @Type(() => Boolean)
-  @IsOptional()
-  isResolved?: boolean;
+  text?: string;
 }

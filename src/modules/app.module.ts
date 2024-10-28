@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { QuestionModule } from './question/question.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import mailerConfig from '../config/mailer.config';
+import { AnswerModule } from './answer/answer.module';
 
 @Module({
   imports: [
@@ -26,12 +27,12 @@ import mailerConfig from '../config/mailer.config';
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>
-          configService.get('mailer'),
+      useFactory: (configService: ConfigService) => configService.get('mailer'),
     }),
     UserModule,
     AuthModule,
     QuestionModule,
+    AnswerModule,
   ],
 })
 export class AppModule {}

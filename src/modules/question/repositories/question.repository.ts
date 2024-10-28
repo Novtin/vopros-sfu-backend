@@ -20,12 +20,14 @@ export class QuestionRepository {
     return this.getOneBy({ id: model.id });
   }
 
-  async getOneBy(dto: SearchQuestionDto): Promise<QuestionEntity> {
+  async getOneBy(dto: Partial<QuestionEntity>): Promise<QuestionEntity> {
     return this.dbRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.tags', 'tags')
       .leftJoinAndSelect('question.author', 'author')
       .leftJoinAndSelect('question.images', 'images')
+      .leftJoinAndSelect('question.answers', 'answers')
+      .leftJoinAndSelect('answers.author', 'answer_author')
       .where(dto)
       .limit(1)
       .getOne();
@@ -44,9 +46,19 @@ export class QuestionRepository {
     const query = this.dbRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.tags', 'tags')
-      .leftJoinAndSelect('question.author', 'author');
+      .leftJoinAndSelect('question.author', 'author')
+      .leftJoinAndSelect('question.answers', 'answers')
+      .leftJoinAndSelect('answers.author', 'answer_author');
     if (dto?.description) {
       query.where('question.title ILIKE :title', { title: `%${dto.title}%` });
+    }
+
+    if (dto?.id) {
+      query.andWhere({ id: dto.id });
+    }
+
+    if (dto?.authorId) {
+      query.andWhere({ authorId: dto.authorId });
     }
 
     if (dto?.description) {
@@ -54,15 +66,16 @@ export class QuestionRepository {
         description: `%${dto.description}%`,
       });
     }
+    query.limit(dto.pageSize);
+    query.offset(dto.pageSize * dto.page);
 
-    if (dto?.pageSize) {
-      query.limit(dto.pageSize);
-      if (dto?.page) {
-        query.offset(dto.pageSize * dto.page);
-      }
-    }
+    const questions = await query.getMany();
 
-    return query.getMany();
+    return dto.isResolved && questions.length
+      ? questions.filter((question) =>
+          question.answers.some((answer) => answer.isSolution),
+        )
+      : questions;
   }
 
   async updateRelations(id: number, dto: RelationQuestionDto) {
