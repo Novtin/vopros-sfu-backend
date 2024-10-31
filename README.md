@@ -18,3 +18,5 @@
 2. ``npm run migration:run``
 3. ``npm run start:dev``
 
+Swagger - http://localhost:`APP_PORT`/api/v1/docs
+
