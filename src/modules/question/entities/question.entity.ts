@@ -13,6 +13,7 @@ import { AbstractTimeEntity } from '../../../common/entities/abstract-time.entit
 import { FileEntity } from '../../file/entities/file.entity';
 import { TagEntity } from '../../tag/entities/tag.entity';
 import { AnswerEntity } from '../../answer/entities/answer.entity';
+import { QuestionViewEntity } from './question-view.entity';
 
 @Entity('question')
 export class QuestionEntity extends AbstractTimeEntity {
@@ -45,6 +46,9 @@ export class QuestionEntity extends AbstractTimeEntity {
 
   @OneToMany(() => AnswerEntity, (answer) => answer.question)
   answers: AnswerEntity[];
+
+  @OneToMany(() => QuestionViewEntity, (view) => view.question)
+  views: QuestionViewEntity[];
 
   //views: numbers;
 

@@ -55,4 +55,9 @@ export class QuestionSchema {
       false,
   )
   isResolved: boolean;
+
+  @Expose()
+  @ApiProperty()
+  @Transform((event) => event.obj.views.length)
+  views: number;
 }

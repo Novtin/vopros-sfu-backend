@@ -8,17 +8,19 @@ import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
 import { FileModule } from '../file/file.module';
 import { TagModule } from '../tag/tag.module';
+import { QuestionViewEntity } from './entities/question-view.entity';
+import { QuestionViewRepository } from './repositories/question-view.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([QuestionEntity]),
+    TypeOrmModule.forFeature([QuestionEntity, QuestionViewEntity]),
     AuthModule,
     UserModule,
     FileModule,
     TagModule,
   ],
   controllers: [QuestionController],
-  providers: [QuestionService, QuestionRepository],
+  providers: [QuestionService, QuestionRepository, QuestionViewRepository],
   exports: [QuestionService],
 })
 export class QuestionModule {}

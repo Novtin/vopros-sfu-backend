@@ -70,7 +70,14 @@ export class QuestionController {
   @Get('/:id')
   @ApiOkResponse({ type: QuestionSchema })
   @UseInterceptors(new TransformInterceptor(QuestionSchema))
-  getOneById(@Param('id', ParseIntPipe) id: number): Promise<QuestionEntity> {
+  async getOneById(
+    @Param('id', ParseIntPipe) id: number,
+    @Context() context: ContextDto,
+  ): Promise<QuestionEntity> {
+    await this.questionService.addView({
+      userId: context.userId,
+      questionId: id,
+    });
     return this.questionService.getOneBy({ id });
   }
 

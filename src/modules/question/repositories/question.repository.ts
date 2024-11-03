@@ -27,6 +27,7 @@ export class QuestionRepository {
       .leftJoinAndSelect('question.author', 'author')
       .leftJoinAndSelect('question.images', 'images')
       .leftJoinAndSelect('question.answers', 'answers')
+      .leftJoinAndSelect('question.views', 'views')
       .leftJoinAndSelect('answers.author', 'answer_author')
       .where(dto)
       .limit(1)
@@ -48,6 +49,7 @@ export class QuestionRepository {
       .leftJoinAndSelect('question.tags', 'tags')
       .leftJoinAndSelect('question.author', 'author')
       .leftJoinAndSelect('question.answers', 'answers')
+      .leftJoinAndSelect('question.views', 'views')
       .leftJoinAndSelect('answers.author', 'answer_author');
     if (dto?.description) {
       query.where('question.title ILIKE :title', { title: `%${dto.title}%` });

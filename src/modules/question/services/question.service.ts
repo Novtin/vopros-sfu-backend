@@ -16,14 +16,25 @@ import { TagService } from '../../tag/services/tag.service';
 import { TagEntity } from '../../tag/entities/tag.entity';
 import { ContextDto } from '../../auth/dtos/context.dto';
 import { RoleEnum } from '../../user/enum/role.enum';
+import { QuestionViewRepository } from '../repositories/question-view.repository';
+import { CreateQuestionViewDto } from '../dtos/create-question-view.dto';
 
 @Injectable()
 export class QuestionService {
   constructor(
     private readonly questionRepository: QuestionRepository,
+    private readonly questionViewRepository: QuestionViewRepository,
     private readonly fileService: FileService,
     private readonly tagService: TagService,
   ) {}
+
+  async addView(dto: CreateQuestionViewDto) {
+    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
+    const questionView = await this.questionViewRepository.getOneBy(dto);
+    if (!questionView) {
+      await this.questionViewRepository.create(dto);
+    }
+  }
 
   async getOneBy(dto: SearchQuestionDto): Promise<QuestionEntity> {
     await this.throwNotFoundExceptionIfNotExist(dto);
