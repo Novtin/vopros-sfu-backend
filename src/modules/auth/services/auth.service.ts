@@ -16,6 +16,7 @@ import { RoleService } from '../../user/services/role.service';
 import { RoleEnum } from '../../user/enum/role.enum';
 import { MailerService } from '@nestjs-modules/mailer';
 import { TokenEnum } from '../enums/token.enum';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,7 @@ export class AuthService {
     private readonly hashService: HashService,
     private readonly tokenService: TokenService,
     private readonly mailerService: MailerService,
+    private readonly configService: ConfigService,
   ) {}
 
   async login(loginDto: LoginDto): Promise<JwtDto> {
@@ -52,15 +54,15 @@ export class AuthService {
   async register(registerDto: RegisterDto): Promise<UserEntity> {
     const emailHash = await this.hashService.makeHash(registerDto.email);
     const confirmationUrl = `http://localhost:9311/api/v1/auth/confirm-email?emailHash=${emailHash}`;
-
-    //await this.mailerService.sendMail({
-    //  to: registerDto.email,
-    //  subject: 'Подтверждение почты',
-    //  template: './confirmation',
-    //  context: {
-    //    confirmationUrl,
-    //  },
-    //});
+    await this.mailerService.sendMail({
+      from: this.configService.get('mailer.default.from'),
+      to: registerDto.email,
+      subject: 'Подтверждение почты',
+      template: './confirmation',
+      context: {
+        confirmationUrl,
+      },
+    });
     return await this.userService.create({
       ...registerDto,
       passwordHash: await this.hashService.makeHash(registerDto.password),

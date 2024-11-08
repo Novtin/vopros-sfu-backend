@@ -10,14 +10,14 @@ export default registerAs('mailer', () => ({
     secure: true,
     auth: {
       user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASSWORD,
+      pass: process.env.MAIL_PASS,
     },
   },
   default: {
-    from: `ВопроСФУ <${process.env.MAIL_USER}>`,
+    from: `"ВопроСФУ" <${process.env.MAIL_USER}>`,
   },
   template: {
-    dir: join(__dirname, 'templates'),
+    dir: join('./src/templates'),
     adapter: new HandlebarsAdapter(),
     options: {
       strict: true,
