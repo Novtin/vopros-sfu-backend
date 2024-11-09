@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class RateDto {
+export class RatingDto {
   @ApiProperty({
     type: Number,
     description: 'Значение -1 или 1',

@@ -3,11 +3,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { QuestionEntity } from '../../question/entities/question.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 import { AbstractTimeEntity } from '../../../common/entities/abstract-time.entity';
+import { AnswerRatingEntity } from './answer-rating.entity';
 
 @Entity('answer')
 export class AnswerEntity extends AbstractTimeEntity {
@@ -33,4 +35,7 @@ export class AnswerEntity extends AbstractTimeEntity {
 
   @Column({ default: false })
   isSolution: boolean;
+
+  @OneToMany(() => AnswerRatingEntity, (rate) => rate.answer)
+  rating: AnswerRatingEntity[];
 }

@@ -5,22 +5,24 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
-import { QuestionEntity } from './question.entity';
 import { UserEntity } from '../../user/entities/user.entity';
+import { AnswerEntity } from './answer.entity';
 
-@Entity('question_rate')
+@Entity('answer_rating')
 @Check(`"value" IN (-1, 1)`)
-export class QuestionRateEntity {
+@Unique(['answerId', 'userId'])
+export class AnswerRatingEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => QuestionEntity)
-  @JoinColumn({ name: 'questionId' })
-  question: QuestionEntity;
+  @ManyToOne(() => AnswerEntity)
+  @JoinColumn({ name: 'answerId' })
+  answer: AnswerEntity;
 
   @Column()
-  questionId: number;
+  answerId: number;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'userId' })

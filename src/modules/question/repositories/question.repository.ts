@@ -28,7 +28,7 @@ export class QuestionRepository {
       .leftJoinAndSelect('question.images', 'images')
       .leftJoinAndSelect('question.answers', 'answers')
       .leftJoinAndSelect('question.views', 'views')
-      .leftJoinAndSelect('question.rate', 'rate')
+      .leftJoinAndSelect('question.rating', 'rating')
       .leftJoinAndSelect('answers.author', 'answer_author')
       .where(dto)
       .limit(1)

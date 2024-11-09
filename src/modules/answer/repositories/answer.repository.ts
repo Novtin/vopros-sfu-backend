@@ -24,6 +24,7 @@ export class AnswerRepository {
       .createQueryBuilder('answer')
       .leftJoinAndSelect('answer.author', 'author')
       .leftJoinAndSelect('answer.question', 'question')
+      .leftJoinAndSelect('answer.rating', 'rating')
       .where(dto)
       .limit(1)
       .getOne();

@@ -24,6 +24,7 @@ import { SearchAnswerDto } from '../dtos/search-answer.dto';
 import { AnswerSchema } from '../schemas/answer.schema';
 import { UpdateAnswerDto } from '../dtos/update-answer.dto';
 import { ResolveQuestionDto } from '../../question/dtos/resolve-question.dto';
+import { RatingDto } from '../../../common/dtos/rating.dto';
 
 @Authorized()
 @ApiTags('answer')
@@ -103,5 +104,20 @@ export class AnswerController {
     @Context() context: ContextDto,
   ) {
     return this.answerService.deleteResolveQuestion(context.userId, questionId);
+  }
+
+  @ApiOkResponse({ type: AnswerSchema })
+  @UseInterceptors(new TransformInterceptor(AnswerSchema))
+  @Post('/:id/rate')
+  rate(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: RatingDto,
+    @Context() context: ContextDto,
+  ) {
+    return this.answerService.rate({
+      answerId: id,
+      userId: context.userId,
+      value: dto.value,
+    });
   }
 }

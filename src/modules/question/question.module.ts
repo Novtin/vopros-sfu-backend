@@ -10,15 +10,15 @@ import { FileModule } from '../file/file.module';
 import { TagModule } from '../tag/tag.module';
 import { QuestionViewEntity } from './entities/question-view.entity';
 import { QuestionViewRepository } from './repositories/question-view.repository';
-import { QuestionRateEntity } from './entities/question-rate.entity';
-import { QuestionRateRepository } from './repositories/question-rate.repository';
+import { QuestionRatingEntity } from './entities/question-rating.entity';
+import { QuestionRatingRepository } from './repositories/question-rating.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       QuestionEntity,
       QuestionViewEntity,
-      QuestionRateEntity,
+      QuestionRatingEntity,
     ]),
     AuthModule,
     UserModule,
@@ -30,7 +30,7 @@ import { QuestionRateRepository } from './repositories/question-rate.repository'
     QuestionService,
     QuestionRepository,
     QuestionViewRepository,
-    QuestionRateRepository,
+    QuestionRatingRepository,
   ],
   exports: [QuestionService],
 })

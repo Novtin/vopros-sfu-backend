@@ -13,11 +13,14 @@ import { RoleEnum } from '../../user/enum/role.enum';
 import { ContextDto } from '../../auth/dtos/context.dto';
 import { UpdateAnswerDto } from '../dtos/update-answer.dto';
 import { plainToInstance } from 'class-transformer';
+import { AnswerRatingRepository } from '../repositories/answer-rating.repository';
+import { CreateAnswerRatingDto } from '../dtos/create-answer-rating.dto';
 
 @Injectable()
 export class AnswerService {
   constructor(
     private readonly answerRepository: AnswerRepository,
+    private readonly answerRatingRepository: AnswerRatingRepository,
     private readonly questionService: QuestionService,
   ) {}
 
@@ -116,5 +119,18 @@ export class AnswerService {
   async deleteSolution(id: number) {
     await this.throwNotFoundExceptionIfNotExist({ id });
     return this.answerRepository.deleteSolution(id);
+  }
+
+  async rate(dto: CreateAnswerRatingDto) {
+    await this.throwNotFoundExceptionIfNotExist({ id: dto.answerId });
+    const rate = await this.answerRatingRepository.getOneBy({
+      answerId: dto.answerId,
+      userId: dto.userId,
+    });
+    if (rate?.value === dto.value) {
+      throw new ConflictException('Ответ уже так оценён пользователем');
+    }
+    await this.answerRatingRepository.create(dto);
+    return this.getOneBy({ id: dto.answerId });
   }
 }

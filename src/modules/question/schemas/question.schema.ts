@@ -5,7 +5,7 @@ import { FileSchema } from '../../file/schemas/file.schema';
 import { AnswerEntity } from '../../answer/entities/answer.entity';
 import { AnswerSchema } from '../../answer/schemas/answer.schema';
 import { ApiProperty } from '@nestjs/swagger';
-import { QuestionRateEntity } from '../entities/question-rate.entity';
+import { QuestionRatingEntity } from '../entities/question-rating.entity';
 
 export class QuestionSchema {
   @Expose()
@@ -67,8 +67,8 @@ export class QuestionSchema {
   @Transform(
     ({ obj }) =>
       obj.rate
-        ?.filter((rate: QuestionRateEntity) => rate.value === 1)
-        ?.map((rate: QuestionRateEntity) => rate.userId) ?? [],
+        ?.filter((rate: QuestionRatingEntity) => rate.value === 1)
+        ?.map((rate: QuestionRatingEntity) => rate.userId) ?? [],
   )
   likeUserIds: number[];
 
@@ -77,8 +77,8 @@ export class QuestionSchema {
   @Transform(
     ({ obj }) =>
       obj.rate
-        ?.filter((rate: QuestionRateEntity) => rate.value === -1)
-        ?.map((rate: QuestionRateEntity) => rate.userId) ?? [],
+        ?.filter((rating: QuestionRatingEntity) => rating.value === -1)
+        ?.map((rating: QuestionRatingEntity) => rating.userId) ?? [],
   )
   dislikeUserIds: number[];
 }

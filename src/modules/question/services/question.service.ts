@@ -19,16 +19,15 @@ import { ContextDto } from '../../auth/dtos/context.dto';
 import { RoleEnum } from '../../user/enum/role.enum';
 import { QuestionViewRepository } from '../repositories/question-view.repository';
 import { CreateQuestionViewDto } from '../dtos/create-question-view.dto';
-import { RateDto } from '../../../common/dtos/rate.dto';
-import { QuestionRateRepository } from '../repositories/question-rate.repository';
-import { CreateQuestionRateDto } from '../dtos/create-question-rate.dto';
+import { QuestionRatingRepository } from '../repositories/question-rating.repository';
+import { CreateQuestionRatingDto } from '../dtos/create-question-rating.dto';
 
 @Injectable()
 export class QuestionService {
   constructor(
     private readonly questionRepository: QuestionRepository,
     private readonly questionViewRepository: QuestionViewRepository,
-    private readonly questionRateRepository: QuestionRateRepository,
+    private readonly questionRateRepository: QuestionRatingRepository,
     private readonly fileService: FileService,
     private readonly tagService: TagService,
   ) {}
@@ -137,7 +136,7 @@ export class QuestionService {
     }
   }
 
-  async rate(dto: CreateQuestionRateDto) {
+  async rate(dto: CreateQuestionRatingDto) {
     await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
     const rate = await this.questionRateRepository.getOneBy({
       questionId: dto.questionId,

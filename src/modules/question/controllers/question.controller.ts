@@ -25,7 +25,7 @@ import { ContextDto } from '../../auth/dtos/context.dto';
 import { Authorized } from '../../auth/decorators/authorized.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../config/multer-image.config';
-import { RateDto } from '../../../common/dtos/rate.dto';
+import { RatingDto } from '../../../common/dtos/rating.dto';
 
 @ApiTags('question')
 @Authorized()
@@ -120,7 +120,7 @@ export class QuestionController {
   @Post('/:id/rate')
   rate(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: RateDto,
+    @Body() dto: RatingDto,
     @Context() context: ContextDto,
   ) {
     return this.questionService.rate({
