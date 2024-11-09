@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, Validate } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  Matches,
+  MinLength,
+  Validate,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { UniqueUserEmailValidator } from '../../user/validators/unique-user-email.validator';
 
@@ -10,6 +16,9 @@ export class RegisterDto {
     required: true,
   })
   @IsString()
+  @Matches(/^[\w.%+-]+@stud\.sfu-kras\.ru$/, {
+    message: 'Электронная почта должна принадлежать домену stud.sfu-kras.ru',
+  })
   @IsEmail()
   @Validate(UniqueUserEmailValidator)
   @Type(() => String)
@@ -21,6 +30,7 @@ export class RegisterDto {
     required: true,
   })
   @IsString()
+  @MinLength(8)
   @Type(() => String)
   password: string;
 
