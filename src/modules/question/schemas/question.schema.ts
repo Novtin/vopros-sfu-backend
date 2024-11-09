@@ -5,6 +5,7 @@ import { FileSchema } from '../../file/schemas/file.schema';
 import { AnswerEntity } from '../../answer/entities/answer.entity';
 import { AnswerSchema } from '../../answer/schemas/answer.schema';
 import { ApiProperty } from '@nestjs/swagger';
+import { QuestionRateEntity } from '../entities/question-rate.entity';
 
 export class QuestionSchema {
   @Expose()
@@ -60,4 +61,24 @@ export class QuestionSchema {
   @ApiProperty()
   @Transform((event) => event.obj.views.length)
   views: number;
+
+  @Expose()
+  @ApiProperty()
+  @Transform(
+    ({ obj }) =>
+      obj.rate
+        ?.filter((rate: QuestionRateEntity) => rate.value === 1)
+        ?.map((rate: QuestionRateEntity) => rate.userId) ?? [],
+  )
+  likeUserIds: number[];
+
+  @Expose()
+  @ApiProperty()
+  @Transform(
+    ({ obj }) =>
+      obj.rate
+        ?.filter((rate: QuestionRateEntity) => rate.value === -1)
+        ?.map((rate: QuestionRateEntity) => rate.userId) ?? [],
+  )
+  dislikeUserIds: number[];
 }

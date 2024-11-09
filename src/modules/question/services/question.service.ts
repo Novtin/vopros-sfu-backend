@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -18,12 +19,16 @@ import { ContextDto } from '../../auth/dtos/context.dto';
 import { RoleEnum } from '../../user/enum/role.enum';
 import { QuestionViewRepository } from '../repositories/question-view.repository';
 import { CreateQuestionViewDto } from '../dtos/create-question-view.dto';
+import { RateDto } from '../../../common/dtos/rate.dto';
+import { QuestionRateRepository } from '../repositories/question-rate.repository';
+import { CreateQuestionRateDto } from '../dtos/create-question-rate.dto';
 
 @Injectable()
 export class QuestionService {
   constructor(
     private readonly questionRepository: QuestionRepository,
     private readonly questionViewRepository: QuestionViewRepository,
+    private readonly questionRateRepository: QuestionRateRepository,
     private readonly fileService: FileService,
     private readonly tagService: TagService,
   ) {}
@@ -130,5 +135,18 @@ export class QuestionService {
     if (!(await this.existBy(dto))) {
       throw new NotFoundException();
     }
+  }
+
+  async rate(dto: CreateQuestionRateDto) {
+    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
+    const rate = await this.questionRateRepository.getOneBy({
+      questionId: dto.questionId,
+      userId: dto.userId,
+    });
+    if (rate?.value === dto.value) {
+      throw new ConflictException('Вопрос уже так оценён пользователем');
+    }
+    await this.questionRateRepository.create(dto);
+    return this.getOneBy({ id: dto.questionId });
   }
 }

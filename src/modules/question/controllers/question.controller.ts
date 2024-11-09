@@ -25,6 +25,7 @@ import { ContextDto } from '../../auth/dtos/context.dto';
 import { Authorized } from '../../auth/decorators/authorized.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../config/multer-image.config';
+import { RateDto } from '../../../common/dtos/rate.dto';
 
 @ApiTags('question')
 @Authorized()
@@ -112,5 +113,20 @@ export class QuestionController {
     @Context() context: ContextDto,
   ) {
     return this.questionService.uploadImages(context, id, imageFiles);
+  }
+
+  @ApiOkResponse({ type: QuestionSchema })
+  @UseInterceptors(new TransformInterceptor(QuestionSchema))
+  @Post('/:id/rate')
+  rate(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: RateDto,
+    @Context() context: ContextDto,
+  ) {
+    return this.questionService.rate({
+      questionId: id,
+      userId: context.userId,
+      value: dto.value,
+    });
   }
 }

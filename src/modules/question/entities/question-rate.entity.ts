@@ -1,4 +1,5 @@
 import {
+  Check,
   Column,
   Entity,
   JoinColumn,
@@ -8,8 +9,9 @@ import {
 import { QuestionEntity } from './question.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 
-@Entity('question_view')
-export class QuestionViewEntity {
+@Entity('question_rate')
+@Check(`"value" IN (-1, 1)`)
+export class QuestionRateEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -26,4 +28,7 @@ export class QuestionViewEntity {
 
   @Column()
   userId: number;
+
+  @Column()
+  value: number;
 }
