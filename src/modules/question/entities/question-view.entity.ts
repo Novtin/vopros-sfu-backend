@@ -4,11 +4,13 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { QuestionEntity } from './question.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('question_view')
+@Unique(['questionId', 'userId'])
 export class QuestionViewEntity {
   @PrimaryGeneratedColumn()
   id: number;
