@@ -28,6 +28,11 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  app.enableCors({
+    origin: config.get<string>('http.frontendUrl'),
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+  });
   await app.listen(config.get<string>('http.port'));
 }
 bootstrap()

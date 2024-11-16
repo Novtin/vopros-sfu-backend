@@ -53,7 +53,7 @@ export class AuthService {
 
   async register(registerDto: RegisterDto): Promise<UserEntity> {
     const emailHash = await this.hashService.makeHash(registerDto.email);
-    const confirmationUrl = `http://localhost:9311/api/v1/auth/confirm-email?emailHash=${emailHash}`;
+    const confirmationUrl = `${this.configService.get('http.frontendUrl')}/confirm-email?emailHash=${emailHash}`;
     await this.mailerService.sendMail({
       from: this.configService.get('mailer.default.from'),
       to: registerDto.email,
