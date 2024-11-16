@@ -16,9 +16,7 @@ export class UserService {
   ) {}
 
   async getOneBy(dto: SearchUserDto): Promise<UserEntity> {
-    if (!(await this.existBy(dto))) {
-      throw new NotFoundException();
-    }
+    await this.throwNotFoundExceptionIfNotExist(dto);
     return this.userRepository.getOneBy(dto);
   }
 

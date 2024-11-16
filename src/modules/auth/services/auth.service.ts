@@ -72,7 +72,6 @@ export class AuthService {
   }
 
   async confirmEmail(emailHash: string) {
-    await this.userService.throwNotFoundExceptionIfNotExist({ emailHash });
     const user = await this.userService.getOneBy({ emailHash });
     await this.userService.confirmEmail(user.id);
     return true;

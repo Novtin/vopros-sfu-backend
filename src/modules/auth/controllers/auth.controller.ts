@@ -15,6 +15,7 @@ import { JwtDto } from '../dtos/jwt.dto';
 import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../dtos/login.dto';
 import { RefreshJwtDto } from '../dtos/refresh-jwt.dto';
+import { ConfirmEmailDto } from '../dtos/confirm-email.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -41,9 +42,9 @@ export class AuthController {
   @ApiOkResponse({
     type: Boolean,
   })
-  @Get('confirm-email')
-  confirmEmail(@Query('emailHash') emailHash: string) {
-    return this.authService.confirmEmail(emailHash);
+  @Post('confirm-email')
+  confirmEmail(@Body() dto: ConfirmEmailDto) {
+    return this.authService.confirmEmail(dto.emailHash);
   }
 
   @ApiOkResponse({
