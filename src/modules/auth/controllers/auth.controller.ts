@@ -16,6 +16,7 @@ import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../dtos/login.dto';
 import { RefreshJwtDto } from '../dtos/refresh-jwt.dto';
 import { ConfirmEmailDto } from '../dtos/confirm-email.dto';
+import { JwtSchema } from '../schemas/jwt.schema';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -23,8 +24,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOkResponse({
-    type: JwtDto,
+    type: JwtSchema,
   })
+  @UseInterceptors(new TransformInterceptor(JwtSchema))
   @Post('login')
   login(@Body() loginDto: LoginDto): Promise<JwtDto> {
     return this.authService.login(loginDto);
@@ -48,8 +50,9 @@ export class AuthController {
   }
 
   @ApiOkResponse({
-    type: JwtDto,
+    type: JwtSchema,
   })
+  @UseInterceptors(new TransformInterceptor(JwtSchema))
   @Post('refresh')
   refresh(@Body() refreshDto: RefreshJwtDto): Promise<JwtDto> {
     return this.authService.refresh(refreshDto);

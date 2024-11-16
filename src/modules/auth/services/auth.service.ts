@@ -53,7 +53,9 @@ export class AuthService {
 
   async register(registerDto: RegisterDto): Promise<UserEntity> {
     const emailHash = await this.hashService.makeHash(registerDto.email);
-    const confirmationUrl = `${this.configService.get('http.frontendUrl')}/confirm-email?emailHash=${emailHash}`;
+    const params = new URLSearchParams();
+    params.set('emailHash', encodeURIComponent(emailHash));
+    const confirmationUrl = `${this.configService.get('http.frontendUrl')}/confirm-email?${params.toString()}`;
     await this.mailerService.sendMail({
       from: this.configService.get('mailer.default.from'),
       to: registerDto.email,
