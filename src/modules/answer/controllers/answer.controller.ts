@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
@@ -115,6 +116,21 @@ export class AnswerController {
     @Context() context: ContextDto,
   ) {
     return this.answerService.rate({
+      answerId: id,
+      userId: context.userId,
+      value: dto.value,
+    });
+  }
+
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/:id/rate')
+  removeRate(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: RatingDto,
+    @Context() context: ContextDto,
+  ) {
+    return this.answerService.removeRate({
       answerId: id,
       userId: context.userId,
       value: dto.value,

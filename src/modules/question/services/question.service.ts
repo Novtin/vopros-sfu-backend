@@ -21,6 +21,10 @@ import { QuestionViewRepository } from '../repositories/question-view.repository
 import { CreateQuestionViewDto } from '../dtos/create-question-view.dto';
 import { QuestionRatingRepository } from '../repositories/question-rating.repository';
 import { CreateQuestionRatingDto } from '../dtos/create-question-rating.dto';
+import { QuestionFavoriteRepository } from '../repositories/question-favorite.repository';
+import { CreateQuestionFavoriteDto } from '../dtos/create-question-favorite.dto';
+import { RemoveQuestionFavoriteDto } from '../dtos/remove-question-favorite.dto';
+import { RemoveQuestionRatingDto } from '../dtos/remove-question-rating.dto';
 
 @Injectable()
 export class QuestionService {
@@ -28,6 +32,7 @@ export class QuestionService {
     private readonly questionRepository: QuestionRepository,
     private readonly questionViewRepository: QuestionViewRepository,
     private readonly questionRateRepository: QuestionRatingRepository,
+    private readonly questionFavoriteRepository: QuestionFavoriteRepository,
     private readonly fileService: FileService,
     private readonly tagService: TagService,
   ) {}
@@ -147,5 +152,42 @@ export class QuestionService {
     }
     await this.questionRateRepository.create(dto);
     return this.getOneBy({ id: dto.questionId });
+  }
+
+  async removeRate(dto: RemoveQuestionRatingDto) {
+    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
+    const rate = await this.questionRateRepository.getOneBy({
+      questionId: dto.questionId,
+      userId: dto.userId,
+      value: dto.value,
+    });
+    if (!rate) {
+      throw new NotFoundException('Оценка не найдена');
+    }
+    await this.questionRateRepository.remove(dto);
+  }
+
+  async setFavorite(dto: CreateQuestionFavoriteDto) {
+    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
+    const favorite = await this.questionFavoriteRepository.getOneBy({
+      questionId: dto.questionId,
+      userId: dto.userId,
+    });
+    if (favorite) {
+      throw new ConflictException('Вопрос уже добавлен в избранное');
+    }
+    await this.questionFavoriteRepository.create(dto);
+  }
+
+  async removeFavorite(dto: RemoveQuestionFavoriteDto) {
+    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
+    const favorite = await this.questionFavoriteRepository.getOneBy({
+      questionId: dto.questionId,
+      userId: dto.userId,
+    });
+    if (favorite) {
+      throw new NotFoundException('Вопрос не найден в избранном');
+    }
+    await this.questionFavoriteRepository.remove(dto);
   }
 }

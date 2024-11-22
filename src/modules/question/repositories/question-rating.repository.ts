@@ -4,6 +4,7 @@ import { QuestionRatingEntity } from '../entities/question-rating.entity';
 import { CreateQuestionRatingDto } from '../dtos/create-question-rating.dto';
 import { Injectable } from '@nestjs/common';
 import { SearchQuestionRatingDto } from '../dtos/search-question-rating.dto';
+import { RemoveQuestionRatingDto } from '../dtos/remove-question-rating.dto';
 
 @Injectable()
 export class QuestionRatingRepository {
@@ -18,5 +19,9 @@ export class QuestionRatingRepository {
 
   getOneBy(dto: SearchQuestionRatingDto) {
     return this.dbRepository.findOneBy(dto);
+  }
+
+  remove(dto: RemoveQuestionRatingDto) {
+    return this.dbRepository.delete(dto);
   }
 }

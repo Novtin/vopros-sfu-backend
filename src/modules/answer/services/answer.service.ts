@@ -15,6 +15,7 @@ import { UpdateAnswerDto } from '../dtos/update-answer.dto';
 import { plainToInstance } from 'class-transformer';
 import { AnswerRatingRepository } from '../repositories/answer-rating.repository';
 import { CreateAnswerRatingDto } from '../dtos/create-answer-rating.dto';
+import { RemoveAnswerRatingDto } from '../dtos/remove-answer-rating.dto';
 
 @Injectable()
 export class AnswerService {
@@ -132,5 +133,18 @@ export class AnswerService {
     }
     await this.answerRatingRepository.create(dto);
     return this.getOneBy({ id: dto.answerId });
+  }
+
+  async removeRate(dto: RemoveAnswerRatingDto) {
+    await this.throwNotFoundExceptionIfNotExist({ id: dto.answerId });
+    const rate = await this.answerRatingRepository.getOneBy({
+      answerId: dto.answerId,
+      userId: dto.userId,
+      value: dto.value,
+    });
+    if (!rate) {
+      throw new NotFoundException('Оценка не найдена');
+    }
+    await this.answerRatingRepository.remove(dto);
   }
 }

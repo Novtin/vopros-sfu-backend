@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
@@ -127,6 +128,47 @@ export class QuestionController {
       questionId: id,
       userId: context.userId,
       value: dto.value,
+    });
+  }
+
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/:id/rate')
+  removeRate(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: RatingDto,
+    @Context() context: ContextDto,
+  ) {
+    return this.questionService.removeRate({
+      questionId: id,
+      userId: context.userId,
+      value: dto.value,
+    });
+  }
+
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('/:id/favorite')
+  setFavorite(
+    @Param('id', ParseIntPipe) id: number,
+    @Context() context: ContextDto,
+  ) {
+    return this.questionService.setFavorite({
+      questionId: id,
+      userId: context.userId,
+    });
+  }
+
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/:id/favorite')
+  removeFavorite(
+    @Param('id', ParseIntPipe) id: number,
+    @Context() context: ContextDto,
+  ) {
+    return this.questionService.removeFavorite({
+      questionId: id,
+      userId: context.userId,
     });
   }
 }

@@ -12,6 +12,8 @@ import { QuestionViewEntity } from './entities/question-view.entity';
 import { QuestionViewRepository } from './repositories/question-view.repository';
 import { QuestionRatingEntity } from './entities/question-rating.entity';
 import { QuestionRatingRepository } from './repositories/question-rating.repository';
+import { QuestionFavoriteRepository } from './repositories/question-favorite.repository';
+import { QuestionFavoriteEntity } from './entities/question-favorite.entity';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { QuestionRatingRepository } from './repositories/question-rating.reposit
       QuestionEntity,
       QuestionViewEntity,
       QuestionRatingEntity,
+      QuestionFavoriteEntity,
     ]),
     AuthModule,
     UserModule,
@@ -31,6 +34,7 @@ import { QuestionRatingRepository } from './repositories/question-rating.reposit
     QuestionRepository,
     QuestionViewRepository,
     QuestionRatingRepository,
+    QuestionFavoriteRepository,
   ],
   exports: [QuestionService],
 })

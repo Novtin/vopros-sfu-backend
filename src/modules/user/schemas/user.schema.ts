@@ -1,5 +1,6 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { FileSchema } from '../../file/schemas/file.schema';
 
 export class UserSchema {
   @Expose()
@@ -13,4 +14,9 @@ export class UserSchema {
   @Expose()
   @ApiProperty()
   description: string;
+
+  @ApiProperty({ type: FileSchema })
+  @Expose()
+  @Type(() => FileSchema)
+  avatar: FileSchema;
 }
