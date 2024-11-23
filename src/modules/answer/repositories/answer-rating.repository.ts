@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AnswerRatingEntity } from '../entities/answer-rating.entity';
 import { CreateAnswerRatingDto } from '../dtos/create-answer-rating.dto';
 import { SearchAnswerRatingDto } from '../dtos/search-answer-rating.dto';
-import { RemoveAnswerRatingDto } from '../dtos/remove-answer-rating.dto';
+import { DeleteAnswerRatingDto } from '../dtos/delete-answer-rating.dto';
 
 @Injectable()
 export class AnswerRatingRepository {
@@ -21,7 +21,7 @@ export class AnswerRatingRepository {
     return this.dbRepository.findOneBy(dto);
   }
 
-  remove(dto: RemoveAnswerRatingDto) {
+  delete(dto: DeleteAnswerRatingDto) {
     return this.dbRepository.delete(dto);
   }
 }

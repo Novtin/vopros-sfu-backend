@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { QuestionFavoriteEntity } from '../entities/question-favorite.entity';
 import { CreateQuestionFavoriteDto } from '../dtos/create-question-favorite.dto';
 import { SearchQuestionFavoriteDto } from '../dtos/search-question-favorite.dto';
-import { RemoveQuestionFavoriteDto } from '../dtos/remove-question-favorite.dto';
+import { DeleteQuestionFavoriteDto } from '../dtos/delete-question-favorite.dto';
 
 @Injectable()
 export class QuestionFavoriteRepository {
@@ -21,7 +21,7 @@ export class QuestionFavoriteRepository {
     return this.dbRepository.findOneBy(dto);
   }
 
-  remove(dto: RemoveQuestionFavoriteDto) {
+  delete(dto: DeleteQuestionFavoriteDto) {
     return this.dbRepository.delete(dto);
   }
 }

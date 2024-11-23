@@ -125,12 +125,12 @@ export class AnswerController {
   @ApiOkResponse()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id/rate')
-  removeRate(
+  deleteRate(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: RatingDto,
     @Context() context: ContextDto,
   ) {
-    return this.answerService.removeRate({
+    return this.answerService.deleteRate({
       answerId: id,
       userId: context.userId,
       value: dto.value,

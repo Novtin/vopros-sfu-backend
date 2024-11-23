@@ -23,8 +23,8 @@ import { QuestionRatingRepository } from '../repositories/question-rating.reposi
 import { CreateQuestionRatingDto } from '../dtos/create-question-rating.dto';
 import { QuestionFavoriteRepository } from '../repositories/question-favorite.repository';
 import { CreateQuestionFavoriteDto } from '../dtos/create-question-favorite.dto';
-import { RemoveQuestionFavoriteDto } from '../dtos/remove-question-favorite.dto';
-import { RemoveQuestionRatingDto } from '../dtos/remove-question-rating.dto';
+import { DeleteQuestionFavoriteDto } from '../dtos/delete-question-favorite.dto';
+import { DeleteQuestionRatingDto } from '../dtos/delete-question-rating.dto';
 
 @Injectable()
 export class QuestionService {
@@ -154,7 +154,7 @@ export class QuestionService {
     return this.getOneBy({ id: dto.questionId });
   }
 
-  async removeRate(dto: RemoveQuestionRatingDto) {
+  async deleteRate(dto: DeleteQuestionRatingDto) {
     await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
     const rate = await this.questionRateRepository.getOneBy({
       questionId: dto.questionId,
@@ -164,7 +164,7 @@ export class QuestionService {
     if (!rate) {
       throw new NotFoundException('Оценка не найдена');
     }
-    await this.questionRateRepository.remove(dto);
+    await this.questionRateRepository.delete(dto);
   }
 
   async setFavorite(dto: CreateQuestionFavoriteDto) {
@@ -179,7 +179,7 @@ export class QuestionService {
     await this.questionFavoriteRepository.create(dto);
   }
 
-  async removeFavorite(dto: RemoveQuestionFavoriteDto) {
+  async deleteFavorite(dto: DeleteQuestionFavoriteDto) {
     await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
     const favorite = await this.questionFavoriteRepository.getOneBy({
       questionId: dto.questionId,
@@ -188,6 +188,6 @@ export class QuestionService {
     if (favorite) {
       throw new NotFoundException('Вопрос не найден в избранном');
     }
-    await this.questionFavoriteRepository.remove(dto);
+    await this.questionFavoriteRepository.delete(dto);
   }
 }
