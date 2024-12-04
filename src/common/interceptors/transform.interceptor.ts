@@ -16,11 +16,23 @@ export class TransformInterceptor<T> implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data) =>
-        plainToInstance(this.classToTransform, data, {
-          strategy: 'excludeAll',
-        }),
-      ),
+      map((data) => {
+        const isArrayWithPagination =
+          Array.isArray(data) && Array.isArray(data[0]);
+        const result = plainToInstance(
+          this.classToTransform,
+          isArrayWithPagination ? data[0] : data,
+          {
+            strategy: 'excludeAll',
+          },
+        );
+        return isArrayWithPagination
+          ? {
+              items: result,
+              total: data[1],
+            }
+          : result;
+      }),
     );
   }
 }

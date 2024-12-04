@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { QuestionEntity } from '../entities/question.entity';
@@ -7,6 +7,9 @@ import { ExistQuestionDto } from '../dtos/exist-question.dto';
 import { UpdateQuestionDto } from '../dtos/update-question.dto';
 import { RelationQuestionDto } from '../../file/dtos/relation-question.dto';
 import { CreateQuestionDto } from '../dtos/create-question.dto';
+import { FilterQuestionEnum } from '../enums/filter-question.enum';
+import { FilterQuestionDto } from '../dtos/filter-question.dto';
+import { orderBy, sum } from 'lodash';
 
 @Injectable()
 export class QuestionRepository {
@@ -79,6 +82,58 @@ export class QuestionRepository {
           question.answers.some((answer) => answer.isSolution),
         )
       : questions;
+  }
+
+  async filter(dto: FilterQuestionDto) {
+    const query = this.dbRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.tags', 'tags')
+      .leftJoinAndSelect('question.author', 'author')
+      .leftJoinAndSelect('question.answers', 'answers')
+      .leftJoinAndSelect('question.views', 'views')
+      .leftJoinAndSelect('question.images', 'images')
+      .leftJoinAndSelect('question.rating', 'rating')
+      .leftJoinAndSelect('author.avatar', 'author_avatar')
+      .orderBy('question."createdAt"', 'DESC')
+      .limit(dto.pageSize)
+      .offset(dto.pageSize * dto.page);
+
+    switch (dto.filter) {
+      case FilterQuestionEnum.CREATED_AT:
+        return query.getManyAndCount();
+      case FilterQuestionEnum.RATING:
+        return query
+          .addSelect(
+            (subQuery) =>
+              subQuery
+                .select('COALESCE(SUM(rating.value), 0)')
+                .from('question_rating', 'rating')
+                .where('rating.questionId = question.id'),
+            'sumRating',
+          )
+          .orderBy(`"sumRating"`, 'DESC')
+          .getManyAndCount();
+      case FilterQuestionEnum.VIEWS:
+        return query
+          .addSelect(
+            (subQuery) =>
+              subQuery
+                .select('COALESCE(COUNT(views.id), 0)')
+                .from('question_view', 'views')
+                .where('views.questionId = question.id'),
+            'viewCount',
+          )
+          .orderBy('"viewCount"', 'DESC')
+          .getManyAndCount();
+      case FilterQuestionEnum.WITHOUT_ANSWER:
+        return query.where('answers.id IS NULL').getManyAndCount();
+      default:
+        throw new NotFoundException();
+    }
+  }
+
+  async getCountQuestions() {
+    return await this.dbRepository.count();
   }
 
   async updateRelations(id: number, dto: RelationQuestionDto) {

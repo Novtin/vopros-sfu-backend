@@ -49,6 +49,11 @@ export class QuestionSchema {
   answers: AnswerSchema;
 
   @Expose()
+  @ApiProperty({ type: AnswerSchema })
+  @Transform((event) => event.obj.answers?.length ?? 0)
+  countAnswers: number;
+
+  @Expose()
   @ApiProperty()
   @Transform(
     (event) =>
@@ -66,7 +71,7 @@ export class QuestionSchema {
   @ApiProperty()
   @Transform(
     ({ obj }) =>
-      obj.rate
+      obj.rating
         ?.filter((rate: QuestionRatingEntity) => rate.value === 1)
         ?.map((rate: QuestionRatingEntity) => rate.userId) ?? [],
   )
@@ -76,7 +81,36 @@ export class QuestionSchema {
   @ApiProperty()
   @Transform(
     ({ obj }) =>
-      obj.rate
+      obj.rating?.filter((rate: QuestionRatingEntity) => rate.value === 1)
+        ?.length ?? 0,
+  )
+  countLikes: number;
+
+  @Expose()
+  @ApiProperty()
+  @Transform(
+    ({ obj }) =>
+      obj.rating?.filter((rate: QuestionRatingEntity) => rate.value === -1)
+        ?.length ?? 0,
+  )
+  countDislikes: number;
+
+  @Expose()
+  @ApiProperty()
+  @Transform(
+    ({ obj }) =>
+      obj.rating?.reduce(
+        (acc: number, cur: QuestionRatingEntity) => acc + cur.value,
+        0,
+      ) ?? 0,
+  )
+  rating: number;
+
+  @Expose()
+  @ApiProperty()
+  @Transform(
+    ({ obj }) =>
+      obj.rating
         ?.filter((rating: QuestionRatingEntity) => rating.value === -1)
         ?.map((rating: QuestionRatingEntity) => rating.userId) ?? [],
   )

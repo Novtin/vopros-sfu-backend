@@ -27,6 +27,8 @@ import { Authorized } from '../../auth/decorators/authorized.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../config/multer-image.config';
 import { RatingDto } from '../../../common/dtos/rating.dto';
+import { FilterQuestionDto } from '../dtos/filter-question.dto';
+import { ApiOkPagination } from '../../../common/decorators/api-ok-pagination';
 
 @ApiTags('question')
 @Authorized()
@@ -67,6 +69,21 @@ export class QuestionController {
   @Get()
   search(@Query() dto: SearchQuestionDto): Promise<QuestionEntity[]> {
     return this.questionService.search(dto);
+  }
+
+  @ApiOkPagination({ type: QuestionSchema })
+  @UseInterceptors(new TransformInterceptor(QuestionSchema))
+  @Get('/filter')
+  filter(@Query() dto: FilterQuestionDto) {
+    return this.questionService.filter(dto);
+  }
+
+  @ApiOkResponse({
+    type: Number,
+  })
+  @Get('/count')
+  getCountQuestions(): Promise<number> {
+    return this.questionService.getCountQuestions();
   }
 
   @Get('/:id')

@@ -25,6 +25,8 @@ import { QuestionFavoriteRepository } from '../repositories/question-favorite.re
 import { CreateQuestionFavoriteDto } from '../dtos/create-question-favorite.dto';
 import { DeleteQuestionFavoriteDto } from '../dtos/delete-question-favorite.dto';
 import { DeleteQuestionRatingDto } from '../dtos/delete-question-rating.dto';
+import { FilterQuestionDto } from '../dtos/filter-question.dto';
+import { FilterQuestionEnum } from '../enums/filter-question.enum';
 
 @Injectable()
 export class QuestionService {
@@ -189,5 +191,13 @@ export class QuestionService {
       throw new NotFoundException('Вопрос не найден в избранном');
     }
     await this.questionFavoriteRepository.delete(dto);
+  }
+
+  filter(dto: FilterQuestionDto) {
+    return this.questionRepository.filter(dto);
+  }
+
+  getCountQuestions() {
+    return this.questionRepository.getCountQuestions();
   }
 }
