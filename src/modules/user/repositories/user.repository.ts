@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,8 @@ import { ExistUserDto } from '../dtos/exist-user.dto';
 import { SaveUserDto } from '../dtos/save-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { RelationUserDto } from '../dtos/relation-user.dto';
+import { FilterUserDto } from '../dtos/filter-user.dto';
+import { FilterUserEnum } from '../enum/filter-user.enum';
 
 @Injectable()
 export class UserRepository {
@@ -46,5 +48,40 @@ export class UserRepository {
       .where(dto)
       .limit(1)
       .getOne();
+  }
+
+  async filter(dto: FilterUserDto) {
+    const query = this.dbRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.avatar', 'avatar')
+      .leftJoinAndSelect('user.questions', 'questions')
+      .leftJoinAndSelect('user.answers', 'answers')
+      .leftJoinAndSelect('questions.rating', 'questions_rating')
+      .leftJoinAndSelect('answers.rating', 'answers_rating')
+      .addSelect(
+        `COALESCE((SELECT COALESCE(SUM(question_rating.value), 0) FROM question_rating WHERE question_rating."questionId" = questions.id), 0) + COALESCE((SELECT COALESCE(SUM(answer_rating.value), 0) FROM answer_rating WHERE answer_rating."answerId" = answers.id), 0)`,
+        'user_rating',
+      )
+      .limit(dto.pageSize)
+      .offset(dto.pageSize * dto.page);
+
+    switch (dto.filter) {
+      case FilterUserEnum.RATING:
+        query.orderBy('user_rating', 'DESC');
+        break;
+      default:
+        throw new NotFoundException();
+    }
+
+    if (dto.query) {
+      query.orWhere('user.nickname ILIKE :nickname', {
+        nickname: `%${dto.query}%`,
+      });
+      query.orWhere('user.email ILIKE :email', {
+        email: `%${dto.query}%`,
+      });
+    }
+
+    return query.getManyAndCount();
   }
 }

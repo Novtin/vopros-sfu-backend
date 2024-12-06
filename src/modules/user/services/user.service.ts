@@ -7,6 +7,7 @@ import { SaveUserDto } from '../dtos/save-user.dto';
 import { FileService } from '../../file/services/file.service';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { RelationUserDto } from '../dtos/relation-user.dto';
+import { FilterUserDto } from '../dtos/filter-user.dto';
 
 @Injectable()
 export class UserService {
@@ -62,5 +63,9 @@ export class UserService {
       await this.fileService.delete(fileIdForDelete);
     }
     return userEntity;
+  }
+
+  async filter(dto: FilterUserDto) {
+    return this.userRepository.filter(dto);
   }
 }

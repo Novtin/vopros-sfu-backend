@@ -26,7 +26,6 @@ import { CreateQuestionFavoriteDto } from '../dtos/create-question-favorite.dto'
 import { DeleteQuestionFavoriteDto } from '../dtos/delete-question-favorite.dto';
 import { DeleteQuestionRatingDto } from '../dtos/delete-question-rating.dto';
 import { FilterQuestionDto } from '../dtos/filter-question.dto';
-import { FilterQuestionEnum } from '../enums/filter-question.enum';
 
 @Injectable()
 export class QuestionService {

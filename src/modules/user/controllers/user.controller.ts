@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -20,12 +21,21 @@ import { ContextDto } from '../../auth/dtos/context.dto';
 import { Context } from '../../auth/decorators/context.decorator';
 import { Authorized } from '../../auth/decorators/authorized.decorator';
 import { RoleEnum } from '../enum/role.enum';
+import { FilterUserDto } from '../dtos/filter-user.dto';
+import { UserDetailSchema } from '../schemas/user-detail.schema';
 
 @Authorized()
 @Controller('/user')
 @ApiTags('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('/filter')
+  @ApiOkResponse({ type: UserDetailSchema })
+  @UseInterceptors(new TransformInterceptor(UserDetailSchema))
+  filter(@Query() dto: FilterUserDto) {
+    return this.userService.filter(dto);
+  }
 
   @Get('/:id')
   @ApiOkResponse({ type: UserSchema })

@@ -13,6 +13,10 @@ export class UserSchema {
 
   @Expose()
   @ApiProperty()
+  nickname: string;
+
+  @Expose()
+  @ApiProperty()
   description: string;
 
   @ApiProperty({ type: FileSchema })

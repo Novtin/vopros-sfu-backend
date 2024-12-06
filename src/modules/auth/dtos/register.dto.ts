@@ -26,6 +26,16 @@ export class RegisterDto {
 
   @ApiProperty({
     type: String,
+    description: 'Никнейм',
+    required: true,
+  })
+  @IsString()
+  @Validate(UniqueUserEmailValidator)
+  @Type(() => String)
+  nickname: string;
+
+  @ApiProperty({
+    type: String,
     description: 'Пароль',
     required: true,
   })

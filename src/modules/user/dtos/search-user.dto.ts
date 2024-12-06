@@ -24,6 +24,15 @@ export class SearchUserDto {
 
   @ApiProperty({
     type: String,
+    description: 'Никнейм',
+    required: true,
+  })
+  @IsString()
+  @Type(() => String)
+  nickname?: string;
+
+  @ApiProperty({
+    type: String,
     description: 'Хэш маила',
     required: true,
   })
