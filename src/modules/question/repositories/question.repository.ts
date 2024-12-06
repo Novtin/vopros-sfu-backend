@@ -88,21 +88,23 @@ export class QuestionRepository {
     const query = this.dbRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.tags', 'tags')
-      .leftJoinAndSelect('question.author', 'author')
+      .leftJoinAndSelect('question.author', 'question_author')
       .leftJoinAndSelect('question.answers', 'answers')
+      .leftJoinAndSelect('answers.author', 'answer_author')
+      .leftJoinAndSelect('answer_author.avatar', 'answer_author_avatar')
       .leftJoinAndSelect('question.views', 'views')
       .leftJoinAndSelect('question.images', 'images')
       .leftJoinAndSelect('question.rating', 'rating')
-      .leftJoinAndSelect('author.avatar', 'author_avatar')
+      .leftJoinAndSelect('question_author.avatar', 'question_author_avatar')
       .orderBy('question."createdAt"', 'DESC')
       .limit(dto.pageSize)
       .offset(dto.pageSize * dto.page);
 
     switch (dto.filter) {
       case FilterQuestionEnum.CREATED_AT:
-        return query.getManyAndCount();
+        break;
       case FilterQuestionEnum.RATING:
-        return query
+        query
           .addSelect(
             (subQuery) =>
               subQuery
@@ -111,10 +113,10 @@ export class QuestionRepository {
                 .where('rating.questionId = question.id'),
             'sumRating',
           )
-          .orderBy(`"sumRating"`, 'DESC')
-          .getManyAndCount();
+          .orderBy(`"sumRating"`, 'DESC');
+        break;
       case FilterQuestionEnum.VIEWS:
-        return query
+        query
           .addSelect(
             (subQuery) =>
               subQuery
@@ -123,13 +125,33 @@ export class QuestionRepository {
                 .where('views.questionId = question.id'),
             'viewCount',
           )
-          .orderBy('"viewCount"', 'DESC')
-          .getManyAndCount();
+          .orderBy('"viewCount"', 'DESC');
+        break;
       case FilterQuestionEnum.WITHOUT_ANSWER:
-        return query.where('answers.id IS NULL').getManyAndCount();
+        query.where('answers.id IS NULL');
+        break;
       default:
         throw new NotFoundException();
     }
+
+    if (dto?.authorId) {
+      query.andWhere({ authorId: dto.authorId });
+    }
+
+    if (dto?.favoriteUserId) {
+      query.andWhere(
+        'question.id IN (SELECT "questionId" FROM question_favorite WHERE question_favorite."userId" = :favoriteUserId)',
+        { favoriteUserId: dto.favoriteUserId },
+      );
+    }
+
+    if (dto?.answeredUserId) {
+      query.andWhere(
+        'answers.id IN (SELECT id FROM answer WHERE answer."authorId" = :answeredUserId)',
+        { answeredUserId: dto.answeredUserId },
+      );
+    }
+    return query.getManyAndCount();
   }
 
   async getCountQuestions() {

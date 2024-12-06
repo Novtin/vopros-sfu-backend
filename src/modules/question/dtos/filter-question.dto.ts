@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsInt, IsOptional } from 'class-validator';
 import { PaginationDto } from '../../../common/dtos/pagination.dto';
 import { FilterQuestionEnum } from '../enums/filter-question.enum';
+import { Type } from 'class-transformer';
 
 export class FilterQuestionDto extends PaginationDto {
   @ApiProperty({
@@ -11,4 +12,31 @@ export class FilterQuestionDto extends PaginationDto {
   })
   @IsEnum(FilterQuestionEnum)
   filter: FilterQuestionEnum;
+
+  @ApiProperty({
+    type: Number,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  @Type(() => Number)
+  authorId?: number;
+
+  @ApiProperty({
+    type: Number,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  @Type(() => Number)
+  favoriteUserId: number;
+
+  @ApiProperty({
+    type: Number,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  @Type(() => Number)
+  answeredUserId: number;
 }

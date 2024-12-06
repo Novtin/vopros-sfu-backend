@@ -1,7 +1,6 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { UserSchema } from '../../user/schemas/user.schema';
 import { ApiProperty } from '@nestjs/swagger';
-import { QuestionRatingEntity } from '../../question/entities/question-rating.entity';
 import { AnswerRatingEntity } from '../entities/answer-rating.entity';
 
 export class AnswerSchema {
