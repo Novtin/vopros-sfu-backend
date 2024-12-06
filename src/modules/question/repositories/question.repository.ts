@@ -8,8 +8,6 @@ import { UpdateQuestionDto } from '../dtos/update-question.dto';
 import { RelationQuestionDto } from '../../file/dtos/relation-question.dto';
 import { CreateQuestionDto } from '../dtos/create-question.dto';
 import { FilterQuestionEnum } from '../enums/filter-question.enum';
-import { FilterQuestionDto } from '../dtos/filter-question.dto';
-import { orderBy, sum } from 'lodash';
 
 @Injectable()
 export class QuestionRepository {
@@ -27,12 +25,14 @@ export class QuestionRepository {
     return this.dbRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.tags', 'tags')
-      .leftJoinAndSelect('question.author', 'author')
-      .leftJoinAndSelect('question.images', 'images')
+      .leftJoinAndSelect('question.author', 'question_author')
       .leftJoinAndSelect('question.answers', 'answers')
-      .leftJoinAndSelect('question.views', 'views')
-      .leftJoinAndSelect('question.rating', 'rating')
       .leftJoinAndSelect('answers.author', 'answer_author')
+      .leftJoinAndSelect('answer_author.avatar', 'answer_author_avatar')
+      .leftJoinAndSelect('question.views', 'views')
+      .leftJoinAndSelect('question.images', 'images')
+      .leftJoinAndSelect('question.rating', 'rating')
+      .leftJoinAndSelect('question_author.avatar', 'question_author_avatar')
       .where(dto)
       .limit(1)
       .getOne();
@@ -47,44 +47,7 @@ export class QuestionRepository {
     return this.getOneBy({ id });
   }
 
-  async search(dto: SearchQuestionDto): Promise<QuestionEntity[]> {
-    const query = this.dbRepository
-      .createQueryBuilder('question')
-      .leftJoinAndSelect('question.tags', 'tags')
-      .leftJoinAndSelect('question.author', 'author')
-      .leftJoinAndSelect('question.answers', 'answers')
-      .leftJoinAndSelect('question.views', 'views')
-      .leftJoinAndSelect('answers.author', 'answer_author');
-    if (dto?.description) {
-      query.where('question.title ILIKE :title', { title: `%${dto.title}%` });
-    }
-
-    if (dto?.id) {
-      query.andWhere({ id: dto.id });
-    }
-
-    if (dto?.authorId) {
-      query.andWhere({ authorId: dto.authorId });
-    }
-
-    if (dto?.description) {
-      query.andWhere('question.description ILIKE :description', {
-        description: `%${dto.description}%`,
-      });
-    }
-    query.limit(dto.pageSize);
-    query.offset(dto.pageSize * dto.page);
-
-    const questions = await query.getMany();
-
-    return dto.isResolved && questions.length
-      ? questions.filter((question) =>
-          question.answers.some((answer) => answer.isSolution),
-        )
-      : questions;
-  }
-
-  async filter(dto: FilterQuestionDto) {
+  async search(dto: SearchQuestionDto) {
     const query = this.dbRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.tags', 'tags')
@@ -149,6 +112,30 @@ export class QuestionRepository {
       query.andWhere(
         'answers.id IN (SELECT id FROM answer WHERE answer."authorId" = :answeredUserId)',
         { answeredUserId: dto.answeredUserId },
+      );
+    }
+
+    if (dto?.title) {
+      query.where('question.title ILIKE :title', { title: `%${dto.title}%` });
+    }
+
+    if (dto?.id) {
+      query.andWhere({ id: dto.id });
+    }
+
+    if (dto?.authorId) {
+      query.andWhere({ authorId: dto.authorId });
+    }
+
+    if (dto?.description) {
+      query.andWhere('question.description ILIKE :description', {
+        description: `%${dto.description}%`,
+      });
+    }
+
+    if (dto?.isResolved) {
+      query.andWhere(
+        'answers.id IN (SELECT id FROM answer WHERE answer."isSolution" = TRUE)',
       );
     }
     return query.getManyAndCount();

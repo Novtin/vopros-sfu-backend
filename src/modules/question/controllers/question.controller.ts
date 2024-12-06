@@ -27,7 +27,6 @@ import { Authorized } from '../../auth/decorators/authorized.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../config/multer-image.config';
 import { RatingDto } from '../../../common/dtos/rating.dto';
-import { FilterQuestionDto } from '../dtos/filter-question.dto';
 import { ApiOkPagination } from '../../../common/decorators/api-ok-pagination';
 
 @ApiTags('question')
@@ -61,21 +60,11 @@ export class QuestionController {
     return this.questionService.update(context.userId, id, dto);
   }
 
-  @ApiOkResponse({
-    type: QuestionSchema,
-    isArray: true,
-  })
-  @UseInterceptors(new TransformInterceptor(QuestionSchema))
-  @Get()
-  search(@Query() dto: SearchQuestionDto): Promise<QuestionEntity[]> {
-    return this.questionService.search(dto);
-  }
-
   @ApiOkPagination({ type: QuestionSchema })
   @UseInterceptors(new TransformInterceptor(QuestionSchema))
-  @Get('/filter')
-  filter(@Query() dto: FilterQuestionDto) {
-    return this.questionService.filter(dto);
+  @Get()
+  search(@Query() dto: SearchQuestionDto) {
+    return this.questionService.search(dto);
   }
 
   @ApiOkResponse({
@@ -97,7 +86,7 @@ export class QuestionController {
       userId: context.userId,
       questionId: id,
     });
-    return this.questionService.getOneBy({ id });
+    return this.questionService.getOneById(id);
   }
 
   @ApiOkResponse({ status: HttpStatus.NO_CONTENT })

@@ -1,28 +1,50 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PaginationDto } from '../../../common/dtos/pagination.dto';
+import { FilterQuestionEnum } from '../enums/filter-question.enum';
+import { Type } from 'class-transformer';
 
 export class SearchQuestionDto extends PaginationDto {
   @ApiProperty({
-    type: Number,
-    description: 'ID',
-    required: false,
+    type: FilterQuestionEnum,
+    enum: FilterQuestionEnum,
+    required: true,
   })
-  @IsInt()
-  @Type(() => Number)
-  @IsOptional()
-  id?: number;
+  @IsEnum(FilterQuestionEnum)
+  filter: FilterQuestionEnum;
 
   @ApiProperty({
     type: Number,
-    description: 'ID автора',
     required: false,
   })
   @IsInt()
-  @Type(() => Number)
   @IsOptional()
+  @Type(() => Number)
   authorId?: number;
+
+  @ApiProperty({
+    type: Number,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  @Type(() => Number)
+  favoriteUserId?: number;
+
+  @ApiProperty({
+    type: Number,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  @Type(() => Number)
+  answeredUserId?: number;
 
   @ApiProperty({
     type: String,
@@ -53,4 +75,14 @@ export class SearchQuestionDto extends PaginationDto {
   @Type(() => Boolean)
   @IsOptional()
   isResolved?: boolean;
+
+  @ApiProperty({
+    type: Number,
+    description: 'ID',
+    required: false,
+  })
+  @IsInt()
+  @Type(() => Number)
+  @IsOptional()
+  id?: number;
 }

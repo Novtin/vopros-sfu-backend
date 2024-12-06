@@ -25,7 +25,6 @@ import { QuestionFavoriteRepository } from '../repositories/question-favorite.re
 import { CreateQuestionFavoriteDto } from '../dtos/create-question-favorite.dto';
 import { DeleteQuestionFavoriteDto } from '../dtos/delete-question-favorite.dto';
 import { DeleteQuestionRatingDto } from '../dtos/delete-question-rating.dto';
-import { FilterQuestionDto } from '../dtos/filter-question.dto';
 
 @Injectable()
 export class QuestionService {
@@ -46,9 +45,9 @@ export class QuestionService {
     }
   }
 
-  async getOneBy(dto: SearchQuestionDto): Promise<QuestionEntity> {
-    await this.throwNotFoundExceptionIfNotExist(dto);
-    return this.questionRepository.getOneBy(dto);
+  async getOneById(id: number): Promise<QuestionEntity> {
+    await this.throwNotFoundExceptionIfNotExist({ id });
+    return this.questionRepository.getOneBy({ id });
   }
 
   existBy(dto: ExistQuestionDto): Promise<boolean> {
@@ -84,10 +83,6 @@ export class QuestionService {
     return this.questionRepository.update(id, dto);
   }
 
-  search(dto: SearchQuestionDto): Promise<QuestionEntity[]> {
-    return this.questionRepository.search(dto);
-  }
-
   async delete(context: ContextDto, id: number): Promise<void> {
     if (!context.roles.includes(RoleEnum.ADMIN)) {
       await this.throwForbiddenExceptionIfNotBelong(context.userId, id);
@@ -106,7 +101,7 @@ export class QuestionService {
     if (!context.roles.includes(RoleEnum.ADMIN)) {
       await this.throwForbiddenExceptionIfNotBelong(context.userId, id);
     }
-    let questionEntity: QuestionEntity = await this.getOneBy({ id });
+    let questionEntity: QuestionEntity = await this.getOneById(id);
     const fileIdsForDelete: number[] = questionEntity.images?.map(
       (file) => file.id,
     );
@@ -152,7 +147,7 @@ export class QuestionService {
       throw new ConflictException('Вопрос уже так оценён пользователем');
     }
     await this.questionRateRepository.create(dto);
-    return this.getOneBy({ id: dto.questionId });
+    return this.getOneById(dto.questionId);
   }
 
   async deleteRate(dto: DeleteQuestionRatingDto) {
@@ -192,8 +187,8 @@ export class QuestionService {
     await this.questionFavoriteRepository.delete(dto);
   }
 
-  filter(dto: FilterQuestionDto) {
-    return this.questionRepository.filter(dto);
+  search(dto: SearchQuestionDto) {
+    return this.questionRepository.search(dto);
   }
 
   getCountQuestions() {
