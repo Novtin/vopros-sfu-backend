@@ -30,7 +30,7 @@ import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('/filter')
+  @Get()
   @ApiOkResponse({ type: UserDetailSchema })
   @UseInterceptors(new TransformInterceptor(UserDetailSchema))
   search(@Query() dto: SearchUserDto) {
