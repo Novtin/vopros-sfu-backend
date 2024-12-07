@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
+import { UserModule } from './user/infrastructure/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from '../config/jwt.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import typeOrmConfig from '../config/typeorm.config';
 import httpConfig from '../config/http.config';
-import { AuthModule } from './auth/auth.module';
-import { QuestionModule } from './question/question.module';
+import { AuthModule } from './auth/infrastructure/auth.module';
+import { QuestionModule } from './question/infrastructure/question.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import mailerConfig from '../config/mailer.config';
-import { AnswerModule } from './answer/answer.module';
+import { AnswerModule } from './answer/infrastructure/answer.module';
 
 @Module({
   imports: [
