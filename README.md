@@ -18,5 +18,5 @@
 2. `npm run migration:run`
 3. dev: `npm run start:dev`, prod: `pm2 start ecosystem.config.js`
 
-Swagger - http://localhost:`APP_PORT`/api/v1/docs
+Swagger - `APP_HOST`:`APP_PORT`/api/v1/docs
 
