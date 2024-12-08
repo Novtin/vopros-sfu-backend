@@ -14,9 +14,9 @@
 
 ---
 0. Создать папку .env, скопировать в неё содержимое .env.example, настроить БД, установив свои параметры для неё в .env (или использовать уже готовые)
-1. ``npm install``
-2. ``npm run migration:run``
-3. ``npm run start:dev``
+1. `npm install`
+2. `npm run migration:run`
+3. dev: `npm run start:dev`, prod: `pm2 start ecosystem.config.js`
 
 Swagger - http://localhost:`APP_PORT`/api/v1/docs
 
