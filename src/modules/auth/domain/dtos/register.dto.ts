@@ -7,7 +7,7 @@ import {
   Validate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UniqueUserEmailValidator } from '../../../user/infrastructure/validators/unique-user-email.validator';
+import { UniqueUserEmailValidator } from '../../../user/domain/validators/unique-user-email.validator';
 
 export class RegisterDto {
   @ApiProperty({

@@ -5,7 +5,7 @@ import { UserRepository } from './repositories/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoleRepository } from './repositories/role.repository';
 import { RoleService } from '../domain/services/role.service';
-import { UniqueUserEmailValidator } from './validators/unique-user-email.validator';
+import { UniqueUserEmailValidator } from '../domain/validators/unique-user-email.validator';
 import { AuthModule } from '../../auth/infrastructure/auth.module';
 import { FileModule } from '../../file/infrastructure/file.module';
 import { IUserRepository } from '../domain/interfaces/i-user-repository';
