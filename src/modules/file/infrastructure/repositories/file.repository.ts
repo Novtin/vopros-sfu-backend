@@ -1,24 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { FileEntity } from '../../domain/entities/file.entity';
 import { SaveFileDto } from '../../domain/dtos/save-file.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SearchFileDto } from '../../domain/dtos/search-file.dto';
 import { ExistFileDto } from '../../domain/dtos/exist-file.dto';
 import { IFileRepository } from '../../domain/interfaces/i-file-repository';
+import { FileModel } from '../../domain/models/file.model';
+import { FileEntity } from '../entities/file.entity';
 
 @Injectable()
 export class FileRepository implements IFileRepository {
   constructor(
     @InjectRepository(FileEntity)
-    private dbRepository: Repository<FileEntity>,
+    private dbRepository: Repository<FileModel>,
   ) {}
 
-  create(dto: SaveFileDto): Promise<FileEntity> {
+  create(dto: SaveFileDto): Promise<FileModel> {
     return this.dbRepository.save(dto);
   }
 
-  getOneBy(dto: SearchFileDto): Promise<FileEntity> {
+  getOneBy(dto: SearchFileDto): Promise<FileModel> {
     return this.dbRepository.createQueryBuilder().where(dto).limit(1).getOne();
   }
 

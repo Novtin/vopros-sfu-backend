@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TransformInterceptor } from '../../../../common/interceptors/transform.interceptor';
-import { UserEntity } from '../../../user/domain/entities/user.entity';
+import { UserModel } from '../../../user/domain/models/user.model';
 import { RegisterDto } from '../../domain/dtos/register.dto';
 import { UserSchema } from '../../../user/infrastructure/schemas/user.schema';
 import { JwtDto } from '../../domain/dtos/jwt.dto';
@@ -30,7 +30,7 @@ export class AuthController {
   })
   @UseInterceptors(new TransformInterceptor(UserSchema))
   @Post('register')
-  register(@Body() registerDto: RegisterDto): Promise<UserEntity> {
+  register(@Body() registerDto: RegisterDto): Promise<UserModel> {
     return this.authService.register(registerDto);
   }
 

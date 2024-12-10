@@ -1,36 +1,31 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { UserEntity } from '../../domain/entities/user.entity';
+import { UserModel } from '../../domain/models/user.model';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 import { ExistUserDto } from '../../domain/dtos/exist-user.dto';
 import { SaveUserDto } from '../../domain/dtos/save-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
-import { RelationUserDto } from '../../domain/dtos/relation-user.dto';
 import { FilterUserEnum } from '../../domain/enum/filter-user.enum';
 import { IUserRepository } from '../../domain/interfaces/i-user-repository';
+import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly dbRepository: Repository<UserEntity>,
+    private readonly dbRepository: Repository<UserModel>,
   ) {}
 
   existBy(dto: ExistUserDto): Promise<boolean> {
     return this.dbRepository.existsBy({ ...dto });
   }
 
-  create(dto: SaveUserDto): Promise<UserEntity> {
+  create(dto: SaveUserDto): Promise<UserModel> {
     return this.dbRepository.save({ ...dto });
   }
 
   async update(id: number, dto: UpdateUserDto) {
-    await this.dbRepository.update(id, { ...dto });
-    return this.getOneBy({ id });
-  }
-
-  async updateRelations(id: number, dto: RelationUserDto) {
     await this.dbRepository.update(id, { ...dto });
     return this.getOneBy({ id });
   }
@@ -40,7 +35,7 @@ export class UserRepository implements IUserRepository {
     return this.getOneBy({ id });
   }
 
-  getOneBy(dto: Partial<UserEntity>): Promise<UserEntity> {
+  async getOneBy(dto: Partial<UserModel>): Promise<UserModel> {
     return this.dbRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.avatar', 'avatar')
@@ -50,7 +45,45 @@ export class UserRepository implements IUserRepository {
       .getOne();
   }
 
-  async search(dto: SearchUserDto) {
+  private getAllRating(userIds: number[]) {
+    return this.dbRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.questions', 'question')
+      .leftJoin('user.answers', 'answer')
+      .leftJoin('question.rating', 'question_rating')
+      .leftJoin('answer.rating', 'answer_rating')
+      .select('user.id', 'userId')
+      .addSelect(
+        (qb) =>
+          qb
+            .select(
+              'COALESCE(SUM(question_rating.value), 0)',
+              'totalQuestionRating',
+            )
+            .from('question_rating', 'question_rating')
+            .where('question_rating.questionId = question.id'),
+        'questionRating',
+      )
+      .addSelect(
+        (qb) =>
+          qb
+            .select(
+              'COALESCE(SUM(answer_rating.value), 0)',
+              'totalAnswerRating',
+            )
+            .from('answer_rating', 'answer_rating')
+            .where('answer_rating.answerId = answer.id'),
+        'answerRating',
+      )
+      .where('user.id IN (:...userIds)', { userIds })
+      .getRawMany<{
+        userId: number;
+        questionRating: number;
+        answerRating: number;
+      }>();
+  }
+
+  async search(dto: SearchUserDto): Promise<[UserModel[], number]> {
     const query = this.dbRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.avatar', 'avatar')
@@ -60,14 +93,14 @@ export class UserRepository implements IUserRepository {
       .leftJoinAndSelect('answers.rating', 'answers_rating')
       .addSelect(
         `COALESCE((SELECT COALESCE(SUM(question_rating.value), 0) FROM question_rating WHERE question_rating."questionId" = questions.id), 0) + COALESCE((SELECT COALESCE(SUM(answer_rating.value), 0) FROM answer_rating WHERE answer_rating."answerId" = answers.id), 0)`,
-        'user_rating',
+        'rating',
       )
       .limit(dto.pageSize)
       .offset(dto.pageSize * dto.page);
 
     switch (dto.filter) {
       case FilterUserEnum.RATING:
-        query.orderBy('user_rating', 'DESC');
+        query.orderBy('rating', 'DESC');
         break;
       default:
         throw new NotFoundException();
@@ -86,6 +119,23 @@ export class UserRepository implements IUserRepository {
       query.andWhere({ id: dto.id });
     }
 
-    return query.getManyAndCount();
+    const [users, count] = await query.getManyAndCount();
+
+    return users.length === 0
+      ? [users, count]
+      : [await this.setRating(users), count];
+  }
+
+  private async setRating(users: UserModel[]) {
+    const allUserRating = await this.getAllRating(users.map((user) => user.id));
+    return users.map((user) => {
+      const userRating = allUserRating.find(
+        (userRating) => userRating.userId === user.id,
+      );
+      user.rating = userRating
+        ? userRating.answerRating + userRating.questionRating
+        : 0;
+      return user;
+    });
   }
 }

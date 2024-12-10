@@ -1,7 +1,7 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { UserSchema } from '../../../user/infrastructure/schemas/user.schema';
 import { ApiProperty } from '@nestjs/swagger';
-import { AnswerRatingEntity } from '../../domain/entities/answer-rating.entity';
+import { AnswerRatingModel } from '../../domain/models/answer-rating.model';
 
 export class AnswerSchema {
   @Expose()
@@ -30,8 +30,8 @@ export class AnswerSchema {
   @Transform(
     ({ obj }) =>
       obj.rate
-        ?.filter((rate: AnswerRatingEntity) => rate.value === 1)
-        ?.map((rate: AnswerRatingEntity) => rate.userId) ?? [],
+        ?.filter((rate: AnswerRatingModel) => rate.value === 1)
+        ?.map((rate: AnswerRatingModel) => rate.userId) ?? [],
   )
   likeUserIds: number[];
 
@@ -40,8 +40,8 @@ export class AnswerSchema {
   @Transform(
     ({ obj }) =>
       obj.rate
-        ?.filter((rating: AnswerRatingEntity) => rating.value === -1)
-        ?.map((rating: AnswerRatingEntity) => rating.userId) ?? [],
+        ?.filter((rating: AnswerRatingModel) => rating.value === -1)
+        ?.map((rating: AnswerRatingModel) => rating.userId) ?? [],
   )
   dislikeUserIds: number[];
 

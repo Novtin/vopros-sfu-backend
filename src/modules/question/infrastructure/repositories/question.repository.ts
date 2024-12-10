@@ -1,27 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { QuestionEntity } from '../../domain/entities/question.entity';
+import { QuestionModel } from '../../domain/models/question.model';
 import { SearchQuestionDto } from '../../domain/dtos/search-question.dto';
 import { ExistQuestionDto } from '../../domain/dtos/exist-question.dto';
 import { UpdateQuestionDto } from '../../domain/dtos/update-question.dto';
 import { CreateQuestionDto } from '../../domain/dtos/create-question.dto';
 import { FilterQuestionEnum } from '../../domain/enums/filter-question.enum';
 import { IQuestionRepository } from '../../domain/interfaces/i-question-repository';
+import { QuestionEntity } from '../entities/question.entity';
 
 @Injectable()
 export class QuestionRepository implements IQuestionRepository {
   constructor(
     @InjectRepository(QuestionEntity)
-    private readonly dbRepository: Repository<QuestionEntity>,
+    private readonly dbRepository: Repository<QuestionModel>,
   ) {}
 
-  async create(dto: CreateQuestionDto): Promise<QuestionEntity> {
+  async create(dto: CreateQuestionDto): Promise<QuestionModel> {
     const model = await this.dbRepository.save({ ...dto });
     return this.getOneBy({ id: model.id });
   }
 
-  async getOneBy(dto: Partial<QuestionEntity>): Promise<QuestionEntity> {
+  async getOneBy(dto: Partial<QuestionModel>): Promise<QuestionModel> {
     return this.dbRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.tags', 'tags')
@@ -42,7 +43,7 @@ export class QuestionRepository implements IQuestionRepository {
     return this.dbRepository.existsBy({ ...dto });
   }
 
-  async update(id: number, dto: UpdateQuestionDto): Promise<QuestionEntity> {
+  async update(id: number, dto: UpdateQuestionDto): Promise<QuestionModel> {
     await this.dbRepository.update(id, dto);
     return this.getOneBy({ id });
   }

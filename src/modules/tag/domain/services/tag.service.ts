@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SearchTagDto } from '../dtos/search-tag.dto';
-import { TagEntity } from '../entities/tag.entity';
+import { TagModel } from '../models/tag.model';
 import { SaveTagDto } from '../dtos/save-tag.dto';
 import { ITagRepository } from '../interfaces/i-tag-repository';
 
@@ -11,7 +11,7 @@ export class TagService {
     private readonly tagRepository: ITagRepository,
   ) {}
 
-  search(dto: SearchTagDto): Promise<TagEntity[]> {
+  search(dto: SearchTagDto): Promise<TagModel[]> {
     return this.tagRepository.search(dto);
   }
 

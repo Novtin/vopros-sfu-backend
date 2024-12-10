@@ -1,4 +1,4 @@
-import { RoleEntity } from '../entities/role.entity';
+import { RoleModel } from '../models/role.model';
 
 export class SaveUserDto {
   email: string;
@@ -9,7 +9,7 @@ export class SaveUserDto {
 
   description: string;
 
-  roles: RoleEntity[];
+  roles: RoleModel[];
 
   emailHash: string;
 }

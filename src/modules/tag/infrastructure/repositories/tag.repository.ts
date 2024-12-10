@@ -1,19 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TagEntity } from '../../domain/entities/tag.entity';
+import { TagModel } from '../../domain/models/tag.model';
 import { SearchTagDto } from '../../domain/dtos/search-tag.dto';
 import { SaveTagDto } from '../../domain/dtos/save-tag.dto';
 import { ITagRepository } from '../../domain/interfaces/i-tag-repository';
+import { TagEntity } from '../entities/tag.entity';
 
 @Injectable()
 export class TagRepository implements ITagRepository {
   constructor(
     @InjectRepository(TagEntity)
-    private readonly dbRepository: Repository<TagEntity>,
+    private readonly dbRepository: Repository<TagModel>,
   ) {}
 
-  async search(dto: SearchTagDto): Promise<TagEntity[]> {
+  async search(dto: SearchTagDto): Promise<TagModel[]> {
     const query = this.dbRepository.createQueryBuilder('tag');
     if (dto?.name) {
       query.andWhere('tag.name ILIKE :name', {
@@ -30,11 +31,11 @@ export class TagRepository implements ITagRepository {
     return query.getMany();
   }
 
-  create(dto: SaveTagDto): Promise<TagEntity> {
+  create(dto: SaveTagDto): Promise<TagModel> {
     return this.dbRepository.save({ ...dto });
   }
 
-  getOneBy(dto: SearchTagDto): Promise<TagEntity> {
+  getOneBy(dto: SearchTagDto): Promise<TagModel> {
     return this.dbRepository.createQueryBuilder().where(dto).limit(1).getOne();
   }
 }

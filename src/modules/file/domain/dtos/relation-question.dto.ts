@@ -1,5 +1,5 @@
-import { FileEntity } from '../entities/file.entity';
+import { FileModel } from '../models/file.model';
 
 export class RelationQuestionDto {
-  images?: FileEntity[];
+  images?: FileModel[];
 }

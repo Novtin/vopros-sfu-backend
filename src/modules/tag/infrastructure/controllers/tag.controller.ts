@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TransformInterceptor } from '../../../../common/interceptors/transform.interceptor';
-import { TagEntity } from '../../domain/entities/tag.entity';
+import { TagModel } from '../../domain/models/tag.model';
 import { TagSchema } from '../schemas/tag.schema';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
 import { TagService } from '../../domain/services/tag.service';
@@ -23,7 +23,7 @@ export class TagController {
   @Get('/:id')
   @ApiOkResponse({ type: TagSchema })
   @UseInterceptors(new TransformInterceptor(TagSchema))
-  getById(@Param('id', ParseIntPipe) id: number): Promise<TagEntity> {
+  getById(@Param('id', ParseIntPipe) id: number): Promise<TagModel> {
     return this.tagService.getOneBy({ id });
   }
 
@@ -33,7 +33,7 @@ export class TagController {
   })
   @UseInterceptors(new TransformInterceptor(TagSchema))
   @Get()
-  search(@Query() dto: SearchTagDto): Promise<TagEntity[]> {
+  search(@Query() dto: SearchTagDto): Promise<TagModel[]> {
     return this.tagService.search(dto);
   }
 }

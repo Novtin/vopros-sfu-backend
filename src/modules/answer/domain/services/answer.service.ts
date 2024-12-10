@@ -108,7 +108,7 @@ export class AnswerService {
       await this.search(
         plainToInstance(SearchAnswerDto, { questionId, isSolution: true }),
       )
-    )?.[0];
+    )[0][0];
     if (!solutionAnswer) {
       throw new ConflictException('Вопрос ещё не решён');
     }

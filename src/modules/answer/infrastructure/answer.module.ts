@@ -5,11 +5,11 @@ import { QuestionModule } from '../../question/infrastructure/question.module';
 import { UserModule } from '../../user/infrastructure/user.module';
 import { AnswerController } from './controllers/answer.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AnswerEntity } from '../domain/entities/answer.entity';
-import { AnswerRatingEntity } from '../domain/entities/answer-rating.entity';
 import { AnswerRatingRepository } from './repositories/answer-rating.repository';
 import { IAnswerRepository } from '../domain/interfaces/i-answer-repository';
 import { IAnswerRatingRepository } from '../domain/interfaces/i-answer-rating-repository';
+import { AnswerEntity } from './entities/answer.entity';
+import { AnswerRatingEntity } from './entities/answer-rating.entity';
 
 @Module({
   imports: [

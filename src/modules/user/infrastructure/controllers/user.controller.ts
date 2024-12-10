@@ -14,7 +14,7 @@ import { UserService } from '../../domain/services/user.service';
 import { TransformInterceptor } from '../../../../common/interceptors/transform.interceptor';
 import { UserSchema } from '../schemas/user.schema';
 import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { UserEntity } from '../../domain/entities/user.entity';
+import { UserModel } from '../../domain/models/user.model';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../../config/multer-image.config';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
@@ -40,7 +40,7 @@ export class UserController {
   @Get('/:id')
   @ApiOkResponse({ type: UserSchema })
   @UseInterceptors(new TransformInterceptor(UserSchema))
-  getOneById(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
+  getOneById(@Param('id', ParseIntPipe) id: number): Promise<UserModel> {
     return this.userService.getOneBy({ id });
   }
 

@@ -17,7 +17,7 @@ import { QuestionService } from '../../domain/services/question.service';
 import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TransformInterceptor } from '../../../../common/interceptors/transform.interceptor';
 import { SaveQuestionDto } from '../../domain/dtos/save-question.dto';
-import { QuestionEntity } from '../../domain/entities/question.entity';
+import { QuestionModel } from '../../domain/models/question.model';
 import { QuestionSchema } from '../schemas/question.schema';
 import { UpdateQuestionDto } from '../../domain/dtos/update-question.dto';
 import { SearchQuestionDto } from '../../domain/dtos/search-question.dto';
@@ -43,7 +43,7 @@ export class QuestionController {
   create(
     @Body() dto: SaveQuestionDto,
     @Context() context: ContextDto,
-  ): Promise<QuestionEntity> {
+  ): Promise<QuestionModel> {
     return this.questionService.create(context.userId, dto);
   }
 
@@ -56,7 +56,7 @@ export class QuestionController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateQuestionDto,
     @Context() context: ContextDto,
-  ): Promise<QuestionEntity> {
+  ): Promise<QuestionModel> {
     return this.questionService.update(context.userId, id, dto);
   }
 
@@ -81,7 +81,7 @@ export class QuestionController {
   async getOneById(
     @Param('id', ParseIntPipe) id: number,
     @Context() context: ContextDto,
-  ): Promise<QuestionEntity> {
+  ): Promise<QuestionModel> {
     await this.questionService.addView({
       userId: context.userId,
       questionId: id,

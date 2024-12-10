@@ -6,7 +6,7 @@ import {
 import { UserService } from '../../../user/domain/services/user.service';
 import { TokenService } from './token.service';
 import { JwtDto } from '../dtos/jwt.dto';
-import { UserEntity } from '../../../user/domain/entities/user.entity';
+import { UserModel } from '../../../user/domain/models/user.model';
 import { LoginDto } from '../dtos/login.dto';
 import { HashService } from './hash.service';
 import { IJwtPayload } from '../interfaces/jwt.payload.interface';
@@ -30,7 +30,7 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto): Promise<JwtDto> {
-    const user: UserEntity = await this.userService.getOneBy({
+    const user: UserModel = await this.userService.getOneBy({
       email: loginDto.email,
     });
     if (!user.isConfirmed) {
@@ -51,7 +51,7 @@ export class AuthService {
     });
   }
 
-  async register(registerDto: RegisterDto): Promise<UserEntity> {
+  async register(registerDto: RegisterDto): Promise<UserModel> {
     const emailHash = await this.hashService.makeHash(registerDto.email);
     const params = new URLSearchParams();
     params.set('emailHash', encodeURIComponent(emailHash));

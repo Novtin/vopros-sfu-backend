@@ -20,7 +20,7 @@ import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { AnswerService } from '../../domain/services/answer.service';
 import { SaveAnswerDto } from '../../domain/dtos/save-answer.dto';
 import { AnswerDetailSchema } from '../schemas/answer-detail.schema';
-import { AnswerEntity } from '../../domain/entities/answer.entity';
+import { AnswerModel } from '../../domain/models/answer.model';
 import { SearchAnswerDto } from '../../domain/dtos/search-answer.dto';
 import { AnswerSchema } from '../schemas/answer.schema';
 import { UpdateAnswerDto } from '../../domain/dtos/update-answer.dto';
@@ -41,14 +41,14 @@ export class AnswerController {
   create(
     @Body() dto: SaveAnswerDto,
     @Context() context: ContextDto,
-  ): Promise<AnswerEntity> {
+  ): Promise<AnswerModel> {
     return this.answerService.create(context.userId, dto);
   }
 
   @Get('/:id')
   @ApiOkResponse({ type: AnswerDetailSchema })
   @UseInterceptors(new TransformInterceptor(AnswerDetailSchema))
-  getById(@Param('id', ParseIntPipe) id: number): Promise<AnswerEntity> {
+  getOneById(@Param('id', ParseIntPipe) id: number): Promise<AnswerModel> {
     return this.answerService.getOneBy({ id });
   }
 
@@ -58,7 +58,7 @@ export class AnswerController {
   })
   @UseInterceptors(new TransformInterceptor(AnswerSchema))
   @Get()
-  search(@Query() dto: SearchAnswerDto): Promise<AnswerEntity[]> {
+  search(@Query() dto: SearchAnswerDto): Promise<[AnswerModel[], number]> {
     return this.answerService.search(dto);
   }
 
@@ -80,7 +80,7 @@ export class AnswerController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateAnswerDto,
     @Context() context: ContextDto,
-  ): Promise<AnswerEntity> {
+  ): Promise<AnswerModel> {
     return this.answerService.update(context.userId, id, dto);
   }
 

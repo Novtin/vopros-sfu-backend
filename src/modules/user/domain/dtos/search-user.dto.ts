@@ -12,6 +12,7 @@ export class SearchUserDto extends PaginationDto {
     required: false,
   })
   @IsInt()
+  @IsOptional()
   @Type(() => Number)
   id?: number;
 

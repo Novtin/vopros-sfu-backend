@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { AnswerEntity } from '../../domain/entities/answer.entity';
+import { AnswerModel } from '../../domain/models/answer.model';
 import { CreateAnswerDto } from '../../domain/dtos/create-answer.dto';
 import { ExistAnswerDto } from '../../domain/dtos/exist-answer.dto';
 import { SearchAnswerDto } from '../../domain/dtos/search-answer.dto';
 import { UpdateAnswerDto } from '../../domain/dtos/update-answer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IAnswerRepository } from '../../domain/interfaces/i-answer-repository';
+import { AnswerEntity } from '../entities/answer.entity';
 
 @Injectable()
 export class AnswerRepository implements IAnswerRepository {
   constructor(
     @InjectRepository(AnswerEntity)
-    private readonly dbRepository: Repository<AnswerEntity>,
+    private readonly dbRepository: Repository<AnswerModel>,
   ) {}
 
   async create(dto: CreateAnswerDto) {
@@ -62,7 +63,7 @@ export class AnswerRepository implements IAnswerRepository {
     query.limit(dto.pageSize);
     query.offset(dto.pageSize * dto.page);
 
-    return query.getMany();
+    return query.getManyAndCount();
   }
 
   async delete(id: number) {

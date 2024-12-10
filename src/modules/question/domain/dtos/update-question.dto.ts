@@ -1,7 +1,7 @@
 import { SaveQuestionDto } from './save-question.dto';
 import { PartialType } from '@nestjs/swagger';
-import { FileEntity } from '../../../file/domain/entities/file.entity';
+import { FileModel } from '../../../file/domain/models/file.model';
 
 export class UpdateQuestionDto extends PartialType(SaveQuestionDto) {
-  images: FileEntity[];
+  images: FileModel[];
 }

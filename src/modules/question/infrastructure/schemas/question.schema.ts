@@ -2,10 +2,10 @@ import { Expose, Transform, Type } from 'class-transformer';
 import { UserSchema } from '../../../user/infrastructure/schemas/user.schema';
 import { TagSchema } from '../../../tag/infrastructure/schemas/tag.schema';
 import { FileSchema } from '../../../file/infrastructure/schemas/file.schema';
-import { AnswerEntity } from '../../../answer/domain/entities/answer.entity';
+import { AnswerModel } from '../../../answer/domain/models/answer.model';
 import { AnswerSchema } from '../../../answer/infrastructure/schemas/answer.schema';
 import { ApiProperty } from '@nestjs/swagger';
-import { QuestionRatingEntity } from '../../domain/entities/question-rating.entity';
+import { QuestionRatingModel } from '../../domain/models/question-rating.model';
 
 export class QuestionSchema {
   @Expose()
@@ -57,7 +57,7 @@ export class QuestionSchema {
   @ApiProperty()
   @Transform(
     (event) =>
-      event.obj.answers?.some((answer: AnswerEntity) => answer.isSolution) ??
+      event.obj.answers?.some((answer: AnswerModel) => answer.isSolution) ??
       false,
   )
   isResolved: boolean;
@@ -72,8 +72,8 @@ export class QuestionSchema {
   @Transform(
     ({ obj }) =>
       obj.rating
-        ?.filter((rate: QuestionRatingEntity) => rate.value === 1)
-        ?.map((rate: QuestionRatingEntity) => rate.userId) ?? [],
+        ?.filter((rate: QuestionRatingModel) => rate.value === 1)
+        ?.map((rate: QuestionRatingModel) => rate.userId) ?? [],
   )
   likeUserIds: number[];
 
@@ -81,7 +81,7 @@ export class QuestionSchema {
   @ApiProperty()
   @Transform(
     ({ obj }) =>
-      obj.rating?.filter((rate: QuestionRatingEntity) => rate.value === 1)
+      obj.rating?.filter((rate: QuestionRatingModel) => rate.value === 1)
         ?.length ?? 0,
   )
   countLikes: number;
@@ -90,7 +90,7 @@ export class QuestionSchema {
   @ApiProperty()
   @Transform(
     ({ obj }) =>
-      obj.rating?.filter((rate: QuestionRatingEntity) => rate.value === -1)
+      obj.rating?.filter((rate: QuestionRatingModel) => rate.value === -1)
         ?.length ?? 0,
   )
   countDislikes: number;
@@ -100,7 +100,7 @@ export class QuestionSchema {
   @Transform(
     ({ obj }) =>
       obj.rating?.reduce(
-        (acc: number, cur: QuestionRatingEntity) => acc + cur.value,
+        (acc: number, cur: QuestionRatingModel) => acc + cur.value,
         0,
       ) ?? 0,
   )
@@ -111,8 +111,8 @@ export class QuestionSchema {
   @Transform(
     ({ obj }) =>
       obj.rating
-        ?.filter((rating: QuestionRatingEntity) => rating.value === -1)
-        ?.map((rating: QuestionRatingEntity) => rating.userId) ?? [],
+        ?.filter((rating: QuestionRatingModel) => rating.value === -1)
+        ?.map((rating: QuestionRatingModel) => rating.userId) ?? [],
   )
   dislikeUserIds: number[];
 }

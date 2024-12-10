@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { SearchRoleDto } from '../dtos/search-role.dto';
-import { RoleEntity } from '../entities/role.entity';
+import { RoleModel } from '../models/role.model';
 import { ExistRoleDto } from '../dtos/exist-role.dto';
 import { IRoleRepository } from '../interfaces/i-role-repository';
 
@@ -11,7 +11,7 @@ export class RoleService {
     private readonly roleRepository: IRoleRepository,
   ) {}
 
-  async getOneBy(dto: SearchRoleDto): Promise<RoleEntity> {
+  async getOneBy(dto: SearchRoleDto): Promise<RoleModel> {
     if (!(await this.existBy(dto))) {
       throw new NotFoundException();
     }

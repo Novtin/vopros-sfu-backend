@@ -9,11 +9,11 @@ import {
 import { SaveQuestionDto } from '../dtos/save-question.dto';
 import { ExistQuestionDto } from '../dtos/exist-question.dto';
 import { SearchQuestionDto } from '../dtos/search-question.dto';
-import { QuestionEntity } from '../entities/question.entity';
+import { QuestionModel } from '../models/question.model';
 import { UpdateQuestionDto } from '../dtos/update-question.dto';
 import { FileService } from '../../../file/domain/services/file.service';
 import { TagService } from '../../../tag/domain/services/tag.service';
-import { TagEntity } from '../../../tag/domain/entities/tag.entity';
+import { TagModel } from '../../../tag/domain/models/tag.model';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { RoleEnum } from '../../../user/domain/enum/role.enum';
 import { CreateQuestionViewDto } from '../dtos/create-question-view.dto';
@@ -49,7 +49,7 @@ export class QuestionService {
     }
   }
 
-  async getOneById(id: number): Promise<QuestionEntity> {
+  async getOneById(id: number): Promise<QuestionModel> {
     await this.throwNotFoundExceptionIfNotExist({ id });
     return this.questionRepository.getOneBy({ id });
   }
@@ -58,11 +58,8 @@ export class QuestionService {
     return this.questionRepository.existBy(dto);
   }
 
-  async create(
-    authorId: number,
-    dto: SaveQuestionDto,
-  ): Promise<QuestionEntity> {
-    const tags: TagEntity[] = [];
+  async create(authorId: number, dto: SaveQuestionDto): Promise<QuestionModel> {
+    const tags: TagModel[] = [];
     for (const tagName of dto.tagNames) {
       let tagEntity = await this.tagService.getOneBy({ name: tagName });
       if (!tagEntity) {
@@ -81,7 +78,7 @@ export class QuestionService {
     userId: number,
     id: number,
     dto: UpdateQuestionDto,
-  ): Promise<QuestionEntity> {
+  ): Promise<QuestionModel> {
     await this.throwNotFoundExceptionIfNotExist({ id });
     await this.throwForbiddenExceptionIfNotBelong(userId, id);
     return this.questionRepository.update(id, dto);
@@ -105,7 +102,7 @@ export class QuestionService {
     if (!context.roles.includes(RoleEnum.ADMIN)) {
       await this.throwForbiddenExceptionIfNotBelong(context.userId, id);
     }
-    let questionEntity: QuestionEntity = await this.getOneById(id);
+    let questionEntity: QuestionModel = await this.getOneById(id);
     const fileIdsForDelete: number[] = questionEntity.images?.map(
       (file) => file.id,
     );

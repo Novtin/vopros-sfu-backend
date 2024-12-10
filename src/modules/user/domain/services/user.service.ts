@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { UserEntity } from '../entities/user.entity';
+import { UserModel } from '../models/user.model';
 import { ExistUserDto } from '../dtos/exist-user.dto';
 import { SaveUserDto } from '../dtos/save-user.dto';
 import { FileService } from '../../../file/domain/services/file.service';
@@ -15,7 +15,7 @@ export class UserService {
     private readonly fileService: FileService,
   ) {}
 
-  async getOneBy(dto: Partial<UserEntity>): Promise<UserEntity> {
+  async getOneBy(dto: Partial<UserModel>): Promise<UserModel> {
     await this.throwNotFoundExceptionIfNotExist(dto);
     return this.userRepository.getOneBy(dto);
   }
@@ -24,7 +24,7 @@ export class UserService {
     return this.userRepository.existBy(dto);
   }
 
-  create(dto: SaveUserDto): Promise<UserEntity> {
+  create(dto: SaveUserDto): Promise<UserModel> {
     return this.userRepository.create(dto);
   }
 
@@ -46,9 +46,9 @@ export class UserService {
   async uploadAvatar(
     id: number,
     avatarFile: Express.Multer.File,
-  ): Promise<UserEntity> {
+  ): Promise<UserModel> {
     await this.throwNotFoundExceptionIfNotExist({ id });
-    let userEntity: UserEntity = await this.getOneBy({ id });
+    let userEntity: UserModel = await this.getOneBy({ id });
     const fileIdForDelete: number = userEntity.avatarId;
     userEntity = await this.update(userEntity.id, {
       avatarId: (await this.fileService.create(avatarFile)).id,

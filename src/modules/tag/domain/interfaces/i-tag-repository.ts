@@ -1,11 +1,11 @@
 import { SearchTagDto } from '../dtos/search-tag.dto';
-import { TagEntity } from '../entities/tag.entity';
+import { TagModel } from '../models/tag.model';
 import { SaveTagDto } from '../dtos/save-tag.dto';
 
 export const ITagRepository = 'ITagRepository';
 
 export interface ITagRepository {
-  search(dto: SearchTagDto): Promise<TagEntity[]>;
-  create(dto: SaveTagDto): Promise<TagEntity>;
-  getOneBy(dto: SearchTagDto): Promise<TagEntity>;
+  search(dto: SearchTagDto): Promise<TagModel[]>;
+  create(dto: SaveTagDto): Promise<TagModel>;
+  getOneBy(dto: SearchTagDto): Promise<TagModel>;
 }

@@ -1,19 +1,20 @@
-import { RoleEntity } from '../../domain/entities/role.entity';
+import { RoleModel } from '../../domain/models/role.model';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SearchRoleDto } from '../../domain/dtos/search-role.dto';
 import { ExistRoleDto } from '../../domain/dtos/exist-role.dto';
 import { IRoleRepository } from '../../domain/interfaces/i-role-repository';
+import { RoleEntity } from '../entities/role.entity';
 
 @Injectable()
 export class RoleRepository implements IRoleRepository {
   constructor(
     @InjectRepository(RoleEntity)
-    private readonly dbRepository: Repository<RoleEntity>,
+    private readonly dbRepository: Repository<RoleModel>,
   ) {}
 
-  getOneBy(dto: SearchRoleDto): Promise<RoleEntity> {
+  getOneBy(dto: SearchRoleDto): Promise<RoleModel> {
     return this.dbRepository.createQueryBuilder().where(dto).limit(1).getOne();
   }
 

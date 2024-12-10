@@ -1,12 +1,16 @@
-import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
+import { EntitySchemaColumnOptions } from 'typeorm';
 
-export abstract class AbstractTimeEntity {
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
-}
+export const AbstractTimeEntity = {
+  createdAt: {
+    name: 'createdAt',
+    createDate: true,
+  } as EntitySchemaColumnOptions,
+  updatedAt: {
+    name: 'updatedAt',
+    updateDate: true,
+  } as EntitySchemaColumnOptions,
+  deletedAt: {
+    name: 'deletedAt',
+    deleteDate: true,
+  } as EntitySchemaColumnOptions,
+};

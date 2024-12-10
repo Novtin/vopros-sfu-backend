@@ -1,16 +1,17 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
-import { QuestionFavoriteEntity } from '../../domain/entities/question-favorite.entity';
+import { QuestionFavoriteModel } from '../../domain/models/question-favorite.model';
 import { CreateQuestionFavoriteDto } from '../../domain/dtos/create-question-favorite.dto';
 import { SearchQuestionFavoriteDto } from '../../domain/dtos/search-question-favorite.dto';
 import { DeleteQuestionFavoriteDto } from '../../domain/dtos/delete-question-favorite.dto';
+import { QuestionFavoriteEntity } from '../entities/question-favorite.entity';
 
 @Injectable()
 export class QuestionFavoriteRepository {
   constructor(
     @InjectRepository(QuestionFavoriteEntity)
-    private readonly dbRepository: Repository<QuestionFavoriteEntity>,
+    private readonly dbRepository: Repository<QuestionFavoriteModel>,
   ) {}
 
   create(dto: CreateQuestionFavoriteDto) {
