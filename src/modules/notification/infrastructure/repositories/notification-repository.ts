@@ -10,10 +10,15 @@ export class NotificationRepository implements INotificationRepository {
     private readonly redisRepository: IRedisRepository,
   ) {}
 
+  private readonly maxQueueLength = 50;
+  private readonly ttlInSeconds = 60 * 60 * 24 * 30; // 30 дней в секундах
+
   async add(userId: string, message: INotificationMessage): Promise<void> {
     const messageStr = JSON.stringify(message);
     const key = `notifications:${userId}`;
     await this.redisRepository.lpush(key, messageStr);
+    await this.redisRepository.ltrim(key, 0, this.maxQueueLength - 1);
+    await this.redisRepository.expire(key, this.ttlInSeconds);
   }
 
   async get(userId: string): Promise<INotificationMessage[]> {
