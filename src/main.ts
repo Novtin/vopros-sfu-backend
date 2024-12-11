@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
-import { DataSource, getConnection } from 'typeorm';
 
 let url: string;
 
@@ -34,8 +33,7 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
   });
-  const entities = app.get(DataSource).entityMetadatas;
-  console.log(entities.map((entity) => entity.name));
+
   await app.listen(config.get<string>('http.port'));
 }
 bootstrap()

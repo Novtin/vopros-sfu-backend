@@ -64,7 +64,7 @@ export class QuestionSchema {
 
   @Expose()
   @ApiProperty()
-  @Transform((event) => event.obj.views.length)
+  @Transform((event) => event.obj.views?.length ?? 0)
   views: number;
 
   @Expose()

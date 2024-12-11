@@ -10,12 +10,13 @@ import { QuestionModule } from './question/infrastructure/question.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import mailerConfig from '../config/mailer.config';
 import { AnswerModule } from './answer/infrastructure/answer.module';
+import redisConfig from '../config/redis.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [typeOrmConfig, jwtConfig, httpConfig, mailerConfig],
+      load: [typeOrmConfig, jwtConfig, httpConfig, mailerConfig, redisConfig],
       envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({

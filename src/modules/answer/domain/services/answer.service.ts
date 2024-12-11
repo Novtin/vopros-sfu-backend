@@ -17,6 +17,7 @@ import { CreateAnswerRatingDto } from '../dtos/create-answer-rating.dto';
 import { DeleteAnswerRatingDto } from '../dtos/delete-answer-rating.dto';
 import { IAnswerRepository } from '../interfaces/i-answer-repository';
 import { IAnswerRatingRepository } from '../interfaces/i-answer-rating-repository';
+import { INotificationService } from '../../../notification/domain/interfaces/i-notification-service';
 
 @Injectable()
 export class AnswerService {
@@ -25,6 +26,8 @@ export class AnswerService {
     private readonly answerRepository: IAnswerRepository,
     @Inject(IAnswerRatingRepository)
     private readonly answerRatingRepository: IAnswerRatingRepository,
+    @Inject(INotificationService)
+    private readonly notificationService: INotificationService,
     private readonly questionService: QuestionService,
   ) {}
 
@@ -32,10 +35,19 @@ export class AnswerService {
     await this.questionService.throwNotFoundExceptionIfNotExist({
       id: dto.questionId,
     });
-    return this.answerRepository.create({
+    const answer = await this.answerRepository.create({
       ...dto,
       authorId,
     });
+    await this.notificationService.sendNotificationToUser(
+      answer.question.authorId.toString(),
+      {
+        questionId: answer.id,
+        answerId: answer.id,
+        answerAuthorId: answer.authorId,
+      },
+    );
+    return answer;
   }
 
   async getOneBy(dto: SearchAnswerDto) {

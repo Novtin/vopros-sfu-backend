@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import { ResultPaginationSchema } from '../schema/result-pagination.schema';
+import { ResultPaginationSchema } from '../schemas/result-pagination.schema';
 
 interface ApiOkSearchResponseOptions {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
