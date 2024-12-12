@@ -1,32 +1,27 @@
 import { Module } from '@nestjs/common';
 import { INotificationRepository } from '../domain/interfaces/i-notification-repository';
 import { NotificationRepository } from './repositories/notification-repository';
-import { INotificationService } from '../domain/interfaces/i-notification-service';
-import { NotificationService } from './service/notification.service';
-import { Redis } from 'ioredis';
-import { ConfigService } from '@nestjs/config';
-import { IRedisRepository } from '../../../common/interfaces/i-redis-repository';
+import { INotificationGateway } from '../domain/interfaces/i-notification-gateway';
+import { NotificationGateway } from './gateways/notification.gateway';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { NotificationEntity } from './entities/notification.entity';
+import { NotificationService } from '../domain/services/notification.service';
+import { NotificationController } from './controllers/notification.controller';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([NotificationEntity])],
   providers: [
-    {
-      provide: IRedisRepository,
-      useFactory: (configService: ConfigService) =>
-        new Redis({
-          host: configService.get<string>('redis.host'),
-          port: configService.get<number>('redis.port'),
-        }),
-      inject: [ConfigService],
-    },
     {
       provide: INotificationRepository,
       useClass: NotificationRepository,
     },
     {
-      provide: INotificationService,
-      useClass: NotificationService,
+      provide: INotificationGateway,
+      useClass: NotificationGateway,
     },
+    NotificationService,
   ],
-  exports: [INotificationService],
+  controllers: [NotificationController],
+  exports: [NotificationService],
 })
 export class NotificationModule {}

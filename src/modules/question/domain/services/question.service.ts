@@ -25,6 +25,7 @@ import { IQuestionRepository } from '../interfaces/i-question-repository';
 import { IQuestionFavoriteRepository } from '../interfaces/i-question-favorite-repository';
 import { IQuestionViewRepository } from '../interfaces/i-question-view-repository';
 import { IQuestionRatingRepository } from '../interfaces/i-question-rating-repository';
+import { NotificationService } from '../../../notification/domain/services/notification.service';
 
 @Injectable()
 export class QuestionService {
@@ -39,9 +40,10 @@ export class QuestionService {
     private readonly questionFavoriteRepository: IQuestionFavoriteRepository,
     private readonly fileService: FileService,
     private readonly tagService: TagService,
+    private readonly notificationService: NotificationService,
   ) {}
 
-  async addView(dto: CreateQuestionViewDto) {
+  async view(dto: CreateQuestionViewDto) {
     await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
     const questionView = await this.questionViewRepository.getOneBy(dto);
     if (!questionView) {
@@ -49,9 +51,14 @@ export class QuestionService {
     }
   }
 
-  async getOneById(id: number): Promise<QuestionModel> {
-    await this.throwNotFoundExceptionIfNotExist({ id });
-    return this.questionRepository.getOneBy({ id });
+  async getOneById(questionId: number, userId: number): Promise<QuestionModel> {
+    await this.throwNotFoundExceptionIfNotExist({ id: questionId });
+    await this.view({
+      userId,
+      questionId,
+    });
+    await this.notificationService.view({ userId, payload: { questionId } });
+    return await this.questionRepository.getOneBy({ id: questionId });
   }
 
   existBy(dto: ExistQuestionDto): Promise<boolean> {
@@ -99,10 +106,11 @@ export class QuestionService {
     if (!imageFiles) {
       throw new BadRequestException('Файлы не найдены');
     }
+    await this.throwNotFoundExceptionIfNotExist({ id });
     if (!context.roles.includes(RoleEnum.ADMIN)) {
       await this.throwForbiddenExceptionIfNotBelong(context.userId, id);
     }
-    let questionEntity: QuestionModel = await this.getOneById(id);
+    let questionEntity = await this.questionRepository.getOneBy({ id });
     const fileIdsForDelete: number[] = questionEntity.images?.map(
       (file) => file.id,
     );
@@ -143,7 +151,7 @@ export class QuestionService {
       throw new ConflictException('Вопрос уже так оценён пользователем');
     }
     await this.questionRateRepository.create(dto);
-    return this.getOneById(dto.questionId);
+    return this.questionRepository.getOneBy({ id: dto.questionId });
   }
 
   async deleteRate(dto: DeleteQuestionRatingDto) {

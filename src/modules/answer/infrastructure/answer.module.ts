@@ -16,7 +16,6 @@ import { NotificationModule } from '../../notification/infrastructure/notificati
   imports: [
     TypeOrmModule.forFeature([AnswerEntity, AnswerRatingEntity]),
     QuestionModule,
-    UserModule,
     NotificationModule,
   ],
   providers: [

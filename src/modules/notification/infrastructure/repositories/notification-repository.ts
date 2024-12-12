@@ -1,34 +1,63 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { INotificationMessage } from '../../domain/interfaces/i-notification-message';
+import { Injectable } from '@nestjs/common';
 import { INotificationRepository } from '../../domain/interfaces/i-notification-repository';
-import { IRedisRepository } from '../../../../common/interfaces/i-redis-repository';
+import { SaveNotificationDto } from '../../domain/dtos/save-notification.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { NotificationEntity } from '../entities/notification.entity';
+import { LessThan, Repository } from 'typeorm';
+import { NotificationModel } from '../../domain/models/notification.model';
+import { SearchNotificationDto } from '../../domain/dtos/search-notification.dto';
+import { ViewNotificationDto } from '../../domain/dtos/view-notification.dto';
 
 @Injectable()
 export class NotificationRepository implements INotificationRepository {
   constructor(
-    @Inject(IRedisRepository)
-    private readonly redisRepository: IRedisRepository,
+    @InjectRepository(NotificationEntity)
+    private readonly dbRepository: Repository<NotificationModel>,
   ) {}
 
-  private readonly maxQueueLength = 50;
-  private readonly ttlInSeconds = 60 * 60 * 24 * 30; // 30 дней в секундах
-
-  async add(userId: string, message: INotificationMessage): Promise<void> {
-    const messageStr = JSON.stringify(message);
-    const key = `notifications:${userId}`;
-    await this.redisRepository.lpush(key, messageStr);
-    await this.redisRepository.ltrim(key, 0, this.maxQueueLength - 1);
-    await this.redisRepository.expire(key, this.ttlInSeconds);
+  create(dto: SaveNotificationDto): Promise<NotificationModel> {
+    return this.dbRepository.save(dto);
   }
 
-  async get(userId: string): Promise<INotificationMessage[]> {
-    const key = `notifications:${userId}`;
-    const notifications = await this.redisRepository.lrange(key, 0, -1);
-    return notifications.map((notification) => JSON.parse(notification));
+  async view(dto: ViewNotificationDto): Promise<void> {
+    await this.dbRepository
+      .createQueryBuilder()
+      .update(NotificationModel)
+      .set({
+        isViewed: true,
+      })
+      .where('userId = :userId', { userId: dto.userId })
+      .andWhere('payload @> :payload', {
+        payload: JSON.stringify(dto.payload),
+      })
+      .execute();
   }
 
-  async delete(userId: string): Promise<void> {
-    const key = `notifications:${userId}`;
-    await this.redisRepository.del(key);
+  search(dto: SearchNotificationDto): Promise<[NotificationModel[], number]> {
+    const query = this.dbRepository
+      .createQueryBuilder()
+      .orderBy('createdAt', 'DESC')
+      .limit(dto.pageSize)
+      .offset(dto.page * dto.pageSize);
+    if (dto.id) {
+      query.andWhere({ id: dto.id });
+    }
+    if (dto.userId) {
+      query.andWhere({ userId: dto.userId });
+    }
+    if (dto.isViewed) {
+      query.andWhere({ isViewed: dto.isViewed });
+    }
+    return query.getManyAndCount();
+  }
+
+  async deleteOld(): Promise<void> {
+    const dateThreshold = new Date();
+    dateThreshold.setDate(dateThreshold.getDate() - 5);
+
+    await this.dbRepository.delete({
+      isViewed: true,
+      createdAt: LessThan(dateThreshold),
+    });
   }
 }

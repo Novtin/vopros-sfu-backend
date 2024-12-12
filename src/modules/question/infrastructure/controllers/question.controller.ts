@@ -82,11 +82,7 @@ export class QuestionController {
     @Param('id', ParseIntPipe) id: number,
     @Context() context: ContextDto,
   ): Promise<QuestionModel> {
-    await this.questionService.addView({
-      userId: context.userId,
-      questionId: id,
-    });
-    return this.questionService.getOneById(id);
+    return this.questionService.getOneById(id, context.userId);
   }
 
   @ApiOkResponse({ status: HttpStatus.NO_CONTENT })

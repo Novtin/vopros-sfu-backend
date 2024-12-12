@@ -17,6 +17,7 @@ import { QuestionEntity } from './entities/question.entity';
 import { QuestionViewEntity } from './entities/question-view.entity';
 import { QuestionRatingEntity } from './entities/question-rating.entity';
 import { QuestionFavoriteEntity } from './entities/question-favorite.entity';
+import { NotificationModule } from '../../notification/infrastructure/notification.module';
 
 @Module({
   imports: [
@@ -26,9 +27,9 @@ import { QuestionFavoriteEntity } from './entities/question-favorite.entity';
       QuestionRatingEntity,
       QuestionFavoriteEntity,
     ]),
-    UserModule,
     FileModule,
     TagModule,
+    NotificationModule,
   ],
   controllers: [QuestionController],
   providers: [

@@ -17,7 +17,7 @@ import { CreateAnswerRatingDto } from '../dtos/create-answer-rating.dto';
 import { DeleteAnswerRatingDto } from '../dtos/delete-answer-rating.dto';
 import { IAnswerRepository } from '../interfaces/i-answer-repository';
 import { IAnswerRatingRepository } from '../interfaces/i-answer-rating-repository';
-import { INotificationService } from '../../../notification/domain/interfaces/i-notification-service';
+import { NotificationService } from '../../../notification/domain/services/notification.service';
 
 @Injectable()
 export class AnswerService {
@@ -26,8 +26,7 @@ export class AnswerService {
     private readonly answerRepository: IAnswerRepository,
     @Inject(IAnswerRatingRepository)
     private readonly answerRatingRepository: IAnswerRatingRepository,
-    @Inject(INotificationService)
-    private readonly notificationService: INotificationService,
+    private readonly notificationService: NotificationService,
     private readonly questionService: QuestionService,
   ) {}
 
@@ -39,14 +38,15 @@ export class AnswerService {
       ...dto,
       authorId,
     });
-    await this.notificationService.sendNotificationToUser(
-      answer.question.authorId.toString(),
-      {
+    await this.notificationService.send({
+      userId: answer.question.authorId,
+      payload: {
         questionId: answer.id,
         answerId: answer.id,
         answerAuthorId: answer.authorId,
+        message: `Пользователь "${answer.author.nickname}" дал ответ на ваш вопрос "${answer.question.title}"`,
       },
-    );
+    });
     return answer;
   }
 
