@@ -50,6 +50,10 @@ export class FileService {
   }
 
   async delete(id: number): Promise<void> {
+    const fileModel = await this.getOneBy({ id });
+    fs.unlink(join('src/files', fileModel.name), (error) => {
+      console.error(error);
+    });
     await this.fileRepository.delete(id);
   }
 
