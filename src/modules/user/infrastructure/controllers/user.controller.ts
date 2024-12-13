@@ -37,18 +37,18 @@ export class UserController {
     return this.userService.search(dto);
   }
 
-  @Get('/:id')
-  @ApiOkResponse({ type: UserSchema })
-  @UseInterceptors(new TransformInterceptor(UserSchema))
-  getOneById(@Param('id', ParseIntPipe) id: number): Promise<UserModel> {
-    return this.userService.getOneBy({ id });
-  }
-
   @Get('/this')
   @ApiOkResponse({ type: UserSchema })
   @UseInterceptors(new TransformInterceptor(UserSchema))
   getThis(@Context() context: ContextDto): Promise<UserModel> {
     return this.userService.getOneBy({ id: context.userId });
+  }
+
+  @Get('/:id')
+  @ApiOkResponse({ type: UserSchema })
+  @UseInterceptors(new TransformInterceptor(UserSchema))
+  getOneById(@Param('id', ParseIntPipe) id: number): Promise<UserModel> {
+    return this.userService.getOneBy({ id });
   }
 
   @ApiConsumes('multipart/form-data')
