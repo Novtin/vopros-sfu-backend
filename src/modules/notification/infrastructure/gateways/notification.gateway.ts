@@ -6,7 +6,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { INotificationRepository } from '../../domain/interfaces/i-notification-repository';
 import { INotificationGateway } from '../../domain/interfaces/i-notification-gateway';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotificationModel } from '../../domain/models/notification.model';

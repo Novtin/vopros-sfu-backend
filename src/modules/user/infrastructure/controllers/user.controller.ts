@@ -44,6 +44,13 @@ export class UserController {
     return this.userService.getOneBy({ id });
   }
 
+  @Get('/this')
+  @ApiOkResponse({ type: UserSchema })
+  @UseInterceptors(new TransformInterceptor(UserSchema))
+  getThis(@Context() context: ContextDto): Promise<UserModel> {
+    return this.userService.getOneBy({ id: context.userId });
+  }
+
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
