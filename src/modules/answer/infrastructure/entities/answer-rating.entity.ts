@@ -5,16 +5,13 @@ export const AnswerRatingEntity = new EntitySchema<AnswerRatingModel>({
   name: 'answer_rating',
   tableName: 'answer_rating',
   columns: {
-    id: {
-      type: 'int',
-      primary: true,
-      generated: true,
-    },
     answerId: {
       type: 'int',
+      primary: true,
     },
     userId: {
       type: 'int',
+      primary: true,
     },
     value: {
       type: 'int',

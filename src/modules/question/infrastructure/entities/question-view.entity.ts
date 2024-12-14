@@ -5,16 +5,13 @@ export const QuestionViewEntity = new EntitySchema<QuestionViewModel>({
   name: 'question_view',
   tableName: 'question_view',
   columns: {
-    id: {
-      type: 'int',
-      primary: true,
-      generated: true,
-    },
     questionId: {
       type: 'int',
+      primary: true,
     },
     userId: {
       type: 'int',
+      primary: true,
     },
   },
   uniques: [

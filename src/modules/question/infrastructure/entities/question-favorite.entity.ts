@@ -5,16 +5,13 @@ export const QuestionFavoriteEntity = new EntitySchema<QuestionFavoriteModel>({
   name: 'question_favorite',
   tableName: 'question_favorite',
   columns: {
-    id: {
-      type: 'int',
-      primary: true,
-      generated: true,
-    },
     questionId: {
       type: 'int',
+      primary: true,
     },
     userId: {
       type: 'int',
+      primary: true,
     },
   },
   uniques: [
