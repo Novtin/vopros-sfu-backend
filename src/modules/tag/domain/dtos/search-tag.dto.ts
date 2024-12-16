@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
 
@@ -10,6 +10,7 @@ export class SearchTagDto extends PaginationDto {
     required: false,
   })
   @IsInt()
+  @IsOptional()
   @Type(() => Number)
   id?: number;
 
@@ -19,6 +20,7 @@ export class SearchTagDto extends PaginationDto {
     required: false,
   })
   @IsString()
+  @IsOptional()
   @Type(() => String)
   name?: string;
 }

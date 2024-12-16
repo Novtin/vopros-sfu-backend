@@ -126,6 +126,10 @@ export class UserRepository implements IUserRepository {
       : [await this.setRating(users), count];
   }
 
+  async delete(id: number): Promise<void> {
+    await this.dbRepository.softDelete({ id });
+  }
+
   private async setRating(users: UserModel[]) {
     const allUserRating = await this.getAllRating(users.map((user) => user.id));
     return users.map((user) => {

@@ -23,7 +23,7 @@ export class TagController {
   @Get('/:id')
   @ApiOkResponse({ type: TagSchema })
   @UseInterceptors(new TransformInterceptor(TagSchema))
-  getById(@Param('id', ParseIntPipe) id: number): Promise<TagModel> {
+  getOneById(@Param('id', ParseIntPipe) id: number): Promise<TagModel> {
     return this.tagService.getOneBy({ id });
   }
 
@@ -33,7 +33,7 @@ export class TagController {
   })
   @UseInterceptors(new TransformInterceptor(TagSchema))
   @Get()
-  search(@Query() dto: SearchTagDto): Promise<TagModel[]> {
+  search(@Query() dto: SearchTagDto): Promise<[TagModel[], number]> {
     return this.tagService.search(dto);
   }
 }

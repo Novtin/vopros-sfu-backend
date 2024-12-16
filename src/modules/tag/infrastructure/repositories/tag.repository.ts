@@ -14,8 +14,11 @@ export class TagRepository implements ITagRepository {
     private readonly dbRepository: Repository<TagModel>,
   ) {}
 
-  async search(dto: SearchTagDto): Promise<TagModel[]> {
+  async search(dto: SearchTagDto): Promise<[TagModel[], number]> {
     const query = this.dbRepository.createQueryBuilder('tag');
+    if (dto?.id) {
+      query.andWhere({ id: dto.id });
+    }
     if (dto?.name) {
       query.andWhere('tag.name ILIKE :name', {
         name: `%${dto.name}%`,
@@ -28,7 +31,7 @@ export class TagRepository implements ITagRepository {
         query.offset(dto.pageSize * dto.page);
       }
     }
-    return query.getMany();
+    return query.getManyAndCount();
   }
 
   create(dto: SaveTagDto): Promise<TagModel> {

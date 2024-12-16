@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UniqueUserEmailValidator } from '../../../user/domain/validators/unique-user-email.validator';
+import { UniqueUserNicknameValidator } from '../../../user/domain/validators/unique-user-nickname';
 
 export class RegisterDto {
   @ApiProperty({
@@ -30,7 +31,7 @@ export class RegisterDto {
     required: true,
   })
   @IsString()
-  @Validate(UniqueUserEmailValidator)
+  @Validate(UniqueUserNicknameValidator)
   @Type(() => String)
   nickname: string;
 

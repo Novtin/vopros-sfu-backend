@@ -11,7 +11,7 @@ export class TagService {
     private readonly tagRepository: ITagRepository,
   ) {}
 
-  search(dto: SearchTagDto): Promise<TagModel[]> {
+  search(dto: SearchTagDto): Promise<[TagModel[], number]> {
     return this.tagRepository.search(dto);
   }
 

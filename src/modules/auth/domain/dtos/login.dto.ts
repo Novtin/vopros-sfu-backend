@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, ValidateIf } from 'class-validator';
 import { Type } from 'class-transformer';
+import { RoleEnum } from '../../../user/domain/enum/role.enum';
 
 export class LoginDto {
   @ApiProperty({
@@ -10,6 +11,7 @@ export class LoginDto {
   })
   @IsString()
   @IsEmail()
+  @ValidateIf((object) => object.email !== RoleEnum.ADMIN)
   @Type(() => String)
   email: string;
 

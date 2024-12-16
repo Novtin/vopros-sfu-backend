@@ -14,4 +14,5 @@ export interface IUserRepository {
   confirmEmail(id: number): Promise<UserModel>;
   getOneBy(dto: Partial<UserModel>): Promise<UserModel>;
   search(dto: SearchUserDto): Promise<[UserModel[], number]>;
+  delete(id: number): Promise<void>;
 }

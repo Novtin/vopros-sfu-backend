@@ -1,11 +1,15 @@
 import {
-  BadRequestException,
+  Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseInterceptors,
@@ -20,9 +24,9 @@ import { multerImageOptions } from '../../../../config/multer-image.config';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { Context } from '../../../auth/infrastructure/decorators/context.decorator';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
-import { RoleEnum } from '../../domain/enum/role.enum';
 import { UserDetailSchema } from '../schemas/user-detail.schema';
 import { SearchUserDto } from '../../domain/dtos/search-user.dto';
+import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
 
 @Authorized()
 @Controller('/user')
@@ -72,14 +76,29 @@ export class UserController {
     @UploadedFile() imageFile: Express.Multer.File,
     @Context() context: ContextDto,
   ) {
-    if (!imageFile) {
-      throw new BadRequestException('Файл не найден');
-    }
-    if (!context.roles.includes(RoleEnum.ADMIN)) {
-      if (context.userId !== id) {
-        throw new ForbiddenException();
-      }
-    }
-    return this.userService.uploadAvatar(id, imageFile);
+    this.userService.throwForbiddenExceptionIfNotThis(context.userId, id);
+    return this.userService.uploadAvatar(context.userId, imageFile);
+  }
+
+  @Put('/:id')
+  @ApiOkResponse({ type: UserSchema })
+  @UseInterceptors(new TransformInterceptor(UserSchema))
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto,
+  ): Promise<UserModel> {
+    dto.avatarId = undefined;
+    return this.userService.update(id, dto);
+  }
+
+  @ApiOkResponse({ status: HttpStatus.NO_CONTENT })
+  @Delete('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Context() context: ContextDto,
+  ) {
+    this.userService.throwForbiddenExceptionIfNotThisOrAdmin(context, id);
+    await this.userService.delete(id);
   }
 }

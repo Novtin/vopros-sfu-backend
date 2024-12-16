@@ -22,7 +22,7 @@ export class NotificationRepository implements INotificationRepository {
   async view(dto: ViewNotificationDto): Promise<void> {
     await this.dbRepository
       .createQueryBuilder()
-      .update(NotificationModel)
+      .update('notification')
       .set({
         isViewed: true,
       })
