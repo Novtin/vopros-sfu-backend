@@ -29,19 +29,16 @@ export class TokenService {
   }
 
   async verify(token: string, type: TokenEnum): Promise<IJwtPayload> {
-    let payload: IJwtPayload = null;
     try {
-      const secret =
-        type === TokenEnum.ACCESS
-          ? this.configService.get('jwt.accessSecret')
-          : this.configService.get('jwt.refreshSecret');
-      payload = this.jwtService.verify(token, {
-        secret,
+      return this.jwtService.verify<IJwtPayload>(token, {
+        secret:
+          type === TokenEnum.ACCESS
+            ? this.configService.get('jwt.accessSecret')
+            : this.configService.get('jwt.refreshSecret'),
         algorithms: this.configService.get('jwt.algorithm'),
       });
     } catch {
       throw new UnauthorizedException('JWT has expired');
     }
-    return payload;
   }
 }

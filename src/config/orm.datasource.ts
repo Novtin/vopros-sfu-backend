@@ -1,7 +1,6 @@
 import { DataSource } from 'typeorm';
 import * as process from 'process';
 import * as dotenv from 'dotenv';
-import { RoleEntity } from '../modules/user/infrastructure/entities/role.entity';
 
 dotenv.config({ path: '.env' });
 export const config = {
