@@ -1,5 +1,5 @@
 import { UserModel } from '../../../user/domain/models/user.model';
-import { AbstractTimeModel } from '../../../../common/models/abstract-time.model';
+import { AbstractTimeModel } from '../../../global/domain/models/abstract-time.model';
 import { FileModel } from '../../../file/domain/models/file.model';
 import { QuestionRatingModel } from './question-rating.model';
 import { QuestionViewModel } from './question-view.model';

@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MailerService } from '@nestjs-modules/mailer';
-import { ConfigService } from '@nestjs/config';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../../modules/auth/domain/services/auth.service';
 import { UserService } from '../../modules/user/domain/services/user.service';
@@ -14,8 +12,10 @@ import { RoleEnum } from '../../modules/user/domain/enum/role.enum';
 import { JwtDto } from '../../modules/auth/domain/dtos/jwt.dto';
 import { RegisterDto } from '../../modules/auth/domain/dtos/register.dto';
 import { RefreshJwtDto } from '../../modules/auth/domain/dtos/refresh-jwt.dto';
-import { IJwtPayload } from '../../modules/auth/domain/interfaces/jwt.payload.interface';
+import { IJwtPayload } from '../../modules/auth/domain/interfaces/i-jwt-payload-interface';
 import { RoleModel } from '../../modules/user/domain/models/role.model';
+import { IEventEmitterService } from '../../modules/global/domain/interfaces/i-event-emitter-service';
+import { IConfigService } from '../../modules/global/domain/interfaces/i-config-service';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -23,8 +23,8 @@ describe('AuthService', () => {
   let tokenService: TokenService;
   let hashService: HashService;
   let roleService: RoleService;
-  let mailerService: MailerService;
-  let configService: ConfigService;
+  let configService: IConfigService;
+  let eventEmitterService: IEventEmitterService;
 
   beforeAll(async () => {
     const mockUserService = {
@@ -47,12 +47,12 @@ describe('AuthService', () => {
       getOneBy: jest.fn(),
     };
 
-    const mockMailerService = {
-      sendMail: jest.fn(),
-    };
-
     const mockConfigService = {
       get: jest.fn(),
+    };
+
+    const mockEventEmitterService = {
+      emit: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -62,8 +62,8 @@ describe('AuthService', () => {
         { provide: TokenService, useValue: mockTokenService },
         { provide: HashService, useValue: mockHashService },
         { provide: RoleService, useValue: mockRoleService },
-        { provide: MailerService, useValue: mockMailerService },
-        { provide: ConfigService, useValue: mockConfigService },
+        { provide: IEventEmitterService, useValue: mockEventEmitterService },
+        { provide: IConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
@@ -72,8 +72,9 @@ describe('AuthService', () => {
     tokenService = module.get<TokenService>(TokenService);
     hashService = module.get<HashService>(HashService);
     roleService = module.get<RoleService>(RoleService);
-    mailerService = module.get<MailerService>(MailerService);
-    configService = module.get<ConfigService>(ConfigService);
+    eventEmitterService =
+      module.get<IEventEmitterService>(IEventEmitterService);
+    configService = module.get<IConfigService>(IConfigService);
   });
 
   describe('login', () => {
@@ -139,7 +140,7 @@ describe('AuthService', () => {
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
       };
-      tokenService.makeTokens = jest.fn().mockResolvedValue(jwtDto);
+      tokenService.make = jest.fn().mockResolvedValue(jwtDto);
 
       const result = await authService.login(loginDto);
       expect(result).toEqual(jwtDto);
@@ -169,12 +170,11 @@ describe('AuthService', () => {
         description: 'Test',
         emailHash: 'hashedEmail',
       });
-      mailerService.sendMail = jest.fn().mockResolvedValue(true);
       configService.get = jest.fn().mockReturnValue('http://test.com');
 
       const result = await authService.register(registerDto);
       expect(result.email).toBe('test@example.com');
-      expect(mailerService.sendMail).toHaveBeenCalled();
+      expect(eventEmitterService.emit).toHaveBeenCalled();
     });
   });
 
@@ -201,7 +201,7 @@ describe('AuthService', () => {
       };
 
       tokenService.verify = jest.fn().mockResolvedValue(payload);
-      tokenService.makeTokens = jest.fn().mockResolvedValue(jwtDto);
+      tokenService.make = jest.fn().mockResolvedValue(jwtDto);
 
       const result = await authService.refresh(refreshDto);
       expect(result).toEqual(jwtDto);

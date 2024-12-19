@@ -52,12 +52,22 @@ export class NotificationRepository implements INotificationRepository {
   }
 
   async deleteOld(): Promise<void> {
-    const dateThreshold = new Date();
-    dateThreshold.setDate(dateThreshold.getDate() - 5);
+    const dateThresholdForViewed = new Date();
+    dateThresholdForViewed.setDate(dateThresholdForViewed.getDate() - 5);
 
-    await this.dbRepository.delete({
-      isViewed: true,
-      createdAt: LessThan(dateThreshold),
-    });
+    const dateThresholdForNotViewed = new Date();
+    dateThresholdForNotViewed.setDate(dateThresholdForNotViewed.getDate() - 25);
+
+    await this.dbRepository
+      .createQueryBuilder()
+      .delete()
+      .from('notification')
+      .where('createdAt < :dateThresholdForViewed AND isViewed = TRUE', {
+        dateThresholdForViewed,
+      })
+      .orWhere('createdAt < :dateThresholdForNotViewed', {
+        dateThresholdForNotViewed,
+      })
+      .execute();
   }
 }

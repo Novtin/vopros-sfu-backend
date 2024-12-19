@@ -25,7 +25,8 @@ import { IQuestionRepository } from '../interfaces/i-question-repository';
 import { IQuestionFavoriteRepository } from '../interfaces/i-question-favorite-repository';
 import { IQuestionViewRepository } from '../interfaces/i-question-view-repository';
 import { IQuestionRatingRepository } from '../interfaces/i-question-rating-repository';
-import { NotificationService } from '../../../notification/domain/services/notification.service';
+import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
+import { EventEnum } from '../../../global/domain/enums/event.enum';
 
 @Injectable()
 export class QuestionService {
@@ -38,16 +39,20 @@ export class QuestionService {
     private readonly questionRateRepository: IQuestionRatingRepository,
     @Inject(IQuestionFavoriteRepository)
     private readonly questionFavoriteRepository: IQuestionFavoriteRepository,
+    @Inject(IEventEmitterService)
+    private readonly evenEmitterService: IEventEmitterService,
     private readonly fileService: FileService,
     private readonly tagService: TagService,
-    private readonly notificationService: NotificationService,
   ) {}
 
   async view(dto: CreateQuestionViewDto) {
-    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
     const questionView = await this.questionViewRepository.getOneBy(dto);
     if (!questionView) {
       await this.questionViewRepository.create(dto);
+      this.evenEmitterService.emit(EventEnum.VIEW_NOTIFICATION, {
+        userId: dto.userId,
+        payload: { questionId: dto.questionId },
+      });
     }
   }
 
@@ -57,7 +62,6 @@ export class QuestionService {
       userId,
       questionId,
     });
-    await this.notificationService.view({ userId, payload: { questionId } });
     return await this.questionRepository.getOneBy({ id: questionId });
   }
 

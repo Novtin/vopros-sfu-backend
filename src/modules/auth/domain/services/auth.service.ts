@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -9,24 +10,24 @@ import { JwtDto } from '../dtos/jwt.dto';
 import { UserModel } from '../../../user/domain/models/user.model';
 import { LoginDto } from '../dtos/login.dto';
 import { HashService } from './hash.service';
-import { IJwtPayload } from '../interfaces/jwt.payload.interface';
+import { IJwtPayload } from '../interfaces/i-jwt-payload-interface';
 import { RegisterDto } from '../dtos/register.dto';
 import { RefreshJwtDto } from '../dtos/refresh-jwt.dto';
 import { RoleService } from '../../../user/domain/services/role.service';
 import { RoleEnum } from '../../../user/domain/enum/role.enum';
-import { MailerService } from '@nestjs-modules/mailer';
 import { TokenEnum } from '../enums/token.enum';
-import { ConfigService } from '@nestjs/config';
+import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
+import { EventEnum } from '../../../global/domain/enums/event.enum';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(IEventEmitterService)
+    private readonly eventEmitterService: IEventEmitterService,
     private readonly userService: UserService,
     private readonly roleService: RoleService,
     private readonly hashService: HashService,
     private readonly tokenService: TokenService,
-    private readonly mailerService: MailerService,
-    private readonly configService: ConfigService,
   ) {}
 
   async login(loginDto: LoginDto): Promise<JwtDto> {
@@ -44,7 +45,7 @@ export class AuthService {
       throw new UnauthorizedException('Неверный логин или пароль');
     }
 
-    return await this.tokenService.makeTokens({
+    return await this.tokenService.make({
       email: user.email,
       userId: user.id,
       roles: user.roles.map((role) => role.name),
@@ -53,24 +54,19 @@ export class AuthService {
 
   async register(registerDto: RegisterDto): Promise<UserModel> {
     const emailHash = await this.hashService.makeHash(registerDto.email);
-    const params = new URLSearchParams();
-    params.set('emailHash', encodeURIComponent(emailHash));
-    const confirmationUrl = `${this.configService.get('http.frontendUrl')}/confirm-email?${params.toString()}`;
-    await this.mailerService.sendMail({
-      from: this.configService.get('mailer.default.from'),
-      to: registerDto.email,
-      subject: 'Подтверждение почты',
-      template: './confirmation',
-      context: {
-        confirmationUrl,
-      },
-    });
-    return await this.userService.create({
+    const user = await this.userService.create({
       ...registerDto,
       passwordHash: await this.hashService.makeHash(registerDto.password),
       emailHash,
       roles: [await this.roleService.getOneBy({ name: RoleEnum.USER })],
     });
+
+    this.eventEmitterService.emit(EventEnum.REGISTER_USER, {
+      email: registerDto.email,
+      emailHash,
+    });
+
+    return user;
   }
 
   async confirmEmail(emailHash: string) {
@@ -92,6 +88,6 @@ export class AuthService {
       userId: payloadFromToken.userId,
       roles: payloadFromToken.roles,
     };
-    return await this.tokenService.makeTokens(newPayload);
+    return this.tokenService.make(newPayload);
   }
 }

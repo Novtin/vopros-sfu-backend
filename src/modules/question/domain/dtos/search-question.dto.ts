@@ -6,13 +6,12 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { PaginationDto } from '../../../../common/dtos/pagination.dto';
+import { PaginationDto } from '../../../global/domain/dtos/pagination.dto';
 import { FilterQuestionEnum } from '../enums/filter-question.enum';
 import { Type } from 'class-transformer';
 
 export class SearchQuestionDto extends PaginationDto {
   @ApiProperty({
-    type: FilterQuestionEnum,
     enum: FilterQuestionEnum,
     required: true,
   })

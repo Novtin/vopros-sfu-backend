@@ -1,6 +1,6 @@
 import { EntitySchema } from 'typeorm';
 import { UserModel } from '../../domain/models/user.model';
-import { AbstractTimeEntity } from '../../../../common/entities/abstract-time.entity';
+import { AbstractTimeEntity } from '../../../global/infrastructure/entities/abstract-time.entity';
 
 export const UserEntity = new EntitySchema<UserModel>({
   name: 'user',

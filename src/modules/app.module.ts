@@ -13,6 +13,8 @@ import { AnswerModule } from './answer/infrastructure/answer.module';
 import redisConfig from '../config/redis.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationModule } from './notification/infrastructure/notification.module';
+import { GlobalModule } from './global/infrastructure/global.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { NotificationModule } from './notification/infrastructure/notification.m
       useFactory: (configService: ConfigService) => configService.get('mailer'),
     }),
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
+    GlobalModule,
     UserModule,
     AuthModule,
     QuestionModule,

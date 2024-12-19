@@ -7,7 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TransformInterceptor } from '../../../../common/interceptors/transform.interceptor';
+import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { TagModel } from '../../domain/models/tag.model';
 import { TagSchema } from '../schemas/tag.schema';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';

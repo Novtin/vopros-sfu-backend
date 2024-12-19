@@ -1,9 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { FilterUserEnum } from '../enum/filter-user.enum';
 import { FilterQuestionEnum } from '../../../question/domain/enums/filter-question.enum';
-import { PaginationDto } from '../../../../common/dtos/pagination.dto';
+import { PaginationDto } from '../../../global/domain/dtos/pagination.dto';
 
 export class SearchUserDto extends PaginationDto {
   @ApiProperty({
@@ -17,7 +23,6 @@ export class SearchUserDto extends PaginationDto {
   id?: number;
 
   @ApiProperty({
-    type: FilterUserEnum,
     enum: FilterUserEnum,
     required: true,
   })
@@ -33,4 +38,14 @@ export class SearchUserDto extends PaginationDto {
   @IsOptional()
   @Type(() => String)
   query?: string;
+
+  @ApiProperty({
+    type: Boolean,
+    description: 'С удалёнными?',
+    required: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Type(() => Boolean)
+  withDeleted?: boolean;
 }

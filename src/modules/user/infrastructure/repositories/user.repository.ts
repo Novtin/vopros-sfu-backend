@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { UserModel } from '../../domain/models/user.model';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SearchUserDto } from '../../domain/dtos/search-user.dto';
@@ -119,6 +119,10 @@ export class UserRepository implements IUserRepository {
       query.andWhere({ id: dto.id });
     }
 
+    if (dto.withDeleted) {
+      query.andWhere('user.deletedAt IS NOT NULL OR user.deletedAt IS NULL');
+    }
+
     const [users, count] = await query.getManyAndCount();
 
     return users.length === 0
@@ -128,6 +132,13 @@ export class UserRepository implements IUserRepository {
 
   async delete(id: number): Promise<void> {
     await this.dbRepository.softDelete({ id });
+  }
+
+  async restore(id: number): Promise<void> {
+    await this.dbRepository.update(
+      { id, deletedAt: Not(IsNull()) },
+      { deletedAt: null },
+    );
   }
 
   private async setRating(users: UserModel[]) {

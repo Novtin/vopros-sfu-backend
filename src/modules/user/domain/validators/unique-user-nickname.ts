@@ -2,7 +2,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 
 @ValidatorConstraint({ name: 'uniqueUserNicknameValidator', async: true })
@@ -10,7 +10,7 @@ import { UserService } from '../services/user.service';
 export class UniqueUserNicknameValidator
   implements ValidatorConstraintInterface
 {
-  constructor(protected readonly userService: UserService) {}
+  constructor(@Inject(UserService) private readonly userService: UserService) {}
 
   async validate(text: string): Promise<boolean> {
     const isUserExistsByNickname: boolean = await this.userService.existBy({

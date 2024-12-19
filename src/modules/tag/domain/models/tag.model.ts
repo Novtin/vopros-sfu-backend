@@ -1,4 +1,4 @@
-import { AbstractTimeModel } from '../../../../common/models/abstract-time.model';
+import { AbstractTimeModel } from '../../../global/domain/models/abstract-time.model';
 
 export class TagModel extends AbstractTimeModel {
   id: number;

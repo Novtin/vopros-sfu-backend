@@ -15,4 +15,5 @@ export interface IUserRepository {
   getOneBy(dto: Partial<UserModel>): Promise<UserModel>;
   search(dto: SearchUserDto): Promise<[UserModel[], number]>;
   delete(id: number): Promise<void>;
+  restore(id: number): Promise<void>;
 }

@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
-import { TransformInterceptor } from '../../../../common/interceptors/transform.interceptor';
+import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { Context } from '../../../auth/infrastructure/decorators/context.decorator';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { AnswerService } from '../../domain/services/answer.service';
@@ -25,7 +25,7 @@ import { SearchAnswerDto } from '../../domain/dtos/search-answer.dto';
 import { AnswerSchema } from '../schemas/answer.schema';
 import { UpdateAnswerDto } from '../../domain/dtos/update-answer.dto';
 import { ResolveQuestionDto } from '../../../question/domain/dtos/resolve-question.dto';
-import { RatingDto } from '../../../../common/dtos/rating.dto';
+import { RatingDto } from '../../../global/domain/dtos/rating.dto';
 
 @Authorized()
 @ApiTags('answer')
@@ -62,7 +62,8 @@ export class AnswerController {
     return this.answerService.search(dto);
   }
 
-  @ApiOkResponse({ status: HttpStatus.NO_CONTENT })
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async delete(
     @Param('id', ParseIntPipe) id: number,
@@ -85,7 +86,8 @@ export class AnswerController {
   }
 
   @Post('/resolve/:questionId')
-  @ApiOkResponse({ status: HttpStatus.NO_CONTENT })
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
   resolve(
     @Param('questionId', ParseIntPipe) questionId: number,
     @Body() dto: ResolveQuestionDto,
@@ -99,7 +101,8 @@ export class AnswerController {
   }
 
   @Delete('/resolve/:questionId')
-  @ApiOkResponse({ status: HttpStatus.NO_CONTENT })
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
   deleteResolve(
     @Param('questionId', ParseIntPipe) questionId: number,
     @Context() context: ContextDto,

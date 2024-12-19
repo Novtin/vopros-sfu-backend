@@ -1,6 +1,6 @@
 import { EntitySchema } from 'typeorm';
 import { TagModel } from '../../domain/models/tag.model';
-import { AbstractTimeEntity } from '../../../../common/entities/abstract-time.entity';
+import { AbstractTimeEntity } from '../../../global/infrastructure/entities/abstract-time.entity';
 
 export const TagEntity = new EntitySchema<TagModel>({
   name: 'tag',

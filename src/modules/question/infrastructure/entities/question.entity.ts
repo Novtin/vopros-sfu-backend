@@ -1,6 +1,6 @@
 import { EntitySchema } from 'typeorm';
 import { QuestionModel } from '../../domain/models/question.model';
-import { AbstractTimeEntity } from '../../../../common/entities/abstract-time.entity';
+import { AbstractTimeEntity } from '../../../global/infrastructure/entities/abstract-time.entity';
 
 export const QuestionEntity = new EntitySchema<QuestionModel>({
   name: 'question',

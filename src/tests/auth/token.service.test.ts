@@ -1,19 +1,21 @@
-import { describe, beforeEach, expect, it, beforeAll } from '@jest/globals';
+import { describe, expect, it, beforeAll } from '@jest/globals';
 import { TokenService } from '../../modules/auth/domain/services/token.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from '../../config/jwt.config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { IJwtPayload } from '../../modules/auth/domain/interfaces/jwt.payload.interface';
+import { IJwtPayload } from '../../modules/auth/domain/interfaces/i-jwt-payload-interface';
 import { RoleEnum } from '../../modules/user/domain/enum/role.enum';
 import { JwtDto } from '../../modules/auth/domain/dtos/jwt.dto';
 import { TokenEnum } from '../../modules/auth/domain/enums/token.enum';
 import { UnauthorizedException } from '@nestjs/common';
+import { IJwtService } from '../../modules/auth/domain/interfaces/i-jwt-service';
+import { IConfigService } from '../../modules/global/domain/interfaces/i-config-service';
 
 describe('TokenService', () => {
   let tokenService: TokenService;
   let jwtService: JwtService;
-  let configService: ConfigService;
+  let configService: IConfigService;
 
   let payload: IJwtPayload;
   let accessToken: string;
@@ -23,18 +25,28 @@ describe('TokenService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         JwtModule,
-        ConfigModule.forRoot({
+        await ConfigModule.forRoot({
           isGlobal: true,
           load: [jwtConfig],
           envFilePath: '.env',
         }),
       ],
-      providers: [TokenService],
+      providers: [
+        {
+          provide: IConfigService,
+          useClass: ConfigService,
+        },
+        {
+          provide: IJwtService,
+          useClass: JwtService,
+        },
+        TokenService,
+      ],
     }).compile();
 
+    jwtService = module.get(IJwtService);
+    configService = module.get<IConfigService>(IConfigService);
     tokenService = module.get<TokenService>(TokenService);
-    jwtService = module.get<JwtService>(JwtService);
-    configService = module.get<ConfigService>(ConfigService);
 
     payload = {
       email: 'test@example.com',
@@ -42,13 +54,13 @@ describe('TokenService', () => {
       roles: [RoleEnum.USER],
     };
 
-    accessToken = await jwtService.signAsync(payload, {
+    accessToken = jwtService.sign(payload, {
       secret: configService.get('jwt.accessSecret'),
       algorithm: configService.get('jwt.algorithm'),
       expiresIn: configService.get('jwt.accessExp'),
     });
 
-    refreshToken = await jwtService.signAsync(payload, {
+    refreshToken = jwtService.sign(payload, {
       secret: configService.get('jwt.refreshSecret'),
       algorithm: configService.get('jwt.algorithm'),
       expiresIn: configService.get('jwt.refreshExp'),
@@ -57,7 +69,7 @@ describe('TokenService', () => {
 
   describe('makeTokens', () => {
     it('should return access and refresh tokens', async () => {
-      const result: JwtDto = await tokenService.makeTokens(payload);
+      const result: JwtDto = await tokenService.make(payload);
       expect(result).toEqual({ accessToken, refreshToken });
     });
   });

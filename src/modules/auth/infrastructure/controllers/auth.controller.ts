@@ -1,6 +1,6 @@
 import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TransformInterceptor } from '../../../../common/interceptors/transform.interceptor';
+import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { UserModel } from '../../../user/domain/models/user.model';
 import { RegisterDto } from '../../domain/dtos/register.dto';
 import { UserSchema } from '../../../user/infrastructure/schemas/user.schema';

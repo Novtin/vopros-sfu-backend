@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -15,7 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from '../../domain/services/user.service';
-import { TransformInterceptor } from '../../../../common/interceptors/transform.interceptor';
+import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { UserSchema } from '../schemas/user.schema';
 import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserModel } from '../../domain/models/user.model';
@@ -27,6 +26,8 @@ import { Authorized } from '../../../auth/infrastructure/decorators/authorized.d
 import { UserDetailSchema } from '../schemas/user-detail.schema';
 import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
+import { Roles } from '../../../auth/infrastructure/decorators/roles.decorator';
+import { RoleEnum } from '../../domain/enum/role.enum';
 
 @Authorized()
 @Controller('/user')
@@ -91,7 +92,7 @@ export class UserController {
     return this.userService.update(id, dto);
   }
 
-  @ApiOkResponse({ status: HttpStatus.NO_CONTENT })
+  @ApiOkResponse()
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(
@@ -100,5 +101,13 @@ export class UserController {
   ) {
     this.userService.throwForbiddenExceptionIfNotThisOrAdmin(context, id);
     await this.userService.delete(id);
+  }
+
+  @Roles(RoleEnum.ADMIN)
+  @ApiOkResponse()
+  @Post('/:id/restore')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async restore(@Param('id', ParseIntPipe) id: number) {
+    await this.userService.restore(id);
   }
 }

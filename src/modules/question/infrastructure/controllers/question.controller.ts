@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { QuestionService } from '../../domain/services/question.service';
 import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TransformInterceptor } from '../../../../common/interceptors/transform.interceptor';
+import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { SaveQuestionDto } from '../../domain/dtos/save-question.dto';
 import { QuestionModel } from '../../domain/models/question.model';
 import { QuestionSchema } from '../schemas/question.schema';
@@ -26,8 +26,8 @@ import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../../config/multer-image.config';
-import { RatingDto } from '../../../../common/dtos/rating.dto';
-import { ApiOkPagination } from '../../../../common/decorators/api-ok-pagination';
+import { RatingDto } from '../../../global/domain/dtos/rating.dto';
+import { ApiOkPagination } from '../../../global/infrastructure/decorators/api-ok-pagination';
 
 @ApiTags('question')
 @Authorized()
@@ -85,7 +85,8 @@ export class QuestionController {
     return this.questionService.getOneById(id, context.userId);
   }
 
-  @ApiOkResponse({ status: HttpStatus.NO_CONTENT })
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async delete(
     @Param('id', ParseIntPipe) id: number,

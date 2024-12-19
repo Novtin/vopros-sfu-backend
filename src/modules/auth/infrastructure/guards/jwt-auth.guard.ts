@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { UserService } from '../../../user/domain/services/user.service';
 import { TokenService } from '../../domain/services/token.service';
-import { IJwtPayload } from '../../domain/interfaces/jwt.payload.interface';
+import { IJwtPayload } from '../../domain/interfaces/i-jwt-payload-interface';
 import { TokenEnum } from '../../domain/enums/token.enum';
 
 @Injectable()

@@ -17,7 +17,8 @@ import { CreateAnswerRatingDto } from '../dtos/create-answer-rating.dto';
 import { DeleteAnswerRatingDto } from '../dtos/delete-answer-rating.dto';
 import { IAnswerRepository } from '../interfaces/i-answer-repository';
 import { IAnswerRatingRepository } from '../interfaces/i-answer-rating-repository';
-import { NotificationService } from '../../../notification/domain/services/notification.service';
+import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
+import { EventEnum } from '../../../global/domain/enums/event.enum';
 
 @Injectable()
 export class AnswerService {
@@ -26,7 +27,8 @@ export class AnswerService {
     private readonly answerRepository: IAnswerRepository,
     @Inject(IAnswerRatingRepository)
     private readonly answerRatingRepository: IAnswerRatingRepository,
-    private readonly notificationService: NotificationService,
+    @Inject(IEventEmitterService)
+    private readonly eventEmitterService: IEventEmitterService,
     private readonly questionService: QuestionService,
   ) {}
 
@@ -38,7 +40,7 @@ export class AnswerService {
       ...dto,
       authorId,
     });
-    await this.notificationService.send({
+    this.eventEmitterService.emit(EventEnum.SEND_NOTIFICATION, {
       userId: answer.question.authorId,
       payload: {
         questionId: answer.id,

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResultPaginationDto } from '../dtos/result-pagination.dto';
+import { ResultPaginationDto } from '../../domain/dtos/result-pagination.dto';
 
 export class ResultPaginationSchema<Model> {
   @ApiProperty()

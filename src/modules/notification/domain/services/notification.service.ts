@@ -5,7 +5,6 @@ import { NotificationModel } from '../models/notification.model';
 import { SearchNotificationDto } from '../dtos/search-notification.dto';
 import { ViewNotificationDto } from '../dtos/view-notification.dto';
 import { INotificationGateway } from '../interfaces/i-notification-gateway';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class NotificationService {
@@ -33,8 +32,7 @@ export class NotificationService {
     this.notificationGateway.send(notification);
   }
 
-  @Cron('0 0 */5 * *')
-  private async deleteOld() {
+  async deleteOld() {
     await this.notificationRepository.deleteOld();
   }
 }

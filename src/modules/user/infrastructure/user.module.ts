@@ -12,6 +12,7 @@ import { IUserRepository } from '../domain/interfaces/i-user-repository';
 import { IRoleRepository } from '../domain/interfaces/i-role-repository';
 import { UserEntity } from './entities/user.entity';
 import { RoleEntity } from './entities/role.entity';
+import { UniqueUserNicknameValidator } from '../domain/validators/unique-user-nickname';
 
 @Global()
 @Module({
@@ -33,6 +34,7 @@ import { RoleEntity } from './entities/role.entity';
     },
     RoleService,
     UniqueUserEmailValidator,
+    UniqueUserNicknameValidator,
   ],
   exports: [UserService, RoleService],
 })

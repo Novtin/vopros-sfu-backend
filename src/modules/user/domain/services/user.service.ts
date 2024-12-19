@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { UserModel } from '../models/user.model';
 import { ExistUserDto } from '../dtos/exist-user.dto';
@@ -32,8 +33,16 @@ export class UserService {
     return this.userRepository.existBy(dto);
   }
 
-  create(dto: SaveUserDto): Promise<UserModel> {
-    return this.userRepository.create(dto);
+  async create(dto: SaveUserDto): Promise<UserModel> {
+    try {
+      return await this.userRepository.create(dto);
+    } catch (error) {
+      if (error?.code === '23505') {
+        throw new UnprocessableEntityException(
+          'Пользователь с таким email забанен',
+        );
+      }
+    }
   }
 
   async update(id: number, dto: UpdateUserDto) {
@@ -90,5 +99,9 @@ export class UserService {
   async delete(id: number) {
     await this.throwNotFoundExceptionIfNotExist({ id });
     await this.userRepository.delete(id);
+  }
+
+  async restore(id: number) {
+    await this.userRepository.restore(id);
   }
 }
