@@ -29,7 +29,7 @@ export class AnswerSchema {
   @ApiProperty()
   @Transform(
     ({ obj }) =>
-      obj.rate
+      obj.rating
         ?.filter((rate: AnswerRatingModel) => rate.value === 1)
         ?.map((rate: AnswerRatingModel) => rate.userId) ?? [],
   )
@@ -39,7 +39,7 @@ export class AnswerSchema {
   @ApiProperty()
   @Transform(
     ({ obj }) =>
-      obj.rate
+      obj.rating
         ?.filter((rating: AnswerRatingModel) => rating.value === -1)
         ?.map((rating: AnswerRatingModel) => rating.userId) ?? [],
   )

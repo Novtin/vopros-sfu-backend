@@ -1,10 +1,4 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SaveAnswerDto } from '../dtos/save-answer.dto';
 import { QuestionService } from '../../../question/domain/services/question.service';
 import { ExistAnswerDto } from '../dtos/exist-answer.dto';
@@ -19,6 +13,9 @@ import { IAnswerRepository } from '../interfaces/i-answer-repository';
 import { IAnswerRatingRepository } from '../interfaces/i-answer-rating-repository';
 import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
 import { EventEnum } from '../../../global/domain/enums/event.enum';
+import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
+import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
+import { ConflictException } from '../../../global/domain/exceptions/conflict.exception';
 
 @Injectable()
 export class AnswerService {
@@ -40,7 +37,7 @@ export class AnswerService {
       ...dto,
       authorId,
     });
-    this.eventEmitterService.emit(EventEnum.SEND_NOTIFICATION, {
+    this.eventEmitterService.emit(EventEnum.CREATE_NOTIFICATION, {
       userId: answer.question.authorId,
       payload: {
         questionId: answer.id,

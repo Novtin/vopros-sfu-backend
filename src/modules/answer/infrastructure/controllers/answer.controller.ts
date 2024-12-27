@@ -12,7 +12,7 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
 import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { Context } from '../../../auth/infrastructure/decorators/context.decorator';
@@ -26,9 +26,10 @@ import { AnswerSchema } from '../schemas/answer.schema';
 import { UpdateAnswerDto } from '../../domain/dtos/update-answer.dto';
 import { ResolveQuestionDto } from '../../../question/domain/dtos/resolve-question.dto';
 import { RatingDto } from '../../../global/domain/dtos/rating.dto';
+import { ApiOkPagination } from '../../../global/infrastructure/decorators/api-ok-pagination';
 
 @Authorized()
-@ApiTags('answer')
+@ApiTags('Ответ')
 @Controller('answer')
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
@@ -36,6 +37,7 @@ export class AnswerController {
   @ApiOkResponse({
     type: AnswerDetailSchema,
   })
+  @ApiOperation({ summary: 'Создать ответ' })
   @UseInterceptors(new TransformInterceptor(AnswerDetailSchema))
   @Post()
   create(
@@ -47,15 +49,14 @@ export class AnswerController {
 
   @Get('/:id')
   @ApiOkResponse({ type: AnswerDetailSchema })
+  @ApiOperation({ summary: 'Получить ответ' })
   @UseInterceptors(new TransformInterceptor(AnswerDetailSchema))
   getOneById(@Param('id', ParseIntPipe) id: number): Promise<AnswerModel> {
     return this.answerService.getOneBy({ id });
   }
 
-  @ApiOkResponse({
-    type: AnswerSchema,
-    isArray: true,
-  })
+  @ApiOkPagination({ type: AnswerSchema })
+  @ApiOperation({ summary: 'Получить ответы' })
   @UseInterceptors(new TransformInterceptor(AnswerSchema))
   @Get()
   search(@Query() dto: SearchAnswerDto): Promise<[AnswerModel[], number]> {
@@ -63,6 +64,7 @@ export class AnswerController {
   }
 
   @ApiOkResponse()
+  @ApiOperation({ summary: 'Удалить ответ' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async delete(
@@ -75,6 +77,7 @@ export class AnswerController {
   @ApiOkResponse({
     type: AnswerDetailSchema,
   })
+  @ApiOperation({ summary: 'Обновить ответ' })
   @UseInterceptors(new TransformInterceptor(AnswerDetailSchema))
   @Put('/:id')
   update(
@@ -87,6 +90,7 @@ export class AnswerController {
 
   @Post('/resolve/:questionId')
   @ApiOkResponse()
+  @ApiOperation({ summary: 'Отметить ответ решением вопроса' })
   @HttpCode(HttpStatus.NO_CONTENT)
   resolve(
     @Param('questionId', ParseIntPipe) questionId: number,
@@ -101,6 +105,7 @@ export class AnswerController {
   }
 
   @Delete('/resolve/:questionId')
+  @ApiOperation({ summary: 'Убрать отметку ответа решением вопроса' })
   @ApiOkResponse()
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteResolve(
@@ -112,6 +117,7 @@ export class AnswerController {
 
   @ApiOkResponse({ type: AnswerSchema })
   @UseInterceptors(new TransformInterceptor(AnswerSchema))
+  @ApiOperation({ summary: 'Оценить ответ' })
   @Post('/:id/rate')
   rate(
     @Param('id', ParseIntPipe) id: number,
@@ -126,6 +132,7 @@ export class AnswerController {
   }
 
   @ApiOkResponse()
+  @ApiOperation({ summary: 'Убрать оценку ответа' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id/rate')
   deleteRate(

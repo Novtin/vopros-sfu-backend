@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserService } from '../../../user/domain/services/user.service';
 import { TokenService } from './token.service';
 import { JwtDto } from '../dtos/jwt.dto';
@@ -18,6 +13,8 @@ import { RoleEnum } from '../../../user/domain/enum/role.enum';
 import { TokenEnum } from '../enums/token.enum';
 import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
 import { EventEnum } from '../../../global/domain/enums/event.enum';
+import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
+import { UnauthorizedException } from '../../../global/domain/exceptions/unauthorized.exception';
 
 @Injectable()
 export class AuthService {
@@ -81,7 +78,7 @@ export class AuthService {
       TokenEnum.REFRESH,
     );
     if (!payloadFromToken) {
-      throw new UnauthorizedException('JWT has expired');
+      throw new UnauthorizedException('JWT истёк');
     }
     const newPayload: IJwtPayload = {
       email: payloadFromToken.email,

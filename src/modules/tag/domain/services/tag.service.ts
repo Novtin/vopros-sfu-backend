@@ -11,6 +11,18 @@ export class TagService {
     private readonly tagRepository: ITagRepository,
   ) {}
 
+  async createOrGetByNames(tagNames: string[]): Promise<TagModel[]> {
+    const tags: TagModel[] = [];
+    for (const tagName of tagNames) {
+      let tagEntity = await this.getOneBy({ name: tagName });
+      if (!tagEntity) {
+        tagEntity = await this.create({ name: tagName });
+      }
+      tags.push(tagEntity);
+    }
+    return tags;
+  }
+
   search(dto: SearchTagDto): Promise<[TagModel[], number]> {
     return this.tagRepository.search(dto);
   }

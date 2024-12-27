@@ -1,9 +1,10 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtDto } from '../dtos/jwt.dto';
 import { IJwtPayload } from '../interfaces/i-jwt-payload-interface';
 import { TokenEnum } from '../enums/token.enum';
 import { IJwtService } from '../interfaces/i-jwt-service';
 import { IConfigService } from '../../../global/domain/interfaces/i-config-service';
+import { UnauthorizedException } from '../../../global/domain/exceptions/unauthorized.exception';
 
 @Injectable()
 export class TokenService {
@@ -40,7 +41,7 @@ export class TokenService {
         algorithms: [this.configService.get('jwt.algorithm')],
       });
     } catch {
-      throw new UnauthorizedException('JWT has expired');
+      throw new UnauthorizedException('JWT истёк');
     }
   }
 }

@@ -1,9 +1,14 @@
-import { NestFactory } from '@nestjs/core';
+import {
+  BaseExceptionFilter,
+  HttpAdapterHost,
+  NestFactory,
+} from '@nestjs/core';
 import { AppModule } from './modules/app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
+import { HttpAppExceptionFilter } from './modules/global/infrastructure/filters/http-app-exception.filter';
 
 let url: string;
 
@@ -28,6 +33,8 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  const httpAdapterHost = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpAppExceptionFilter(httpAdapterHost.httpAdapter));
   app.enableCors({
     origin: config.get<string>('http.frontendUrl'),
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],

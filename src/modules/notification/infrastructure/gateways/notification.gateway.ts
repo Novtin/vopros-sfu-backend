@@ -6,14 +6,15 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { INotificationGateway } from '../../domain/interfaces/i-notification-gateway';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotificationModel } from '../../domain/models/notification.model';
 import { NotificationService } from '../../domain/services/notification.service';
+import { OnEvent } from '@nestjs/event-emitter';
+import { EventEnum } from '../../../global/domain/enums/event.enum';
 
 @Injectable()
 @WebSocketGateway()
-export class NotificationGateway implements INotificationGateway {
+export class NotificationGateway {
   @WebSocketServer()
   private readonly server: Server;
 
@@ -22,6 +23,7 @@ export class NotificationGateway implements INotificationGateway {
     private readonly notificationService: NotificationService,
   ) {}
 
+  @OnEvent(EventEnum.SEND_NOTIFICATION)
   send(notification: NotificationModel): void {
     this.server
       .to(notification.userId.toString())

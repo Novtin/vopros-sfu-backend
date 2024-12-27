@@ -21,7 +21,7 @@ export class QuestionSchema {
   description: string;
 
   @Expose()
-  @ApiProperty({ type: FileSchema })
+  @ApiProperty({ type: FileSchema, isArray: true })
   @Type(() => FileSchema)
   images: FileSchema[];
 
@@ -31,7 +31,7 @@ export class QuestionSchema {
   author: UserSchema;
 
   @Expose()
-  @ApiProperty({ type: TagSchema })
+  @ApiProperty({ type: TagSchema, isArray: true })
   @Type(() => TagSchema)
   tags: TagSchema[];
 
@@ -44,12 +44,12 @@ export class QuestionSchema {
   updatedAt: Date;
 
   @Expose()
-  @ApiProperty({ type: AnswerSchema })
+  @ApiProperty({ type: AnswerSchema, isArray: true })
   @Type(() => AnswerSchema)
-  answers: AnswerSchema;
+  answers: AnswerSchema[];
 
   @Expose()
-  @ApiProperty({ type: AnswerSchema })
+  @ApiProperty()
   @Transform((event) => event.obj.answers?.length ?? 0)
   countAnswers: number;
 

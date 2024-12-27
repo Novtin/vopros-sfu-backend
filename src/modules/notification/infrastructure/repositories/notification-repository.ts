@@ -36,7 +36,7 @@ export class NotificationRepository implements INotificationRepository {
   search(dto: SearchNotificationDto): Promise<[NotificationModel[], number]> {
     const query = this.dbRepository
       .createQueryBuilder()
-      .orderBy('createdAt', 'DESC')
+      .orderBy('"createdAt"', 'DESC')
       .limit(dto.pageSize)
       .offset(dto.page * dto.pageSize);
     if (dto.id) {

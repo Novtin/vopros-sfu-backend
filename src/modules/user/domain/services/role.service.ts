@@ -1,8 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SearchRoleDto } from '../dtos/search-role.dto';
 import { RoleModel } from '../models/role.model';
 import { ExistRoleDto } from '../dtos/exist-role.dto';
 import { IRoleRepository } from '../interfaces/i-role-repository';
+import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
 
 @Injectable()
 export class RoleService {

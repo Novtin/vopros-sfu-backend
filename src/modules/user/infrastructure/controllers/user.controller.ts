@@ -16,7 +16,13 @@ import {
 import { UserService } from '../../domain/services/user.service';
 import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { UserSchema } from '../schemas/user.schema';
-import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserModel } from '../../domain/models/user.model';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../../config/multer-image.config';
@@ -28,21 +34,24 @@ import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
 import { Roles } from '../../../auth/infrastructure/decorators/roles.decorator';
 import { RoleEnum } from '../../domain/enum/role.enum';
+import { ApiOkPagination } from '../../../global/infrastructure/decorators/api-ok-pagination';
 
 @Authorized()
 @Controller('/user')
-@ApiTags('user')
+@ApiTags('Пользователь')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @ApiOkResponse({ type: UserDetailSchema })
+  @ApiOperation({ summary: 'Получить пользователей' })
+  @ApiOkPagination({ type: UserDetailSchema })
   @UseInterceptors(new TransformInterceptor(UserDetailSchema))
   search(@Query() dto: SearchUserDto) {
     return this.userService.search(dto);
   }
 
   @Get('/this')
+  @ApiOperation({ summary: 'Получить текущего пользователя' })
   @ApiOkResponse({ type: UserSchema })
   @UseInterceptors(new TransformInterceptor(UserSchema))
   getThis(@Context() context: ContextDto): Promise<UserModel> {
@@ -50,6 +59,7 @@ export class UserController {
   }
 
   @Get('/:id')
+  @ApiOperation({ summary: 'Получить пользователя' })
   @ApiOkResponse({ type: UserSchema })
   @UseInterceptors(new TransformInterceptor(UserSchema))
   getOneById(@Param('id', ParseIntPipe) id: number): Promise<UserModel> {
@@ -59,6 +69,7 @@ export class UserController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
+      type: 'object',
       properties: {
         imageFile: {
           type: 'string',
@@ -67,6 +78,7 @@ export class UserController {
       },
     },
   })
+  @ApiOperation({ summary: 'Загрузить аватар пользователя' })
   @UseInterceptors(
     FileInterceptor('imageFile', multerImageOptions),
     new TransformInterceptor(UserSchema),
@@ -82,6 +94,7 @@ export class UserController {
   }
 
   @Put('/:id')
+  @ApiOperation({ summary: 'Обновить пользователя' })
   @ApiOkResponse({ type: UserSchema })
   @UseInterceptors(new TransformInterceptor(UserSchema))
   update(
@@ -93,6 +106,7 @@ export class UserController {
   }
 
   @ApiOkResponse()
+  @ApiOperation({ summary: 'Удалить пользователя' })
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(
@@ -105,6 +119,7 @@ export class UserController {
 
   @Roles(RoleEnum.ADMIN)
   @ApiOkResponse()
+  @ApiOperation({ summary: 'Восстановить пользователя' })
   @Post('/:id/restore')
   @HttpCode(HttpStatus.NO_CONTENT)
   async restore(@Param('id', ParseIntPipe) id: number) {

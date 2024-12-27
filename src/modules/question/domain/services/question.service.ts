@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SaveQuestionDto } from '../dtos/save-question.dto';
 import { ExistQuestionDto } from '../dtos/exist-question.dto';
 import { SearchQuestionDto } from '../dtos/search-question.dto';
@@ -27,6 +20,10 @@ import { IQuestionViewRepository } from '../interfaces/i-question-view-repositor
 import { IQuestionRatingRepository } from '../interfaces/i-question-rating-repository';
 import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
 import { EventEnum } from '../../../global/domain/enums/event.enum';
+import { BadRequestException } from '../../../global/domain/exceptions/bad-request.exception';
+import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
+import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
+import { ConflictException } from '../../../global/domain/exceptions/conflict.exception';
 
 @Injectable()
 export class QuestionService {
@@ -70,17 +67,9 @@ export class QuestionService {
   }
 
   async create(authorId: number, dto: SaveQuestionDto): Promise<QuestionModel> {
-    const tags: TagModel[] = [];
-    for (const tagName of dto.tagNames) {
-      let tagEntity = await this.tagService.getOneBy({ name: tagName });
-      if (!tagEntity) {
-        tagEntity = await this.tagService.create({ name: tagName });
-      }
-      tags.push(tagEntity);
-    }
     return this.questionRepository.create({
       ...dto,
-      tags,
+      tags: await this.tagService.createOrGetByNames(dto.tagNames),
       authorId,
     });
   }
@@ -92,7 +81,20 @@ export class QuestionService {
   ): Promise<QuestionModel> {
     await this.throwNotFoundExceptionIfNotExist({ id });
     await this.throwForbiddenExceptionIfNotBelong(userId, id);
-    return this.questionRepository.update(id, dto);
+    let partialQuestionModel: Partial<QuestionModel>;
+    if (dto.tagNames) {
+      const tags = await this.tagService.createOrGetByNames(dto.tagNames);
+      delete dto.tagNames;
+      partialQuestionModel = {
+        ...dto,
+        tags,
+      };
+    } else {
+      partialQuestionModel = {
+        ...dto,
+      };
+    }
+    return this.questionRepository.update(id, partialQuestionModel);
   }
 
   async delete(context: ContextDto, id: number): Promise<void> {
@@ -118,7 +120,7 @@ export class QuestionService {
     const fileIdsForDelete: number[] = questionEntity.images?.map(
       (file) => file.id,
     );
-    questionEntity = await this.update(id, context.userId, {
+    questionEntity = await this.update(context.userId, id, {
       images: await Promise.all(
         imageFiles.map(async (file) => await this.fileService.create(file)),
       ),
@@ -141,7 +143,7 @@ export class QuestionService {
 
   async throwNotFoundExceptionIfNotExist(dto: ExistQuestionDto) {
     if (!(await this.existBy(dto))) {
-      throw new NotFoundException();
+      throw new NotFoundException('ddd');
     }
   }
 
@@ -189,7 +191,7 @@ export class QuestionService {
       questionId: dto.questionId,
       userId: dto.userId,
     });
-    if (favorite) {
+    if (!favorite) {
       throw new NotFoundException('Вопрос не найден в избранном');
     }
     await this.questionFavoriteRepository.delete(dto);

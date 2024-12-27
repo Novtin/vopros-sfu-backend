@@ -10,7 +10,7 @@ export interface IQuestionRepository {
   create(dto: CreateQuestionDto): Promise<QuestionModel>;
   getOneBy(dto: Partial<QuestionModel>): Promise<QuestionModel>;
   existBy(dto: ExistQuestionDto): Promise<boolean>;
-  update(id: number, dto: UpdateQuestionDto): Promise<QuestionModel>;
+  update(id: number, dto: Partial<QuestionModel>): Promise<QuestionModel>;
   search(dto: SearchQuestionDto): Promise<[QuestionModel[], number]>;
   getCountQuestions(): Promise<number>;
   delete(id: number): Promise<void>;

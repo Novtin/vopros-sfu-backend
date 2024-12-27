@@ -9,9 +9,9 @@ import { ViewNotificationDto } from '../../domain/dtos/view-notification.dto';
 export class NotificationEventService {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @OnEvent(EventEnum.SEND_NOTIFICATION)
+  @OnEvent(EventEnum.CREATE_NOTIFICATION)
   async onSendNotification(dto: SaveNotificationDto) {
-    await this.notificationService.send(dto);
+    await this.notificationService.createAndSend(dto);
   }
 
   @OnEvent(EventEnum.VIEW_NOTIFICATION)

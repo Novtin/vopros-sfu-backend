@@ -1,22 +1,21 @@
 import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
 import { NotificationService } from '../../domain/services/notification.service';
 import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { NotificationModel } from '../../domain/models/notification.model';
 import { SearchNotificationDto } from '../../domain/dtos/search-notification.dto';
 import { NotificationSchema } from '../schemas/notification.schema';
+import { ApiOkPagination } from '../../../global/infrastructure/decorators/api-ok-pagination';
 
 @Authorized()
-@ApiTags('notification')
+@ApiTags('Уведомления')
 @Controller('notification')
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @ApiOkResponse({
-    type: NotificationSchema,
-    isArray: true,
-  })
+  @ApiOkPagination({ type: NotificationSchema })
+  @ApiOperation({ summary: 'Получить уведомления' })
   @UseInterceptors(new TransformInterceptor(NotificationSchema))
   @Get()
   search(

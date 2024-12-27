@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserModel } from '../models/user.model';
 import { ExistUserDto } from '../dtos/exist-user.dto';
 import { SaveUserDto } from '../dtos/save-user.dto';
@@ -15,6 +8,10 @@ import { IUserRepository } from '../interfaces/i-user-repository';
 import { SearchUserDto } from '../dtos/search-user.dto';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { RoleEnum } from '../enum/role.enum';
+import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
+import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
+import { BadRequestException } from '../../../global/domain/exceptions/bad-request.exception';
+import { UnprocessableEntityException } from '../../../global/domain/exceptions/unprocessable-entity.exception';
 
 @Injectable()
 export class UserService {
@@ -83,7 +80,6 @@ export class UserService {
     let userEntity: UserModel = await this.getOneBy({ id });
     const fileIdForDelete: number = userEntity.avatarId;
     userEntity = await this.update(userEntity.id, {
-      ...userEntity,
       avatarId: (await this.fileService.create(avatarFile)).id,
     });
     if (fileIdForDelete) {

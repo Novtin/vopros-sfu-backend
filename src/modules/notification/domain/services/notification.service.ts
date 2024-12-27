@@ -1,18 +1,19 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { INotificationRepository } from '../interfaces/i-notification-repository';
 import { SaveNotificationDto } from '../dtos/save-notification.dto';
 import { NotificationModel } from '../models/notification.model';
 import { SearchNotificationDto } from '../dtos/search-notification.dto';
 import { ViewNotificationDto } from '../dtos/view-notification.dto';
-import { INotificationGateway } from '../interfaces/i-notification-gateway';
+import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
+import { EventEnum } from '../../../global/domain/enums/event.enum';
 
 @Injectable()
 export class NotificationService {
   constructor(
     @Inject(INotificationRepository)
     private readonly notificationRepository: INotificationRepository,
-    @Inject(forwardRef(() => INotificationGateway))
-    private readonly notificationGateway: INotificationGateway,
+    @Inject(IEventEmitterService)
+    private readonly eventEmitterService: IEventEmitterService,
   ) {}
 
   private create(dto: SaveNotificationDto): Promise<NotificationModel> {
@@ -27,9 +28,9 @@ export class NotificationService {
     await this.notificationRepository.view(dto);
   }
 
-  async send(dto: SaveNotificationDto): Promise<void> {
+  async createAndSend(dto: SaveNotificationDto): Promise<void> {
     const notification = await this.create(dto);
-    this.notificationGateway.send(notification);
+    this.eventEmitterService.emit(EventEnum.SEND_NOTIFICATION, notification);
   }
 
   async deleteOld() {

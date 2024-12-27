@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { QuestionModel } from '../../domain/models/question.model';
 import { SearchQuestionDto } from '../../domain/dtos/search-question.dto';
 import { ExistQuestionDto } from '../../domain/dtos/exist-question.dto';
-import { UpdateQuestionDto } from '../../domain/dtos/update-question.dto';
 import { CreateQuestionDto } from '../../domain/dtos/create-question.dto';
 import { FilterQuestionEnum } from '../../domain/enums/filter-question.enum';
 import { IQuestionRepository } from '../../domain/interfaces/i-question-repository';
@@ -23,28 +22,32 @@ export class QuestionRepository implements IQuestionRepository {
   }
 
   async getOneBy(dto: Partial<QuestionModel>): Promise<QuestionModel> {
-    return this.dbRepository
-      .createQueryBuilder('question')
-      .leftJoinAndSelect('question.tags', 'tags')
-      .leftJoinAndSelect('question.author', 'question_author')
-      .leftJoinAndSelect('question.answers', 'answers')
-      .leftJoinAndSelect('answers.author', 'answer_author')
-      .leftJoinAndSelect('answer_author.avatar', 'answer_author_avatar')
-      .leftJoinAndSelect('question.views', 'views')
-      .leftJoinAndSelect('question.images', 'images')
-      .leftJoinAndSelect('question.rating', 'rating')
-      .leftJoinAndSelect('question_author.avatar', 'question_author_avatar')
-      .where(dto)
-      .limit(1)
-      .getOne();
+    return this.dbRepository.findOne({
+      where: { ...dto },
+      relations: [
+        'tags',
+        'author',
+        'answers',
+        'answers.author',
+        'answers.author.avatar',
+        'views',
+        'images',
+        'rating',
+        'author.avatar',
+      ],
+    });
   }
 
   existBy(dto: ExistQuestionDto): Promise<boolean> {
     return this.dbRepository.existsBy({ ...dto });
   }
 
-  async update(id: number, dto: UpdateQuestionDto): Promise<QuestionModel> {
-    await this.dbRepository.update(id, dto);
+  async update(
+    id: number,
+    dto: Partial<QuestionModel>,
+  ): Promise<QuestionModel> {
+    await this.dbRepository.save({ id, ...dto });
+    console.log(await this.getOneBy({ id }));
     return this.getOneBy({ id });
   }
 

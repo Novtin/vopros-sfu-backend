@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  StreamableFile,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SaveFileDto } from '../dtos/save-file.dto';
 import { SearchFileDto } from '../dtos/search-file.dto';
 import { ExistQuestionDto } from '../../../question/domain/dtos/exist-question.dto';
@@ -13,6 +8,7 @@ import * as process from 'process';
 import * as fs from 'fs';
 import { IFileRepository } from '../interfaces/i-file-repository';
 import { FileModel } from '../models/file.model';
+import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
 
 @Injectable()
 export class FileService {
@@ -35,15 +31,14 @@ export class FileService {
     return this.fileRepository.getOneBy(dto);
   }
 
-  async getFileById(id: number) {
+  async getReadStreamByFileId(id: number) {
     const fileModel: FileModel = await this.getOneBy({ id });
     const path: string = join(
       ...process.env.FILE_SAVE_PATH.split('/'),
       fileModel.name,
     );
     if (fs.existsSync(path)) {
-      const imageStream = fs.createReadStream(path);
-      return new StreamableFile(imageStream);
+      return fs.createReadStream(path);
     } else {
       throw new NotFoundException();
     }

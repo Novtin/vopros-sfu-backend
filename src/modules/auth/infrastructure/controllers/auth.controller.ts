@@ -1,5 +1,5 @@
 import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { UserModel } from '../../../user/domain/models/user.model';
 import { RegisterDto } from '../../domain/dtos/register.dto';
@@ -11,7 +11,7 @@ import { RefreshJwtDto } from '../../domain/dtos/refresh-jwt.dto';
 import { ConfirmEmailDto } from '../../domain/dtos/confirm-email.dto';
 import { JwtSchema } from '../schemas/jwt.schema';
 
-@ApiTags('auth')
+@ApiTags('Аутентификация')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -19,6 +19,7 @@ export class AuthController {
   @ApiOkResponse({
     type: JwtSchema,
   })
+  @ApiOperation({ summary: 'Войти' })
   @UseInterceptors(new TransformInterceptor(JwtSchema))
   @Post('login')
   login(@Body() loginDto: LoginDto): Promise<JwtDto> {
@@ -28,6 +29,7 @@ export class AuthController {
   @ApiOkResponse({
     type: UserSchema,
   })
+  @ApiOperation({ summary: 'Зарегистрироваться' })
   @UseInterceptors(new TransformInterceptor(UserSchema))
   @Post('register')
   register(@Body() registerDto: RegisterDto): Promise<UserModel> {
@@ -37,6 +39,7 @@ export class AuthController {
   @ApiOkResponse({
     type: Boolean,
   })
+  @ApiOperation({ summary: 'Подтвердить электронную почту после регистрации' })
   @Post('confirm-email')
   confirmEmail(@Body() dto: ConfirmEmailDto) {
     return this.authService.confirmEmail(dto.emailHash);
@@ -45,6 +48,7 @@ export class AuthController {
   @ApiOkResponse({
     type: JwtSchema,
   })
+  @ApiOperation({ summary: 'Обновить JWT' })
   @UseInterceptors(new TransformInterceptor(JwtSchema))
   @Post('refresh')
   refresh(@Body() refreshDto: RefreshJwtDto): Promise<JwtDto> {

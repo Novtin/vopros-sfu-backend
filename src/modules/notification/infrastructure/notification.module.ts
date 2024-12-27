@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { INotificationRepository } from '../domain/interfaces/i-notification-repository';
 import { NotificationRepository } from './repositories/notification-repository';
-import { INotificationGateway } from '../domain/interfaces/i-notification-gateway';
 import { NotificationGateway } from './gateways/notification.gateway';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationEntity } from './entities/notification.entity';
@@ -21,10 +20,6 @@ import { INotificationMailerService } from '../domain/interfaces/i-notification-
       useClass: NotificationRepository,
     },
     {
-      provide: INotificationGateway,
-      useClass: NotificationGateway,
-    },
-    {
       provide: INotificationMailerService,
       useExisting: MailerService,
     },
@@ -32,6 +27,7 @@ import { INotificationMailerService } from '../domain/interfaces/i-notification-
     NotificationCronService,
     NotificationEventService,
     NotificationMailEventService,
+    NotificationGateway,
   ],
   controllers: [NotificationController],
   exports: [NotificationService],
