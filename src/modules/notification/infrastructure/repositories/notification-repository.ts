@@ -3,7 +3,7 @@ import { INotificationRepository } from '../../domain/interfaces/i-notification-
 import { SaveNotificationDto } from '../../domain/dtos/save-notification.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotificationEntity } from '../entities/notification.entity';
-import { LessThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { NotificationModel } from '../../domain/models/notification.model';
 import { SearchNotificationDto } from '../../domain/dtos/search-notification.dto';
 import { ViewNotificationDto } from '../../domain/dtos/view-notification.dto';

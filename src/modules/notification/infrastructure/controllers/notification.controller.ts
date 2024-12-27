@@ -1,5 +1,5 @@
 import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
 import { NotificationService } from '../../domain/services/notification.service';
 import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';

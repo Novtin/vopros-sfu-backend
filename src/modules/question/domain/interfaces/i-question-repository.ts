@@ -1,7 +1,6 @@
 import { CreateQuestionDto } from '../dtos/create-question.dto';
 import { QuestionModel } from '../models/question.model';
 import { ExistQuestionDto } from '../dtos/exist-question.dto';
-import { UpdateQuestionDto } from '../dtos/update-question.dto';
 import { SearchQuestionDto } from '../dtos/search-question.dto';
 
 export const IQuestionRepository = 'IQuestionRepository';

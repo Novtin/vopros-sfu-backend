@@ -1,8 +1,4 @@
-import {
-  BaseExceptionFilter,
-  HttpAdapterHost,
-  NestFactory,
-} from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';

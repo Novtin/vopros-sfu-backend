@@ -6,7 +6,6 @@ import { QuestionModel } from '../models/question.model';
 import { UpdateQuestionDto } from '../dtos/update-question.dto';
 import { FileService } from '../../../file/domain/services/file.service';
 import { TagService } from '../../../tag/domain/services/tag.service';
-import { TagModel } from '../../../tag/domain/models/tag.model';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { RoleEnum } from '../../../user/domain/enum/role.enum';
 import { CreateQuestionViewDto } from '../dtos/create-question-view.dto';
