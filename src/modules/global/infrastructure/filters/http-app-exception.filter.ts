@@ -11,6 +11,7 @@ import {
 import { AppException } from '../../domain/exceptions/app-exception';
 import { ExceptionEnum } from '../../domain/enums/exception.enum';
 import { BaseExceptionFilter } from '@nestjs/core';
+import { HttpException } from '@nestjs/common/exceptions/http.exception';
 
 @Catch(AppException)
 export class HttpAppExceptionFilter
@@ -18,25 +19,29 @@ export class HttpAppExceptionFilter
   implements ExceptionFilter
 {
   catch(exception: AppException, host: ArgumentsHost) {
-    try {
-      switch (exception.type) {
-        case ExceptionEnum.FORBIDDEN:
-          throw new ForbiddenException(exception.message);
-        case ExceptionEnum.NOT_FOUND:
-          throw new NotFoundException(exception.message);
-        case ExceptionEnum.BAD_REQUEST:
-          throw new BadRequestException(exception.message);
-        case ExceptionEnum.CONFLICT:
-          throw new ConflictException(exception.message);
-        case ExceptionEnum.UNAUTHORIZED:
-          throw new UnauthorizedException(exception.message);
-        case ExceptionEnum.UNPROCESSABLE_ENTITY:
-          throw new UnauthorizedException(exception.message);
-        default:
-          throw exception;
-      }
-    } catch (error) {
-      super.catch(error, host);
+    let httpException: HttpException;
+    switch (exception.type) {
+      case ExceptionEnum.FORBIDDEN:
+        httpException = new ForbiddenException(exception.message);
+        break;
+      case ExceptionEnum.NOT_FOUND:
+        httpException = new NotFoundException(exception.message);
+        break;
+      case ExceptionEnum.BAD_REQUEST:
+        httpException = new BadRequestException(exception.message);
+        break;
+      case ExceptionEnum.CONFLICT:
+        httpException = new ConflictException(exception.message);
+        break;
+      case ExceptionEnum.UNAUTHORIZED:
+        httpException = new UnauthorizedException(exception.message);
+        break;
+      case ExceptionEnum.UNPROCESSABLE_ENTITY:
+        httpException = new UnauthorizedException(exception.message);
+        break;
+      default:
+        throw exception;
     }
+    super.catch(httpException, host);
   }
 }
