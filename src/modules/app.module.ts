@@ -15,12 +15,20 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationModule } from './notification/infrastructure/notification.module';
 import { GlobalModule } from './global/infrastructure/global.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import fileLocalConfig from '../config/file-local.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [typeOrmConfig, jwtConfig, httpConfig, mailerConfig, redisConfig],
+      load: [
+        typeOrmConfig,
+        jwtConfig,
+        httpConfig,
+        mailerConfig,
+        redisConfig,
+        fileLocalConfig,
+      ],
       envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({

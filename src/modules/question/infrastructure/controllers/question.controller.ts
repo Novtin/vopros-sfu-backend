@@ -34,6 +34,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../../config/multer-image.config';
 import { RatingDto } from '../../../global/domain/dtos/rating.dto';
 import { ApiOkPagination } from '../../../global/infrastructure/decorators/api-ok-pagination';
+import { QuestionCountSchema } from '../schemas/question-count.schema';
+import { IQuestionCount } from '../../domain/interfaces/i-question-count';
 
 @ApiTags('Вопрос')
 @Authorized()
@@ -77,11 +79,12 @@ export class QuestionController {
   }
 
   @ApiOkResponse({
-    type: Number,
+    type: QuestionCountSchema,
   })
+  @UseInterceptors(new TransformInterceptor(QuestionCountSchema))
   @ApiOperation({ summary: 'Получить количество вопросов' })
   @Get('/count')
-  getCountQuestions(): Promise<number> {
+  getCountQuestions(): Promise<IQuestionCount> {
     return this.questionService.getCountQuestions();
   }
 

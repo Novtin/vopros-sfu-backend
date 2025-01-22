@@ -9,15 +9,19 @@ import * as fs from 'fs';
 import { IFileRepository } from '../interfaces/i-file-repository';
 import { FileModel } from '../models/file.model';
 import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
+import { IFileLocalRepository } from '../interfaces/i-file-local-repository';
+import { IFile } from '../interfaces/i-file';
 
 @Injectable()
 export class FileService {
   constructor(
     @Inject(IFileRepository)
     private readonly fileRepository: IFileRepository,
+    @Inject(IFileLocalRepository)
+    private readonly fileLocalRepository: IFileLocalRepository,
   ) {}
 
-  create(file: Express.Multer.File): Promise<FileModel> {
+  create(file: IFile): Promise<FileModel> {
     const dto: SaveFileDto = {
       name: file.filename,
       size: file.size,
@@ -46,9 +50,7 @@ export class FileService {
 
   async delete(id: number): Promise<void> {
     const fileModel = await this.getOneBy({ id });
-    fs.unlink(join('src/files', fileModel.name), (error) => {
-      console.error(error);
-    });
+    this.fileLocalRepository.delete(fileModel.name);
     await this.fileRepository.delete(id);
   }
 

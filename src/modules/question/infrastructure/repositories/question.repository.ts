@@ -8,6 +8,7 @@ import { CreateQuestionDto } from '../../domain/dtos/create-question.dto';
 import { FilterQuestionEnum } from '../../domain/enums/filter-question.enum';
 import { IQuestionRepository } from '../../domain/interfaces/i-question-repository';
 import { QuestionEntity } from '../entities/question.entity';
+import { IQuestionCount } from '../../domain/interfaces/i-question-count';
 
 @Injectable()
 export class QuestionRepository implements IQuestionRepository {
@@ -145,8 +146,8 @@ export class QuestionRepository implements IQuestionRepository {
     return query.getManyAndCount();
   }
 
-  async getCountQuestions() {
-    return await this.dbRepository.count();
+  async getCountQuestions(): Promise<IQuestionCount> {
+    return { count: await this.dbRepository.count() };
   }
 
   async delete(id: number) {
