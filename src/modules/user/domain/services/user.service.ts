@@ -12,13 +12,21 @@ import { NotFoundException } from '../../../global/domain/exceptions/not-found.e
 import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
 import { BadRequestException } from '../../../global/domain/exceptions/bad-request.exception';
 import { UnprocessableEntityException } from '../../../global/domain/exceptions/unprocessable-entity.exception';
+import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
+import { EventEnum } from '../../../global/domain/enums/event.enum';
+import { IHashService } from '../../../auth/domain/interfaces/i-hash-service';
+import { ConfirmPasswordResetUserDto } from '../dtos/confirm-password-reset-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(IUserRepository)
     private readonly userRepository: IUserRepository,
+    @Inject(IEventEmitterService)
+    private readonly eventEmitterService: IEventEmitterService,
     private readonly fileService: FileService,
+    @Inject(IHashService)
+    private readonly hashService: IHashService,
   ) {}
 
   async getOneBy(dto: Partial<UserModel>): Promise<UserModel> {
@@ -42,7 +50,7 @@ export class UserService {
     }
   }
 
-  async update(id: number, dto: UpdateUserDto) {
+  async update(id: number, dto: Partial<UserModel>) {
     await this.throwNotFoundExceptionIfNotExist({ id });
     return this.userRepository.update(id, dto);
   }
@@ -99,5 +107,30 @@ export class UserService {
 
   async restore(id: number) {
     await this.userRepository.restore(id);
+  }
+
+  async requestPasswordReset(context: ContextDto) {
+    const newEmailHash = await this.hashService.makeHash(context.email);
+    const updatedUser = await this.userRepository.update(context.userId, {
+      emailHash: newEmailHash,
+    });
+    this.eventEmitterService.emit(EventEnum.RESET_PASSWORD_USER, {
+      email: updatedUser.email,
+      emailHash: updatedUser.emailHash,
+    });
+  }
+
+  async confirmPasswordReset(dto: ConfirmPasswordResetUserDto) {
+    await this.throwNotFoundExceptionIfNotExist({ emailHash: dto.emailHash });
+
+    const newPasswordHash = await this.hashService.makeHash(dto.password);
+
+    const user = await this.userRepository.getOneBy({
+      emailHash: dto.emailHash,
+    });
+
+    await this.update(user.id, {
+      passwordHash: newPasswordHash,
+    });
   }
 }

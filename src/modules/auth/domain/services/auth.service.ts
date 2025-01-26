@@ -4,7 +4,6 @@ import { TokenService } from './token.service';
 import { JwtDto } from '../dtos/jwt.dto';
 import { UserModel } from '../../../user/domain/models/user.model';
 import { LoginDto } from '../dtos/login.dto';
-import { HashService } from './hash.service';
 import { IJwtPayload } from '../interfaces/i-jwt-payload-interface';
 import { RegisterDto } from '../dtos/register.dto';
 import { RefreshJwtDto } from '../dtos/refresh-jwt.dto';
@@ -15,6 +14,7 @@ import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-
 import { EventEnum } from '../../../global/domain/enums/event.enum';
 import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
 import { UnauthorizedException } from '../../../global/domain/exceptions/unauthorized.exception';
+import { IHashService } from '../interfaces/i-hash-service';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +23,8 @@ export class AuthService {
     private readonly eventEmitterService: IEventEmitterService,
     private readonly userService: UserService,
     private readonly roleService: RoleService,
-    private readonly hashService: HashService,
+    @Inject(IHashService)
+    private readonly hashService: IHashService,
     private readonly tokenService: TokenService,
   ) {}
 

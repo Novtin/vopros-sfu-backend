@@ -9,7 +9,7 @@ export const IUserRepository = 'IUserRepository';
 export interface IUserRepository {
   existBy(dto: ExistUserDto): Promise<boolean>;
   create(dto: SaveUserDto): Promise<UserModel>;
-  update(id: number, dto: UpdateUserDto): Promise<UserModel>;
+  update(id: number, dto: Partial<UserModel>): Promise<UserModel>;
   existBy(dto: ExistUserDto): Promise<boolean>;
   confirmEmail(id: number): Promise<UserModel>;
   getOneBy(dto: Partial<UserModel>): Promise<UserModel>;

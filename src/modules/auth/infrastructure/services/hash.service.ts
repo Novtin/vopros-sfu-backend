@@ -1,9 +1,10 @@
 import * as argon from 'argon2';
 import { randomBytes } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
+import { IHashService } from '../../domain/interfaces/i-hash-service';
 
 @Injectable()
-export class HashService {
+export class HashService implements IHashService {
   async compareTextAndHash(plainText: string, hash: string): Promise<boolean> {
     return argon.verify(hash, plainText);
   }

@@ -8,9 +8,9 @@ import { IJwtPayload } from '../../modules/auth/domain/interfaces/i-jwt-payload-
 import { RoleEnum } from '../../modules/user/domain/enum/role.enum';
 import { JwtDto } from '../../modules/auth/domain/dtos/jwt.dto';
 import { TokenEnum } from '../../modules/auth/domain/enums/token.enum';
-import { UnauthorizedException } from '@nestjs/common';
 import { IJwtService } from '../../modules/auth/domain/interfaces/i-jwt-service';
 import { IConfigService } from '../../modules/global/domain/interfaces/i-config-service';
+import { UnauthorizedException } from '../../modules/global/domain/exceptions/unauthorized.exception';
 
 describe('TokenService', () => {
   let tokenService: TokenService;

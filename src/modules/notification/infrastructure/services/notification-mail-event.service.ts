@@ -20,14 +20,33 @@ export class NotificationMailEventService {
   }): Promise<void> {
     const params = new URLSearchParams();
     params.set('emailHash', encodeURIComponent(payload.emailHash));
-    const confirmationUrl = `${this.configService.get('http.frontendUrl')}/confirm-email?${params.toString()}`;
+    const confirmMailUrl = `${this.configService.get('http.frontendUrl')}/confirm-email?${params.toString()}`;
     await this.mailerService.sendMail({
       from: this.configService.get('mailer.default.from'),
       to: payload.email,
       subject: 'Подтверждение почты',
       template: './confirmation',
       context: {
-        confirmationUrl,
+        confirmMailUrl,
+      },
+    });
+  }
+
+  @OnEvent(EventEnum.RESET_PASSWORD_USER)
+  async onResetPasswordUser(payload: {
+    email: string;
+    emailHash: string;
+  }): Promise<void> {
+    const params = new URLSearchParams();
+    params.set('emailHash', encodeURIComponent(payload.emailHash));
+    const resetPasswordUrl = `${this.configService.get('http.frontendUrl')}/reset-password?${params.toString()}`;
+    await this.mailerService.sendMail({
+      from: this.configService.get('mailer.default.from'),
+      to: payload.email,
+      subject: 'Обновление пароля',
+      template: './reset-password',
+      context: {
+        resetPasswordUrl,
       },
     });
   }

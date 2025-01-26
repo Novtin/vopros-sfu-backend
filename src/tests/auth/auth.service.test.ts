@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../../modules/auth/domain/services/auth.service';
 import { UserService } from '../../modules/user/domain/services/user.service';
 import { TokenService } from '../../modules/auth/domain/services/token.service';
-import { HashService } from '../../modules/auth/domain/services/hash.service';
+import { HashService } from '../../modules/auth/infrastructure/services/hash.service';
 import { RoleService } from '../../modules/user/domain/services/role.service';
 import { LoginDto } from '../../modules/auth/domain/dtos/login.dto';
 import { UserModel } from '../../modules/user/domain/models/user.model';
@@ -16,12 +15,15 @@ import { IJwtPayload } from '../../modules/auth/domain/interfaces/i-jwt-payload-
 import { RoleModel } from '../../modules/user/domain/models/role.model';
 import { IEventEmitterService } from '../../modules/global/domain/interfaces/i-event-emitter-service';
 import { IConfigService } from '../../modules/global/domain/interfaces/i-config-service';
+import { IHashService } from '../../modules/auth/domain/interfaces/i-hash-service';
+import { ForbiddenException } from '../../modules/global/domain/exceptions/forbidden.exception';
+import { UnauthorizedException } from '../../modules/global/domain/exceptions/unauthorized.exception';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let userService: UserService;
   let tokenService: TokenService;
-  let hashService: HashService;
+  let hashService: IHashService;
   let roleService: RoleService;
   let configService: IConfigService;
   let eventEmitterService: IEventEmitterService;
@@ -60,7 +62,7 @@ describe('AuthService', () => {
         AuthService,
         { provide: UserService, useValue: mockUserService },
         { provide: TokenService, useValue: mockTokenService },
-        { provide: HashService, useValue: mockHashService },
+        { provide: IHashService, useValue: mockHashService },
         { provide: RoleService, useValue: mockRoleService },
         { provide: IEventEmitterService, useValue: mockEventEmitterService },
         { provide: IConfigService, useValue: mockConfigService },
@@ -70,7 +72,7 @@ describe('AuthService', () => {
     authService = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
     tokenService = module.get<TokenService>(TokenService);
-    hashService = module.get<HashService>(HashService);
+    hashService = module.get<IHashService>(IHashService);
     roleService = module.get<RoleService>(RoleService);
     eventEmitterService =
       module.get<IEventEmitterService>(IEventEmitterService);

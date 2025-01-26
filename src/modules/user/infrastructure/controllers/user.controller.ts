@@ -35,6 +35,7 @@ import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
 import { Roles } from '../../../auth/infrastructure/decorators/roles.decorator';
 import { RoleEnum } from '../../domain/enum/role.enum';
 import { ApiOkPagination } from '../../../global/infrastructure/decorators/api-ok-pagination';
+import { ConfirmPasswordResetUserDto } from '../../domain/dtos/confirm-password-reset-user.dto';
 
 @Authorized()
 @Controller('/user')
@@ -56,6 +57,22 @@ export class UserController {
   @UseInterceptors(new TransformInterceptor(UserSchema))
   getThis(@Context() context: ContextDto): Promise<UserModel> {
     return this.userService.getOneBy({ id: context.userId });
+  }
+
+  @Put('/confirm-password')
+  @ApiOperation({ summary: 'Подтвердить обновления пароля пользователя' })
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  confirmPasswordReset(@Body() dto: ConfirmPasswordResetUserDto) {
+    return this.userService.confirmPasswordReset(dto);
+  }
+
+  @Put('/request-password')
+  @ApiOperation({ summary: 'Запросить обновления пароля пользователя' })
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  requestPasswordReset(@Context() context: ContextDto) {
+    return this.userService.requestPasswordReset(context);
   }
 
   @Get('/:id')
