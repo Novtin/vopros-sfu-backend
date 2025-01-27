@@ -9,10 +9,12 @@ import { AuthService } from '../domain/services/auth.service';
 import { RolesAuthGuard } from './guards/roles-auth.guard';
 import { IJwtService } from '../domain/interfaces/i-jwt-service';
 import { IHashService } from '../domain/interfaces/i-hash-service';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Global()
 @Module({
-  imports: [forwardRef(() => UserModule), JwtModule],
+  imports: [forwardRef(() => UserModule), JwtModule, PassportModule],
   controllers: [AuthController],
   providers: [
     {
@@ -24,6 +26,7 @@ import { IHashService } from '../domain/interfaces/i-hash-service';
       useClass: HashService,
     },
     JwtAuthGuard,
+    JwtStrategy,
     TokenService,
     AuthService,
     RolesAuthGuard,

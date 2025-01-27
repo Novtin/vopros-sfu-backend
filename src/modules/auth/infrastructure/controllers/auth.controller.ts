@@ -1,4 +1,11 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserModel } from '../../../user/domain/models/user.model';
 import { RegisterDto } from '../../domain/dtos/register.dto';
@@ -16,19 +23,14 @@ import { Transform } from '../../../global/infrastructure/decorators/transform';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOkResponse({
-    type: JwtSchema,
-  })
   @ApiOperation({ summary: 'Войти' })
   @Transform(JwtSchema)
+  @UseGuards()
   @Post('login')
-  login(@Body() loginDto: LoginDto): Promise<JwtDto> {
-    return this.authService.login(loginDto);
+  login(@Body() dto: LoginDto): Promise<JwtDto> {
+    return this.authService.login(dto);
   }
 
-  @ApiOkResponse({
-    type: UserSchema,
-  })
   @ApiOperation({ summary: 'Зарегистрироваться' })
   @Transform(UserSchema)
   @Post('register')
@@ -36,18 +38,14 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-  @ApiOkResponse({
-    type: Boolean,
-  })
+  @ApiOkResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Подтвердить электронную почту после регистрации' })
   @Post('confirm-email')
-  confirmEmail(@Body() dto: ConfirmEmailDto) {
+  confirmEmail(@Body() dto: ConfirmEmailDto): Promise<void> {
     return this.authService.confirmEmail(dto.emailHash);
   }
 
-  @ApiOkResponse({
-    type: JwtSchema,
-  })
   @ApiOperation({ summary: 'Обновить JWT' })
   @Transform(JwtSchema)
   @Post('refresh')

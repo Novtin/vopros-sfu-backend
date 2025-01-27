@@ -1,38 +1,22 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { UserService } from '../../../user/domain/services/user.service';
-import { TokenService } from '../../domain/services/token.service';
-import { IJwtPayload } from '../../domain/interfaces/i-jwt-payload-interface';
-import { TokenEnum } from '../../domain/enums/token.enum';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { JWT_STRATEGY } from '../strategies/jwt.strategy';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
-  constructor(
-    private readonly userService: UserService,
-    private readonly tokenService: TokenService,
-  ) {}
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
-    if (req.headers.authorization) {
-      const payload: IJwtPayload = await this.tokenService.verify(
-        // Токен приходит в виде 'Bearer <JWT>'
-        req.headers.authorization.split(' ')[1],
-        TokenEnum.ACCESS,
-      );
-      if (payload) {
-        const isUserExistsByEmail: boolean = await this.userService.existBy({
-          email: payload.email,
-        });
-        if (isUserExistsByEmail) {
-          req.user = {
-            userId: payload.userId,
-            email: payload.email,
-            roles: payload.roles,
-          };
-          return true;
-        }
-      }
+export class JwtAuthGuard extends AuthGuard(JWT_STRATEGY) {
+  handleRequest<T>(
+    err: any,
+    user: any,
+    info: any,
+    context: ExecutionContext,
+  ): T {
+    if (err || !user) {
+      throw new UnauthorizedException('JWT недействителен или истёк');
     }
-    return false;
+    return user;
   }
 }
