@@ -14,7 +14,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from '../../domain/services/user.service';
-import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { UserSchema } from '../schemas/user.schema';
 import {
   ApiBody,
@@ -34,10 +33,9 @@ import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
 import { Roles } from '../../../auth/infrastructure/decorators/roles.decorator';
 import { RoleEnum } from '../../domain/enum/role.enum';
-import { ApiOkPagination } from '../../../global/infrastructure/decorators/api-ok-pagination';
 import { ConfirmPasswordResetUserDto } from '../../domain/dtos/confirm-password-reset-user.dto';
+import { Transform } from '../../../global/infrastructure/decorators/transform';
 
-@Authorized()
 @Controller('/user')
 @ApiTags('Пользователь')
 export class UserController {
@@ -45,16 +43,15 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: 'Получить пользователей' })
-  @ApiOkPagination({ type: UserDetailSchema })
-  @UseInterceptors(new TransformInterceptor(UserDetailSchema))
+  @Transform(UserDetailSchema, { pagination: true })
   search(@Query() dto: SearchUserDto) {
     return this.userService.search(dto);
   }
 
+  @Authorized()
   @Get('/this')
   @ApiOperation({ summary: 'Получить текущего пользователя' })
-  @ApiOkResponse({ type: UserSchema })
-  @UseInterceptors(new TransformInterceptor(UserSchema))
+  @Transform(UserSchema)
   getThis(@Context() context: ContextDto): Promise<UserModel> {
     return this.userService.getOneBy({ id: context.userId });
   }
@@ -67,6 +64,7 @@ export class UserController {
     return this.userService.confirmPasswordReset(dto);
   }
 
+  @Authorized()
   @Put('/request-password')
   @ApiOperation({ summary: 'Запросить обновления пароля пользователя' })
   @ApiOkResponse()
@@ -77,12 +75,12 @@ export class UserController {
 
   @Get('/:id')
   @ApiOperation({ summary: 'Получить пользователя' })
-  @ApiOkResponse({ type: UserSchema })
-  @UseInterceptors(new TransformInterceptor(UserSchema))
+  @Transform(UserSchema)
   getOneById(@Param('id', ParseIntPipe) id: number): Promise<UserModel> {
     return this.userService.getOneBy({ id });
   }
 
+  @Authorized()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -96,10 +94,8 @@ export class UserController {
     },
   })
   @ApiOperation({ summary: 'Загрузить аватар пользователя' })
-  @UseInterceptors(
-    FileInterceptor('imageFile', multerImageOptions),
-    new TransformInterceptor(UserSchema),
-  )
+  @UseInterceptors(FileInterceptor('imageFile', multerImageOptions))
+  @Transform(UserSchema)
   @Post('/:id/image')
   uploadAvatar(
     @Param('id', ParseIntPipe) id: number,
@@ -110,10 +106,10 @@ export class UserController {
     return this.userService.uploadAvatar(context.userId, imageFile);
   }
 
+  @Authorized()
   @Put('/:id')
   @ApiOperation({ summary: 'Обновить пользователя' })
-  @ApiOkResponse({ type: UserSchema })
-  @UseInterceptors(new TransformInterceptor(UserSchema))
+  @Transform(UserSchema)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateUserDto,
@@ -122,6 +118,7 @@ export class UserController {
     return this.userService.update(id, dto);
   }
 
+  @Authorized()
   @ApiOkResponse()
   @ApiOperation({ summary: 'Удалить пользователя' })
   @Delete('/:id')
@@ -135,6 +132,7 @@ export class UserController {
   }
 
   @Roles(RoleEnum.ADMIN)
+  @Authorized()
   @ApiOkResponse()
   @ApiOperation({ summary: 'Восстановить пользователя' })
   @Post('/:id/restore')

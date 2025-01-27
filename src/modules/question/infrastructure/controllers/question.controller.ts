@@ -21,7 +21,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { SaveQuestionDto } from '../../domain/dtos/save-question.dto';
 import { QuestionModel } from '../../domain/models/question.model';
 import { QuestionSchema } from '../schemas/question.schema';
@@ -33,21 +32,18 @@ import { Authorized } from '../../../auth/infrastructure/decorators/authorized.d
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../../config/multer-image.config';
 import { RatingDto } from '../../../global/domain/dtos/rating.dto';
-import { ApiOkPagination } from '../../../global/infrastructure/decorators/api-ok-pagination';
 import { QuestionCountSchema } from '../schemas/question-count.schema';
 import { IQuestionCount } from '../../domain/interfaces/i-question-count';
+import { Transform } from '../../../global/infrastructure/decorators/transform';
 
 @ApiTags('Вопрос')
-@Authorized()
 @Controller('question')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
-  @ApiOkResponse({
-    type: QuestionSchema,
-  })
+  @Authorized()
   @ApiOperation({ summary: 'Создать вопрос' })
-  @UseInterceptors(new TransformInterceptor(QuestionSchema))
+  @Transform(QuestionSchema)
   @Post()
   create(
     @Body() dto: SaveQuestionDto,
@@ -56,11 +52,9 @@ export class QuestionController {
     return this.questionService.create(context.userId, dto);
   }
 
-  @ApiOkResponse({
-    type: QuestionSchema,
-  })
+  @Authorized()
   @ApiOperation({ summary: 'Обновить вопрос' })
-  @UseInterceptors(new TransformInterceptor(QuestionSchema))
+  @Transform(QuestionSchema)
   @Put('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -70,18 +64,14 @@ export class QuestionController {
     return this.questionService.update(context.userId, id, dto);
   }
 
-  @ApiOkPagination({ type: QuestionSchema })
   @ApiOperation({ summary: 'Получить вопросы' })
-  @UseInterceptors(new TransformInterceptor(QuestionSchema))
+  @Transform(QuestionSchema, { pagination: true })
   @Get()
   search(@Query() dto: SearchQuestionDto) {
     return this.questionService.search(dto);
   }
 
-  @ApiOkResponse({
-    type: QuestionCountSchema,
-  })
-  @UseInterceptors(new TransformInterceptor(QuestionCountSchema))
+  @Transform(QuestionCountSchema)
   @ApiOperation({ summary: 'Получить количество вопросов' })
   @Get('/count')
   getCountQuestions(): Promise<IQuestionCount> {
@@ -90,8 +80,7 @@ export class QuestionController {
 
   @Get('/:id')
   @ApiOperation({ summary: 'Получить вопрос' })
-  @ApiOkResponse({ type: QuestionSchema })
-  @UseInterceptors(new TransformInterceptor(QuestionSchema))
+  @Transform(QuestionSchema)
   async getOneById(
     @Param('id', ParseIntPipe) id: number,
     @Context() context: ContextDto,
@@ -99,6 +88,7 @@ export class QuestionController {
     return this.questionService.getOneById(id, context.userId);
   }
 
+  @Authorized()
   @ApiOkResponse()
   @ApiOperation({ summary: 'Удалить вопрос' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -110,6 +100,7 @@ export class QuestionController {
     await this.questionService.delete(context, id);
   }
 
+  @Authorized()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -126,10 +117,8 @@ export class QuestionController {
     },
   })
   @ApiOperation({ summary: 'Загрузить изображения к вопросу' })
-  @UseInterceptors(
-    FilesInterceptor('imageFiles', 5, multerImageOptions),
-    new TransformInterceptor(QuestionSchema),
-  )
+  @UseInterceptors(FilesInterceptor('imageFiles', 5, multerImageOptions))
+  @Transform(QuestionSchema)
   @Post('/:id/images')
   async uploadImages(
     @Param('id', ParseIntPipe) id: number,
@@ -139,9 +128,9 @@ export class QuestionController {
     return this.questionService.uploadImages(context, id, imageFiles);
   }
 
-  @ApiOkResponse({ type: QuestionSchema })
+  @Authorized()
   @ApiOperation({ summary: 'Оценить вопрос' })
-  @UseInterceptors(new TransformInterceptor(QuestionSchema))
+  @Transform(QuestionSchema)
   @Post('/:id/rate')
   rate(
     @Param('id', ParseIntPipe) id: number,
@@ -155,6 +144,7 @@ export class QuestionController {
     });
   }
 
+  @Authorized()
   @ApiOkResponse()
   @ApiOperation({ summary: 'Убрать оценку вопроса' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -171,6 +161,7 @@ export class QuestionController {
     });
   }
 
+  @Authorized()
   @ApiOkResponse()
   @ApiOperation({ summary: 'Добавить вопрос в избранное' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -185,6 +176,7 @@ export class QuestionController {
     });
   }
 
+  @Authorized()
   @ApiOkResponse()
   @ApiOperation({ summary: 'Удалить вопрос из избранного' })
   @HttpCode(HttpStatus.NO_CONTENT)

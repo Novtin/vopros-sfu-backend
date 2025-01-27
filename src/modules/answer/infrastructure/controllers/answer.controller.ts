@@ -10,11 +10,9 @@ import {
   Post,
   Put,
   Query,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
-import { TransformInterceptor } from '../../../global/infrastructure/interceptors/transform.interceptor';
 import { Context } from '../../../auth/infrastructure/decorators/context.decorator';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { AnswerService } from '../../domain/services/answer.service';
@@ -26,19 +24,16 @@ import { AnswerSchema } from '../schemas/answer.schema';
 import { UpdateAnswerDto } from '../../domain/dtos/update-answer.dto';
 import { ResolveQuestionDto } from '../../../question/domain/dtos/resolve-question.dto';
 import { RatingDto } from '../../../global/domain/dtos/rating.dto';
-import { ApiOkPagination } from '../../../global/infrastructure/decorators/api-ok-pagination';
+import { Transform } from '../../../global/infrastructure/decorators/transform';
 
-@Authorized()
 @ApiTags('Ответ')
 @Controller('answer')
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
-  @ApiOkResponse({
-    type: AnswerDetailSchema,
-  })
+  @Authorized()
   @ApiOperation({ summary: 'Создать ответ' })
-  @UseInterceptors(new TransformInterceptor(AnswerDetailSchema))
+  @Transform(AnswerDetailSchema)
   @Post()
   create(
     @Body() dto: SaveAnswerDto,
@@ -48,21 +43,20 @@ export class AnswerController {
   }
 
   @Get('/:id')
-  @ApiOkResponse({ type: AnswerDetailSchema })
   @ApiOperation({ summary: 'Получить ответ' })
-  @UseInterceptors(new TransformInterceptor(AnswerDetailSchema))
+  @Transform(AnswerDetailSchema)
   getOneById(@Param('id', ParseIntPipe) id: number): Promise<AnswerModel> {
     return this.answerService.getOneBy({ id });
   }
 
-  @ApiOkPagination({ type: AnswerSchema })
   @ApiOperation({ summary: 'Получить ответы' })
-  @UseInterceptors(new TransformInterceptor(AnswerSchema))
+  @Transform(AnswerSchema, { pagination: true })
   @Get()
   search(@Query() dto: SearchAnswerDto): Promise<[AnswerModel[], number]> {
     return this.answerService.search(dto);
   }
 
+  @Authorized()
   @ApiOkResponse()
   @ApiOperation({ summary: 'Удалить ответ' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -74,11 +68,9 @@ export class AnswerController {
     await this.answerService.delete(context, id);
   }
 
-  @ApiOkResponse({
-    type: AnswerDetailSchema,
-  })
+  @Authorized()
   @ApiOperation({ summary: 'Обновить ответ' })
-  @UseInterceptors(new TransformInterceptor(AnswerDetailSchema))
+  @Transform(AnswerDetailSchema)
   @Put('/:id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -89,6 +81,7 @@ export class AnswerController {
   }
 
   @Post('/resolve/:questionId')
+  @Authorized()
   @ApiOkResponse()
   @ApiOperation({ summary: 'Отметить ответ решением вопроса' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -105,6 +98,7 @@ export class AnswerController {
   }
 
   @Delete('/resolve/:questionId')
+  @Authorized()
   @ApiOperation({ summary: 'Убрать отметку ответа решением вопроса' })
   @ApiOkResponse()
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -115,8 +109,8 @@ export class AnswerController {
     return this.answerService.deleteResolveQuestion(context.userId, questionId);
   }
 
-  @ApiOkResponse({ type: AnswerSchema })
-  @UseInterceptors(new TransformInterceptor(AnswerSchema))
+  @Transform(AnswerSchema)
+  @Authorized()
   @ApiOperation({ summary: 'Оценить ответ' })
   @Post('/:id/rate')
   rate(
@@ -132,6 +126,7 @@ export class AnswerController {
   }
 
   @ApiOkResponse()
+  @Authorized()
   @ApiOperation({ summary: 'Убрать оценку ответа' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id/rate')

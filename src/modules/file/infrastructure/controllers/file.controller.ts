@@ -1,5 +1,4 @@
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
 import {
   Controller,
   Get,
@@ -10,7 +9,6 @@ import {
 import { FileService } from '../../domain/services/file.service';
 
 @ApiTags('Файл')
-@Authorized()
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
