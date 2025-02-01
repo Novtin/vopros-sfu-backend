@@ -3,6 +3,7 @@ import { SearchTagDto } from '../dtos/search-tag.dto';
 import { TagModel } from '../models/tag.model';
 import { SaveTagDto } from '../dtos/save-tag.dto';
 import { ITagRepository } from '../interfaces/i-tag-repository';
+import { uniqBy as _uniqBy } from 'lodash';
 
 @Injectable()
 export class TagService {
@@ -13,6 +14,7 @@ export class TagService {
 
   async createOrGetByNames(tagNames: string[]): Promise<TagModel[]> {
     const tags: TagModel[] = [];
+    console.log(tagNames);
     for (const tagName of tagNames) {
       let tagEntity = await this.getOneBy({ name: tagName });
       if (!tagEntity) {
@@ -20,7 +22,8 @@ export class TagService {
       }
       tags.push(tagEntity);
     }
-    return tags;
+
+    return _uniqBy(tags, 'name');
   }
 
   search(dto: SearchTagDto): Promise<[TagModel[], number]> {

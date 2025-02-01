@@ -10,4 +10,5 @@ export interface IFileRepository {
   getOneBy(dto: SearchFileDto): Promise<FileModel>;
   delete(id: number): Promise<void>;
   existBy(dto: ExistFileDto): Promise<boolean>;
+  getExampleImages(): Promise<FileModel[]>;
 }

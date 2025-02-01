@@ -3,14 +3,12 @@ import { SaveFileDto } from '../dtos/save-file.dto';
 import { SearchFileDto } from '../dtos/search-file.dto';
 import { ExistQuestionDto } from '../../../question/domain/dtos/exist-question.dto';
 import { ExistFileDto } from '../dtos/exist-file.dto';
-import { join } from 'path';
-import * as process from 'process';
-import * as fs from 'fs';
 import { IFileRepository } from '../interfaces/i-file-repository';
 import { FileModel } from '../models/file.model';
 import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
 import { IFileLocalRepository } from '../interfaces/i-file-local-repository';
 import { IFile } from '../interfaces/i-file';
+import { StreamFileDto } from '../dtos/stream-file.dto';
 
 @Injectable()
 export class FileService {
@@ -35,17 +33,9 @@ export class FileService {
     return this.fileRepository.getOneBy(dto);
   }
 
-  async getReadStreamByFileId(id: number) {
+  async getReadStreamByFileId(id: number, dto: StreamFileDto) {
     const fileModel: FileModel = await this.getOneBy({ id });
-    const path: string = join(
-      ...process.env.FILE_SAVE_PATH.split('/'),
-      fileModel.name,
-    );
-    if (fs.existsSync(path)) {
-      return fs.createReadStream(path);
-    } else {
-      throw new NotFoundException();
-    }
+    return this.fileLocalRepository.getReadStream(fileModel, dto.isExample);
   }
 
   async delete(id: number): Promise<void> {
@@ -62,5 +52,12 @@ export class FileService {
 
   existBy(dto: ExistFileDto): Promise<boolean> {
     return this.fileRepository.existBy(dto);
+  }
+
+  async getExampleImages() {
+    const models = await this.fileRepository.getExampleImages();
+    return {
+      fileIds: models.map((model) => model.id),
+    };
   }
 }

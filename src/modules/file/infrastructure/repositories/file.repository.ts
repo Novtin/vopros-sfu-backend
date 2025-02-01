@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SaveFileDto } from '../../domain/dtos/save-file.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { SearchFileDto } from '../../domain/dtos/search-file.dto';
 import { ExistFileDto } from '../../domain/dtos/exist-file.dto';
 import { IFileRepository } from '../../domain/interfaces/i-file-repository';
@@ -29,5 +29,11 @@ export class FileRepository implements IFileRepository {
 
   existBy(dto: ExistFileDto): Promise<boolean> {
     return this.dbRepository.existsBy(dto);
+  }
+
+  getExampleImages(): Promise<FileModel[]> {
+    return this.dbRepository.findBy({
+      name: ILike('avatar%'),
+    });
   }
 }
