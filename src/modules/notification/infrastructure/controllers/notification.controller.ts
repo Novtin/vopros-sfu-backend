@@ -14,7 +14,7 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @ApiOperation({ summary: 'Получить уведомления' })
-  @SchemaTransform(NotificationSchema, { pagination: true })
+  @SchemaTransform(NotificationSchema, { isPagination: true })
   @Get()
   search(
     @Query() dto: SearchNotificationDto,

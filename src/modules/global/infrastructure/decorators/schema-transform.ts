@@ -5,10 +5,10 @@ import { ApiOkPagination } from './api-ok-pagination';
 
 export const SchemaTransform = (
   classToTransform: any,
-  params?: { pagination: boolean },
+  params?: { isPagination: boolean },
 ) =>
   applyDecorators(
-    params?.pagination
+    params?.isPagination
       ? ApiOkPagination({ type: classToTransform })
       : ApiOkResponse({ type: classToTransform }),
     UseInterceptors(new TransformInterceptor(classToTransform)),

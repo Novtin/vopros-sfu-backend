@@ -65,7 +65,7 @@ export class QuestionController {
   }
 
   @ApiOperation({ summary: 'Получить вопросы' })
-  @SchemaTransform(QuestionSchema, { pagination: true })
+  @SchemaTransform(QuestionSchema, { isPagination: true })
   @Get()
   search(@Query() dto: SearchQuestionDto) {
     return this.questionService.search(dto);

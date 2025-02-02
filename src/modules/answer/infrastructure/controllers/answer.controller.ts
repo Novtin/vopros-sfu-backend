@@ -50,7 +50,7 @@ export class AnswerController {
   }
 
   @ApiOperation({ summary: 'Получить ответы' })
-  @SchemaTransform(AnswerSchema, { pagination: true })
+  @SchemaTransform(AnswerSchema, { isPagination: true })
   @Get()
   search(@Query() dto: SearchAnswerDto): Promise<[AnswerModel[], number]> {
     return this.answerService.search(dto);

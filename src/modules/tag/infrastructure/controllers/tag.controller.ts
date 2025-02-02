@@ -19,7 +19,7 @@ export class TagController {
   }
 
   @ApiOperation({ summary: 'Получить тэги' })
-  @SchemaTransform(TagSchema, { pagination: true })
+  @SchemaTransform(TagSchema, { isPagination: true })
   @Get()
   search(@Query() dto: SearchTagDto): Promise<[TagModel[], number]> {
     return this.tagService.search(dto);

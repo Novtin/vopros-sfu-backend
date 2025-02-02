@@ -43,7 +43,7 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: 'Получить пользователей' })
-  @SchemaTransform(UserDetailSchema, { pagination: true })
+  @SchemaTransform(UserDetailSchema, { isPagination: true })
   search(@Query() dto: SearchUserDto) {
     return this.userService.search(dto);
   }
