@@ -25,7 +25,7 @@ export class NotificationMailEventService {
       from: this.configService.get('mailer.default.from'),
       to: payload.email,
       subject: 'Подтверждение почты',
-      template: './confirmation',
+      template: './confirm-mail',
       context: {
         confirmMailUrl,
       },
