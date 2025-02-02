@@ -4,7 +4,7 @@ import { TagModel } from '../../domain/models/tag.model';
 import { TagSchema } from '../schemas/tag.schema';
 import { TagService } from '../../domain/services/tag.service';
 import { SearchTagDto } from '../../domain/dtos/search-tag.dto';
-import { Transform } from '../../../global/infrastructure/decorators/transform';
+import { SchemaTransform } from '../../../global/infrastructure/decorators/schema-transform';
 
 @ApiTags('Тэг')
 @Controller('tag')
@@ -13,13 +13,13 @@ export class TagController {
 
   @Get('/:id')
   @ApiOperation({ summary: 'Получить тэг' })
-  @Transform(TagSchema)
+  @SchemaTransform(TagSchema)
   getOneById(@Param('id', ParseIntPipe) id: number): Promise<TagModel> {
     return this.tagService.getOneBy({ id });
   }
 
   @ApiOperation({ summary: 'Получить тэги' })
-  @Transform(TagSchema, { pagination: true })
+  @SchemaTransform(TagSchema, { pagination: true })
   @Get()
   search(@Query() dto: SearchTagDto): Promise<[TagModel[], number]> {
     return this.tagService.search(dto);

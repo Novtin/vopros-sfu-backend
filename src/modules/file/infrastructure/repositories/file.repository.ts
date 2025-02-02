@@ -31,7 +31,7 @@ export class FileRepository implements IFileRepository {
     return this.dbRepository.existsBy(dto);
   }
 
-  getExampleImages(): Promise<FileModel[]> {
+  getExamples(): Promise<FileModel[]> {
     return this.dbRepository.findBy({
       name: ILike('avatar%'),
     });

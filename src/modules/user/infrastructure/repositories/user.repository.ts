@@ -21,7 +21,7 @@ export class UserRepository implements IUserRepository {
     return this.dbRepository.existsBy({ ...dto });
   }
 
-  create(dto: SaveUserDto): Promise<UserModel> {
+  create(dto: Partial<UserModel>): Promise<UserModel> {
     return this.dbRepository.save({ ...dto });
   }
 

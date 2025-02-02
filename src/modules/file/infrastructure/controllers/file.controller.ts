@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { FileService } from '../../domain/services/file.service';
 import { FileExampleImageSchema } from '../schemas/file-example-image.schema';
-import { Transform } from '../../../global/infrastructure/decorators/transform';
+import { SchemaTransform } from '../../../global/infrastructure/decorators/schema-transform';
 import { StreamFileDto } from '../../domain/dtos/stream-file.dto';
 
 @ApiTags('Файл')
@@ -18,10 +18,10 @@ export class FileController {
   constructor(private readonly fileService: FileService) {}
 
   @ApiOperation({ summary: 'Получить список id стандартных изображений' })
-  @Transform(FileExampleImageSchema)
+  @SchemaTransform(FileExampleImageSchema)
   @Get('/examples-images')
   getExampleImages() {
-    return this.fileService.getExampleImages();
+    return this.fileService.getExampleIds();
   }
 
   @ApiOkResponse()

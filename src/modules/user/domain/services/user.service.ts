@@ -3,7 +3,6 @@ import { UserModel } from '../models/user.model';
 import { ExistUserDto } from '../dtos/exist-user.dto';
 import { SaveUserDto } from '../dtos/save-user.dto';
 import { FileService } from '../../../file/domain/services/file.service';
-import { UpdateUserDto } from '../dtos/update-user.dto';
 import { IUserRepository } from '../interfaces/i-user-repository';
 import { SearchUserDto } from '../dtos/search-user.dto';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
@@ -16,6 +15,7 @@ import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-
 import { EventEnum } from '../../../global/domain/enums/event.enum';
 import { IHashService } from '../../../auth/domain/interfaces/i-hash-service';
 import { ConfirmPasswordResetUserDto } from '../dtos/confirm-password-reset-user.dto';
+import { sample as _sample } from 'lodash';
 
 @Injectable()
 export class UserService {
@@ -40,7 +40,11 @@ export class UserService {
 
   async create(dto: SaveUserDto): Promise<UserModel> {
     try {
-      return await this.userRepository.create(dto);
+      const { fileIds } = await this.fileService.getExampleIds();
+      return await this.userRepository.create({
+        ...dto,
+        avatarId: _sample(fileIds),
+      });
     } catch (error) {
       if (error?.code === '23505') {
         throw new UnprocessableEntityException(

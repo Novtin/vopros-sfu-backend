@@ -34,7 +34,7 @@ import { multerImageOptions } from '../../../../config/multer-image.config';
 import { RatingDto } from '../../../global/domain/dtos/rating.dto';
 import { QuestionCountSchema } from '../schemas/question-count.schema';
 import { IQuestionCount } from '../../domain/interfaces/i-question-count';
-import { Transform } from '../../../global/infrastructure/decorators/transform';
+import { SchemaTransform } from '../../../global/infrastructure/decorators/schema-transform';
 
 @ApiTags('Вопрос')
 @Controller('question')
@@ -43,7 +43,7 @@ export class QuestionController {
 
   @Authorized()
   @ApiOperation({ summary: 'Создать вопрос' })
-  @Transform(QuestionSchema)
+  @SchemaTransform(QuestionSchema)
   @Post()
   create(
     @Body() dto: SaveQuestionDto,
@@ -54,7 +54,7 @@ export class QuestionController {
 
   @Authorized()
   @ApiOperation({ summary: 'Обновить вопрос' })
-  @Transform(QuestionSchema)
+  @SchemaTransform(QuestionSchema)
   @Put('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -65,13 +65,13 @@ export class QuestionController {
   }
 
   @ApiOperation({ summary: 'Получить вопросы' })
-  @Transform(QuestionSchema, { pagination: true })
+  @SchemaTransform(QuestionSchema, { pagination: true })
   @Get()
   search(@Query() dto: SearchQuestionDto) {
     return this.questionService.search(dto);
   }
 
-  @Transform(QuestionCountSchema)
+  @SchemaTransform(QuestionCountSchema)
   @ApiOperation({ summary: 'Получить количество вопросов' })
   @Get('/count')
   getCountQuestions(): Promise<IQuestionCount> {
@@ -80,7 +80,7 @@ export class QuestionController {
 
   @Get('/:id')
   @ApiOperation({ summary: 'Получить вопрос' })
-  @Transform(QuestionSchema)
+  @SchemaTransform(QuestionSchema)
   async getOneById(
     @Param('id', ParseIntPipe) id: number,
     @Context() context: ContextDto,
@@ -118,7 +118,7 @@ export class QuestionController {
   })
   @ApiOperation({ summary: 'Загрузить изображения к вопросу' })
   @UseInterceptors(FilesInterceptor('imageFiles', 5, multerImageOptions))
-  @Transform(QuestionSchema)
+  @SchemaTransform(QuestionSchema)
   @Post('/:id/images')
   async uploadImages(
     @Param('id', ParseIntPipe) id: number,
@@ -130,7 +130,7 @@ export class QuestionController {
 
   @Authorized()
   @ApiOperation({ summary: 'Оценить вопрос' })
-  @Transform(QuestionSchema)
+  @SchemaTransform(QuestionSchema)
   @Post('/:id/rate')
   rate(
     @Param('id', ParseIntPipe) id: number,

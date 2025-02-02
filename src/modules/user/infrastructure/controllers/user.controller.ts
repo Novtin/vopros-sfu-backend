@@ -34,7 +34,7 @@ import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
 import { Roles } from '../../../auth/infrastructure/decorators/roles.decorator';
 import { RoleEnum } from '../../domain/enum/role.enum';
 import { ConfirmPasswordResetUserDto } from '../../domain/dtos/confirm-password-reset-user.dto';
-import { Transform } from '../../../global/infrastructure/decorators/transform';
+import { SchemaTransform } from '../../../global/infrastructure/decorators/schema-transform';
 
 @Controller('/user')
 @ApiTags('Пользователь')
@@ -43,7 +43,7 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: 'Получить пользователей' })
-  @Transform(UserDetailSchema, { pagination: true })
+  @SchemaTransform(UserDetailSchema, { pagination: true })
   search(@Query() dto: SearchUserDto) {
     return this.userService.search(dto);
   }
@@ -51,7 +51,7 @@ export class UserController {
   @Authorized()
   @Get('/this')
   @ApiOperation({ summary: 'Получить текущего пользователя' })
-  @Transform(UserSchema)
+  @SchemaTransform(UserSchema)
   getThis(@Context() context: ContextDto): Promise<UserModel> {
     return this.userService.getOneBy({ id: context.userId });
   }
@@ -75,7 +75,7 @@ export class UserController {
 
   @Get('/:id')
   @ApiOperation({ summary: 'Получить пользователя' })
-  @Transform(UserSchema)
+  @SchemaTransform(UserSchema)
   getOneById(@Param('id', ParseIntPipe) id: number): Promise<UserModel> {
     return this.userService.getOneBy({ id });
   }
@@ -95,7 +95,7 @@ export class UserController {
   })
   @ApiOperation({ summary: 'Загрузить аватар пользователя' })
   @UseInterceptors(FileInterceptor('imageFile', multerImageOptions))
-  @Transform(UserSchema)
+  @SchemaTransform(UserSchema)
   @Post('/:id/image')
   uploadAvatar(
     @Param('id', ParseIntPipe) id: number,
@@ -109,7 +109,7 @@ export class UserController {
   @Authorized()
   @Put('/:id')
   @ApiOperation({ summary: 'Обновить пользователя' })
-  @Transform(UserSchema)
+  @SchemaTransform(UserSchema)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateUserDto,

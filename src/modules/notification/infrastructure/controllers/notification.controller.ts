@@ -5,7 +5,7 @@ import { NotificationService } from '../../domain/services/notification.service'
 import { NotificationModel } from '../../domain/models/notification.model';
 import { SearchNotificationDto } from '../../domain/dtos/search-notification.dto';
 import { NotificationSchema } from '../schemas/notification.schema';
-import { Transform } from '../../../global/infrastructure/decorators/transform';
+import { SchemaTransform } from '../../../global/infrastructure/decorators/schema-transform';
 
 @Authorized()
 @ApiTags('Уведомления')
@@ -14,7 +14,7 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @ApiOperation({ summary: 'Получить уведомления' })
-  @Transform(NotificationSchema, { pagination: true })
+  @SchemaTransform(NotificationSchema, { pagination: true })
   @Get()
   search(
     @Query() dto: SearchNotificationDto,

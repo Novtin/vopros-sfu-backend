@@ -24,7 +24,7 @@ import { AnswerSchema } from '../schemas/answer.schema';
 import { UpdateAnswerDto } from '../../domain/dtos/update-answer.dto';
 import { ResolveQuestionDto } from '../../../question/domain/dtos/resolve-question.dto';
 import { RatingDto } from '../../../global/domain/dtos/rating.dto';
-import { Transform } from '../../../global/infrastructure/decorators/transform';
+import { SchemaTransform } from '../../../global/infrastructure/decorators/schema-transform';
 
 @ApiTags('Ответ')
 @Controller('answer')
@@ -33,7 +33,7 @@ export class AnswerController {
 
   @Authorized()
   @ApiOperation({ summary: 'Создать ответ' })
-  @Transform(AnswerDetailSchema)
+  @SchemaTransform(AnswerDetailSchema)
   @Post()
   create(
     @Body() dto: SaveAnswerDto,
@@ -44,13 +44,13 @@ export class AnswerController {
 
   @Get('/:id')
   @ApiOperation({ summary: 'Получить ответ' })
-  @Transform(AnswerDetailSchema)
+  @SchemaTransform(AnswerDetailSchema)
   getOneById(@Param('id', ParseIntPipe) id: number): Promise<AnswerModel> {
     return this.answerService.getOneBy({ id });
   }
 
   @ApiOperation({ summary: 'Получить ответы' })
-  @Transform(AnswerSchema, { pagination: true })
+  @SchemaTransform(AnswerSchema, { pagination: true })
   @Get()
   search(@Query() dto: SearchAnswerDto): Promise<[AnswerModel[], number]> {
     return this.answerService.search(dto);
@@ -70,7 +70,7 @@ export class AnswerController {
 
   @Authorized()
   @ApiOperation({ summary: 'Обновить ответ' })
-  @Transform(AnswerDetailSchema)
+  @SchemaTransform(AnswerDetailSchema)
   @Put('/:id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -109,7 +109,7 @@ export class AnswerController {
     return this.answerService.deleteResolveQuestion(context.userId, questionId);
   }
 
-  @Transform(AnswerSchema)
+  @SchemaTransform(AnswerSchema)
   @Authorized()
   @ApiOperation({ summary: 'Оценить ответ' })
   @Post('/:id/rate')

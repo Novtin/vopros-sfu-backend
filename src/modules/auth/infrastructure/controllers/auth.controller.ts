@@ -16,7 +16,7 @@ import { LoginDto } from '../../domain/dtos/login.dto';
 import { RefreshJwtDto } from '../../domain/dtos/refresh-jwt.dto';
 import { ConfirmEmailDto } from '../../domain/dtos/confirm-email.dto';
 import { JwtSchema } from '../schemas/jwt.schema';
-import { Transform } from '../../../global/infrastructure/decorators/transform';
+import { SchemaTransform } from '../../../global/infrastructure/decorators/schema-transform';
 
 @ApiTags('Аутентификация')
 @Controller('auth')
@@ -24,7 +24,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: 'Войти' })
-  @Transform(JwtSchema)
+  @SchemaTransform(JwtSchema)
   @UseGuards()
   @Post('login')
   login(@Body() dto: LoginDto): Promise<JwtDto> {
@@ -32,7 +32,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Зарегистрироваться' })
-  @Transform(UserSchema)
+  @SchemaTransform(UserSchema)
   @Post('register')
   register(@Body() registerDto: RegisterDto): Promise<UserModel> {
     return this.authService.register(registerDto);
@@ -47,7 +47,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Обновить JWT' })
-  @Transform(JwtSchema)
+  @SchemaTransform(JwtSchema)
   @Post('refresh')
   refresh(@Body() refreshDto: RefreshJwtDto): Promise<JwtDto> {
     return this.authService.refresh(refreshDto);

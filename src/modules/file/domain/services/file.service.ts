@@ -40,8 +40,10 @@ export class FileService {
 
   async delete(id: number): Promise<void> {
     const fileModel = await this.getOneBy({ id });
-    this.fileLocalRepository.delete(fileModel.name);
-    await this.fileRepository.delete(id);
+    if (!fileModel.name.startsWith('avatar')) {
+      this.fileLocalRepository.delete(fileModel.name);
+      await this.fileRepository.delete(id);
+    }
   }
 
   async throwNotFoundExceptionIfNotExist(dto: ExistQuestionDto) {
@@ -54,8 +56,8 @@ export class FileService {
     return this.fileRepository.existBy(dto);
   }
 
-  async getExampleImages() {
-    const models = await this.fileRepository.getExampleImages();
+  async getExampleIds() {
+    const models = await this.fileRepository.getExamples();
     return {
       fileIds: models.map((model) => model.id),
     };
