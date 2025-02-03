@@ -76,6 +76,16 @@ export class SearchQuestionDto extends PaginationDto {
   isResolved?: boolean;
 
   @ApiProperty({
+    type: Boolean,
+    description: 'Без ответов?',
+    required: false,
+  })
+  @IsBoolean()
+  @Type(() => Boolean)
+  @IsOptional()
+  isWithoutAnswer?: boolean;
+
+  @ApiProperty({
     type: Number,
     description: 'ID',
     required: false,

@@ -88,15 +88,12 @@ export class QuestionRepository implements IQuestionRepository {
           .addSelect(
             (subQuery) =>
               subQuery
-                .select('COALESCE(COUNT(views.id), 0)')
+                .select('COALESCE(COUNT(*), 0)')
                 .from('question_view', 'views')
                 .where('views.questionId = question.id'),
             'viewCount',
           )
           .orderBy('"viewCount"', 'DESC');
-        break;
-      case FilterQuestionEnum.WITHOUT_ANSWER:
-        query.where('answers.id IS NULL');
         break;
       default:
         throw new NotFoundException();
@@ -104,6 +101,10 @@ export class QuestionRepository implements IQuestionRepository {
 
     if (dto?.authorId) {
       query.andWhere({ authorId: dto.authorId });
+    }
+
+    if (dto?.isWithoutAnswer) {
+      query.where('answers.id IS NULL');
     }
 
     if (dto?.favoriteUserId) {

@@ -85,7 +85,7 @@ export class QuestionController {
     @Param('id', ParseIntPipe) id: number,
     @Context() context: ContextDto,
   ): Promise<QuestionModel> {
-    return this.questionService.getOneById(id, context.userId);
+    return this.questionService.getOneById(id, context?.userId);
   }
 
   @Authorized()

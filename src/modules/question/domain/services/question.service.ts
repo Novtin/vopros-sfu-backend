@@ -23,6 +23,7 @@ import { BadRequestException } from '../../../global/domain/exceptions/bad-reque
 import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
 import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
 import { ConflictException } from '../../../global/domain/exceptions/conflict.exception';
+import { IFile } from '../../../file/domain/interfaces/i-file';
 
 @Injectable()
 export class QuestionService {
@@ -52,12 +53,17 @@ export class QuestionService {
     }
   }
 
-  async getOneById(questionId: number, userId: number): Promise<QuestionModel> {
+  async getOneById(
+    questionId: number,
+    userId?: number,
+  ): Promise<QuestionModel> {
     await this.throwNotFoundExceptionIfNotExist({ id: questionId });
-    await this.view({
-      userId,
-      questionId,
-    });
+    if (userId) {
+      await this.view({
+        userId,
+        questionId,
+      });
+    }
     return await this.questionRepository.getOneBy({ id: questionId });
   }
 
@@ -103,11 +109,7 @@ export class QuestionService {
     await this.questionRepository.delete(id);
   }
 
-  async uploadImages(
-    context: ContextDto,
-    id: number,
-    imageFiles: Array<Express.Multer.File>,
-  ) {
+  async uploadImages(context: ContextDto, id: number, imageFiles: IFile[]) {
     if (!imageFiles) {
       throw new BadRequestException('Файлы не найдены');
     }
