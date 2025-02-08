@@ -1,26 +1,29 @@
 import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotificationModel } from '../../domain/models/notification.model';
 import { NotificationService } from '../../domain/services/notification.service';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EventEnum } from '../../../global/domain/enums/event.enum';
+import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
 
 @Injectable()
 @WebSocketGateway()
-export class NotificationGateway {
+export class NotificationGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   private readonly server: Server;
 
   constructor(
-    @Inject(forwardRef(() => NotificationService))
     private readonly notificationService: NotificationService,
+    @Inject(IEventEmitterService)
+    private readonly eventEmitterService: IEventEmitterService,
   ) {}
 
   @OnEvent(EventEnum.SEND_NOTIFICATION)
@@ -30,16 +33,25 @@ export class NotificationGateway {
       .emit('new-answer', JSON.stringify(notification));
   }
 
-  @SubscribeMessage('connect-user')
-  async handleConnection(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() userId: string,
-  ) {
-    socket.join(userId);
-    const [notifications] = await this.notificationService.search({
-      userId: +userId,
-      isViewed: false,
-    });
-    notifications?.forEach(this.send);
+  async handleConnection(client: Socket) {
+    const userId = client.handshake.query.userId;
+    if (userId) {
+      client.join(userId);
+      const [notifications] = await this.notificationService.search({
+        userId: +userId,
+        isViewed: false,
+      });
+      notifications?.forEach(this.send);
+      this.eventEmitterService.emit(EventEnum.ONLINE_USER, +userId);
+    }
+  }
+
+  handleDisconnect(client: Socket) {
+    const userId = Array.from(client.rooms.keys()).find(
+      (room) => room !== client.id,
+    );
+    if (userId) {
+      this.eventEmitterService.emit(EventEnum.OFFLINE_USER, +userId);
+    }
   }
 }

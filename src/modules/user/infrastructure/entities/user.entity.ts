@@ -37,6 +37,15 @@ export const UserEntity = new EntitySchema<UserModel>({
       type: 'int',
       nullable: true,
     },
+    isOnline: {
+      type: 'boolean',
+      nullable: false,
+      default: false,
+    },
+    wasOnlineAt: {
+      type: 'timestamp',
+      nullable: true,
+    },
     ...AbstractTimeEntity,
   },
   relations: {

@@ -30,4 +30,8 @@ export class UserModel extends AbstractTimeModel {
   answers: AnswerModel[];
 
   rating: number;
+
+  isOnline: boolean;
+
+  wasOnlineAt: Date;
 }
