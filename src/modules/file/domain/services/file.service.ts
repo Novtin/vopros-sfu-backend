@@ -6,7 +6,7 @@ import { ExistFileDto } from '../dtos/exist-file.dto';
 import { IFileRepository } from '../interfaces/i-file-repository';
 import { FileModel } from '../models/file.model';
 import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
-import { IFileLocalRepository } from '../interfaces/i-file-local-repository';
+import { IFileStorageRepository } from '../interfaces/i-file-storage-repository';
 import { IFile } from '../interfaces/i-file';
 import { StreamFileDto } from '../dtos/stream-file.dto';
 
@@ -15,8 +15,8 @@ export class FileService {
   constructor(
     @Inject(IFileRepository)
     private readonly fileRepository: IFileRepository,
-    @Inject(IFileLocalRepository)
-    private readonly fileLocalRepository: IFileLocalRepository,
+    @Inject(IFileStorageRepository)
+    private readonly fileStorageRepository: IFileStorageRepository,
   ) {}
 
   create(file: IFile): Promise<FileModel> {
@@ -35,13 +35,13 @@ export class FileService {
 
   async getReadStreamByFileId(id: number, dto: StreamFileDto) {
     const fileModel: FileModel = await this.getOneBy({ id });
-    return this.fileLocalRepository.getReadStream(fileModel, dto.isExample);
+    return this.fileStorageRepository.getReadStream(fileModel, dto.isExample);
   }
 
   async delete(id: number): Promise<void> {
     const fileModel = await this.getOneBy({ id });
     if (!fileModel.name.startsWith('avatar')) {
-      this.fileLocalRepository.delete(fileModel.name);
+      this.fileStorageRepository.delete(fileModel.name);
       await this.fileRepository.delete(id);
     }
   }

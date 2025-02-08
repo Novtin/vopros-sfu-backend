@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
-import { IFileLocalRepository } from '../../domain/interfaces/i-file-local-repository';
+import { IFileStorageRepository } from '../../domain/interfaces/i-file-storage-repository';
 import { IConfigService } from '../../../global/domain/interfaces/i-config-service';
 import { FileModel } from '../../domain/models/file.model';
 import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
 
 @Injectable()
-export class FileLocalRepository implements IFileLocalRepository {
+export class FileLocalStorageRepository implements IFileStorageRepository {
   constructor(
     @Inject(IConfigService)
     private readonly configService: IConfigService,

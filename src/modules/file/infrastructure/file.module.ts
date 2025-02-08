@@ -6,8 +6,8 @@ import { FileController } from './controllers/file.controller';
 import { UserModule } from '../../user/infrastructure/user.module';
 import { IFileRepository } from '../domain/interfaces/i-file-repository';
 import { FileEntity } from './entities/file.entity';
-import { IFileLocalRepository } from '../domain/interfaces/i-file-local-repository';
-import { FileLocalRepository } from './repositories/file-local.repository';
+import { IFileStorageRepository } from '../domain/interfaces/i-file-storage-repository';
+import { FileLocalStorageRepository } from './repositories/file-local-storage.repository';
 
 @Module({
   imports: [
@@ -21,8 +21,8 @@ import { FileLocalRepository } from './repositories/file-local.repository';
       useClass: FileRepository,
     },
     {
-      provide: IFileLocalRepository,
-      useClass: FileLocalRepository,
+      provide: IFileStorageRepository,
+      useClass: FileLocalStorageRepository,
     },
     FileService,
   ],

@@ -1,8 +1,8 @@
 import { FileModel } from '../models/file.model';
 
-export const IFileLocalRepository = 'IFileLocalRepository';
+export const IFileStorageRepository = 'IFileStorageRepository';
 
-export interface IFileLocalRepository {
+export interface IFileStorageRepository {
   delete(fileName: string): void;
   getReadStream(fileModel: FileModel, isExample: boolean): any;
 }
