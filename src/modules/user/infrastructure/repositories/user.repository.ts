@@ -39,6 +39,8 @@ export class UserRepository implements IUserRepository {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.avatar', 'avatar')
       .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('user.questions', 'questions')
+      .leftJoinAndSelect('user.answers', 'answers')
       .where(dto)
       .limit(1)
       .getOne();

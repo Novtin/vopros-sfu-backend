@@ -1,4 +1,4 @@
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { FileSchema } from '../../../file/infrastructure/schemas/file.schema';
 
@@ -23,4 +23,14 @@ export class UserSchema {
   @Expose()
   @Type(() => FileSchema)
   avatar: FileSchema;
+
+  @Expose()
+  @ApiProperty({ type: Number })
+  @Transform((event) => event.obj.questions?.length ?? 0)
+  countQuestions: number;
+
+  @Expose()
+  @ApiProperty({ type: Number })
+  @Transform((event) => event.obj.answers?.length ?? 0)
+  countAnswers: number;
 }
