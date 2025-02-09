@@ -11,11 +11,22 @@ import { IJwtService } from '../domain/interfaces/i-jwt-service';
 import { IHashService } from '../domain/interfaces/i-hash-service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { AuthCodeController } from './controllers/auth-code.controller';
+import { AuthCodeService } from '../domain/services/auth-code.service';
+import { IAuthCodeRepositories } from '../domain/interfaces/i-auth-code-repositories';
+import { AuthCodeRepository } from './repositories/auth-code.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthCodeEntity } from './entities/auth-code.entity';
 
 @Global()
 @Module({
-  imports: [forwardRef(() => UserModule), JwtModule, PassportModule],
-  controllers: [AuthController],
+  imports: [
+    forwardRef(() => UserModule),
+    JwtModule,
+    PassportModule,
+    TypeOrmModule.forFeature([AuthCodeEntity]),
+  ],
+  controllers: [AuthController, AuthCodeController],
   providers: [
     {
       provide: IJwtService,
@@ -25,10 +36,15 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       provide: IHashService,
       useClass: HashService,
     },
+    {
+      provide: IAuthCodeRepositories,
+      useClass: AuthCodeRepository,
+    },
     JwtAuthGuard,
     JwtStrategy,
     TokenService,
     AuthService,
+    AuthCodeService,
     RolesAuthGuard,
   ],
   exports: [JwtAuthGuard, RolesAuthGuard, TokenService, IHashService],

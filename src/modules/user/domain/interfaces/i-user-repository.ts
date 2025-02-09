@@ -1,7 +1,5 @@
 import { ExistUserDto } from '../dtos/exist-user.dto';
-import { SaveUserDto } from '../dtos/save-user.dto';
 import { UserModel } from '../models/user.model';
-import { UpdateUserDto } from '../dtos/update-user.dto';
 import { SearchUserDto } from '../dtos/search-user.dto';
 
 export const IUserRepository = 'IUserRepository';

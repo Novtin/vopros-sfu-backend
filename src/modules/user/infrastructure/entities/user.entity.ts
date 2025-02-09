@@ -30,9 +30,6 @@ export const UserEntity = new EntitySchema<UserModel>({
       type: 'boolean',
       default: false,
     },
-    emailHash: {
-      type: 'varchar',
-    },
     avatarId: {
       type: 'int',
       nullable: true,
@@ -43,7 +40,7 @@ export const UserEntity = new EntitySchema<UserModel>({
       default: false,
     },
     wasOnlineAt: {
-      type: 'timestamp',
+      type: 'timestamp with time zone',
       nullable: true,
     },
     ...AbstractTimeEntity,

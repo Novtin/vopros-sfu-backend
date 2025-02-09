@@ -1,17 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, MinLength } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class ConfirmPasswordResetUserDto {
+export class UpdatePasswordUserDto {
   @ApiProperty({
-    type: String,
-    description: 'Хэш емаила',
+    type: Number,
+    description: 'ID пользователя',
     required: true,
   })
   @IsNotEmpty()
-  @IsString()
-  @Type(() => String)
-  emailHash: string;
+  @IsNumber()
+  @Type(() => Number)
+  userId: number;
 
   @ApiProperty({
     type: String,
@@ -19,6 +19,7 @@ export class ConfirmPasswordResetUserDto {
     required: true,
   })
   @IsNotEmpty()
+  @MinLength(8)
   @IsString()
   @Type(() => String)
   password: string;

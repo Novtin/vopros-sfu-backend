@@ -11,7 +11,6 @@ import { RoleService } from '../../../user/domain/services/role.service';
 import { RoleEnum } from '../../../user/domain/enum/role.enum';
 import { TokenEnum } from '../enums/token.enum';
 import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
-import { EventEnum } from '../../../global/domain/enums/event.enum';
 import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
 import { UnauthorizedException } from '../../../global/domain/exceptions/unauthorized.exception';
 import { IHashService } from '../interfaces/i-hash-service';
@@ -51,25 +50,11 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto): Promise<UserModel> {
-    const emailHash = await this.hashService.makeHash(registerDto.email);
-    const user = await this.userService.create({
+    return this.userService.create({
       ...registerDto,
       passwordHash: await this.hashService.makeHash(registerDto.password),
-      emailHash,
       roles: [await this.roleService.getOneBy({ name: RoleEnum.USER })],
     });
-
-    this.eventEmitterService.emit(EventEnum.REGISTER_USER, {
-      email: registerDto.email,
-      emailHash,
-    });
-
-    return user;
-  }
-
-  async confirmEmail(emailHash: string) {
-    const user = await this.userService.getOneBy({ emailHash });
-    await this.userService.confirmEmail(user.id);
   }
 
   async refresh(refreshDto: RefreshJwtDto): Promise<JwtDto> {

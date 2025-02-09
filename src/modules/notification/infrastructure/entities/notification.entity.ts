@@ -21,7 +21,7 @@ export const NotificationEntity = new EntitySchema<NotificationModel>({
       default: false,
     },
     createdAt: {
-      type: 'timestamp',
+      type: 'timestamp with time zone',
       createDate: true,
     },
   },

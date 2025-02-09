@@ -17,8 +17,6 @@ export class UserModel extends AbstractTimeModel {
 
   isConfirmed: boolean;
 
-  emailHash: string;
-
   roles: RoleModel[];
 
   avatar: FileModel;

@@ -10,6 +10,4 @@ export class SaveUserDto {
   description: string;
 
   roles: RoleModel[];
-
-  emailHash: string;
 }

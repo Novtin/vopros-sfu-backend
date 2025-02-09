@@ -16,6 +16,7 @@ import { NotificationModule } from './notification/infrastructure/notification.m
 import { GlobalModule } from './global/infrastructure/global.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import fileLocalConfig from '../config/file-local.config';
+import authCodeConfig from '../config/auth-code.config';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import fileLocalConfig from '../config/file-local.config';
         mailerConfig,
         redisConfig,
         fileLocalConfig,
+        authCodeConfig,
       ],
       envFilePath: '.env',
     }),

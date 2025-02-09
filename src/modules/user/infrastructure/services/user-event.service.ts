@@ -19,4 +19,17 @@ export class UserEventService {
       wasOnlineAt: new Date(),
     });
   }
+
+  @OnEvent(EventEnum.REGISTER_USER)
+  async onRegisterUser(payload: { userId: number }) {
+    await this.userService.confirmEmail(payload.userId);
+  }
+
+  @OnEvent(EventEnum.RESET_PASSWORD_USER)
+  async onResetPasswordUser(payload: { userId: number; password: string }) {
+    await this.userService.updatePassword({
+      userId: payload.userId,
+      password: payload.password,
+    });
+  }
 }

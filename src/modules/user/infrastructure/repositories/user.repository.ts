@@ -4,7 +4,6 @@ import { UserModel } from '../../domain/models/user.model';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 import { ExistUserDto } from '../../domain/dtos/exist-user.dto';
-import { SaveUserDto } from '../../domain/dtos/save-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
 import { FilterUserEnum } from '../../domain/enum/filter-user.enum';
 import { IUserRepository } from '../../domain/interfaces/i-user-repository';

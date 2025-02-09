@@ -13,40 +13,19 @@ export class NotificationMailEventService {
     private readonly configService: IConfigService,
   ) {}
 
-  @OnEvent(EventEnum.REGISTER_USER)
-  async onRegisterUser(payload: {
+  @OnEvent(EventEnum.CREATE_AUTH_CODE)
+  async onCreateAuthCode(payload: {
+    code: string;
     email: string;
-    emailHash: string;
   }): Promise<void> {
-    const params = new URLSearchParams();
-    params.set('emailHash', encodeURIComponent(payload.emailHash));
-    const confirmMailUrl = `${this.configService.get('http.frontendUrl')}/confirm-email?${params.toString()}`;
     await this.mailerService.sendMail({
       from: this.configService.get('mailer.default.from'),
       to: payload.email,
-      subject: 'Подтверждение почты',
-      template: './confirm-mail',
+      subject: 'Код подтверждения',
+      template: './auth-code',
       context: {
-        confirmMailUrl,
-      },
-    });
-  }
-
-  @OnEvent(EventEnum.RESET_PASSWORD_USER)
-  async onResetPasswordUser(payload: {
-    email: string;
-    emailHash: string;
-  }): Promise<void> {
-    const params = new URLSearchParams();
-    params.set('emailHash', encodeURIComponent(payload.emailHash));
-    const resetPasswordUrl = `${this.configService.get('http.frontendUrl')}/reset-password?${params.toString()}`;
-    await this.mailerService.sendMail({
-      from: this.configService.get('mailer.default.from'),
-      to: payload.email,
-      subject: 'Обновление пароля',
-      template: './reset-password',
-      context: {
-        resetPasswordUrl,
+        authCode: payload.code,
+        currentYear: new Date().getFullYear(),
       },
     });
   }
