@@ -19,6 +19,14 @@ export class UserSchema {
   @ApiProperty()
   description: string;
 
+  @Expose()
+  @ApiProperty()
+  isOnline: boolean;
+
+  @Expose()
+  @ApiProperty()
+  wasOnlineAt: Date;
+
   @ApiProperty({ type: FileSchema })
   @Expose()
   @Type(() => FileSchema)
@@ -33,4 +41,9 @@ export class UserSchema {
   @ApiProperty({ type: Number })
   @Transform((event) => event.obj.answers?.length ?? 0)
   countAnswers: number;
+
+  @Expose()
+  @ApiProperty()
+  @Type(() => Number)
+  rating: number;
 }

@@ -28,7 +28,6 @@ import { multerImageOptions } from '../../../../config/multer-image.config';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { Context } from '../../../auth/infrastructure/decorators/context.decorator';
 import { Authorized } from '../../../auth/infrastructure/decorators/authorized.decorator';
-import { UserDetailSchema } from '../schemas/user-detail.schema';
 import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
 import { Roles } from '../../../auth/infrastructure/decorators/roles.decorator';
@@ -42,7 +41,7 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: 'Получить пользователей' })
-  @SchemaTransform(UserDetailSchema, { isPagination: true })
+  @SchemaTransform(UserSchema, { isPagination: true })
   search(@Query() dto: SearchUserDto) {
     return this.userService.search(dto);
   }

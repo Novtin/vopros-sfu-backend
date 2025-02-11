@@ -34,16 +34,35 @@ export class UserRepository implements IUserRepository {
     return this.getOneBy({ id });
   }
 
-  async getOneBy(dto: Partial<UserModel>): Promise<UserModel> {
+  private getUserQueryBuilder() {
     return this.dbRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.avatar', 'avatar')
       .leftJoinAndSelect('user.roles', 'roles')
       .leftJoinAndSelect('user.questions', 'questions')
       .leftJoinAndSelect('user.answers', 'answers')
+      .addSelect(
+        `COALESCE(
+        (SELECT COALESCE(SUM(question_rating.value), 0) 
+        FROM question_rating 
+        WHERE question_rating."questionId" = questions.id), 0) 
+        + COALESCE(
+        (SELECT COALESCE(SUM(answer_rating.value), 0) 
+        FROM answer_rating WHERE answer_rating."answerId" = answers.id), 0)`,
+        'rating',
+      );
+  }
+
+  async getOneBy(dto: Partial<UserModel>): Promise<UserModel> {
+    const { entities, raw } = await this.getUserQueryBuilder()
       .where(dto)
       .limit(1)
-      .getOne();
+      .getRawAndEntities();
+
+    return {
+      ...entities[0],
+      rating: raw.find((item) => item.user_id === entities[0].id).rating,
+    };
   }
 
   private getAllRating(userIds: number[]) {
@@ -84,16 +103,25 @@ export class UserRepository implements IUserRepository {
       }>();
   }
 
-  async search(dto: SearchUserDto): Promise<[UserModel[], number]> {
-    const query = this.dbRepository
+  async getTotalUsers() {
+    const query = await this.dbRepository
       .createQueryBuilder('user')
-      .leftJoinAndSelect('user.avatar', 'avatar')
-      .leftJoinAndSelect('user.questions', 'questions')
-      .leftJoinAndSelect('user.answers', 'answers')
+      .select('COUNT(*)', 'total')
+      .getRawOne();
+    return query.total;
+  }
+
+  async search(dto: SearchUserDto): Promise<[UserModel[], number]> {
+    const query = this.getUserQueryBuilder()
       .leftJoinAndSelect('questions.rating', 'questions_rating')
       .leftJoinAndSelect('answers.rating', 'answers_rating')
       .addSelect(
-        `COALESCE((SELECT COALESCE(SUM(question_rating.value), 0) FROM question_rating WHERE question_rating."questionId" = questions.id), 0) + COALESCE((SELECT COALESCE(SUM(answer_rating.value), 0) FROM answer_rating WHERE answer_rating."answerId" = answers.id), 0)`,
+        `COALESCE(
+        (SELECT COALESCE(SUM(question_rating.value), 0)
+         FROM question_rating WHERE question_rating."questionId" = questions.id), 0)
+          + COALESCE(
+          (SELECT COALESCE(SUM(answer_rating.value), 0) FROM answer_rating 
+          WHERE answer_rating."answerId" = answers.id), 0)`,
         'rating',
       )
       .limit(dto.pageSize)
@@ -124,11 +152,14 @@ export class UserRepository implements IUserRepository {
       query.andWhere('user.deletedAt IS NOT NULL OR user.deletedAt IS NULL');
     }
 
-    const [users, count] = await query.getManyAndCount();
+    const { entities, raw } = await query.getRawAndEntities();
 
-    return users.length === 0
-      ? [users, count]
-      : [await this.setRating(users), count];
+    const users = entities.map((entity) => ({
+      ...entity,
+      rating: raw.find((item) => item.user_id === entity.id).rating,
+    }));
+
+    return [users, await this.getTotalUsers()];
   }
 
   async delete(id: number): Promise<void> {
