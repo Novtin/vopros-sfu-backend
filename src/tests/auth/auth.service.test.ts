@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../../modules/auth/domain/services/auth.service';
 import { UserService } from '../../modules/user/domain/services/user.service';
 import { TokenService } from '../../modules/auth/domain/services/token.service';
-import { HashService } from '../../modules/auth/infrastructure/services/hash.service';
 import { RoleService } from '../../modules/user/domain/services/role.service';
 import { LoginDto } from '../../modules/auth/domain/dtos/login.dto';
 import { UserModel } from '../../modules/user/domain/models/user.model';
@@ -155,7 +154,6 @@ describe('AuthService', () => {
         email: 'test@example.com',
         password: 'test',
         nickname: 'test',
-        description: 'Test',
       };
 
       const hashedEmail = 'hashedEmail';
@@ -169,7 +167,6 @@ describe('AuthService', () => {
         email: 'test@example.com',
         password: 'test',
         nickname: 'test',
-        description: 'Test',
         emailHash: 'hashedEmail',
       });
       configService.get = jest.fn().mockReturnValue('http://test.com');

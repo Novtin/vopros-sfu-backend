@@ -7,7 +7,7 @@ export class SaveUserDto {
 
   passwordHash: string;
 
-  description: string;
+  description?: string;
 
   roles: RoleModel[];
 }

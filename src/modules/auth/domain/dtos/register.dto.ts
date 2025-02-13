@@ -44,13 +44,4 @@ export class RegisterDto {
   @MinLength(8)
   @Type(() => String)
   password: string;
-
-  @ApiProperty({
-    type: String,
-    description: 'Описание профиля',
-    required: true,
-  })
-  @IsString()
-  @Type(() => String)
-  description: string;
 }
