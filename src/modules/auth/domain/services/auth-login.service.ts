@@ -7,7 +7,6 @@ import { UnauthorizedException } from '../../../global/domain/exceptions/unautho
 import { RefreshDto } from '../dtos/refresh.dto';
 import { LogoutDto } from '../dtos/logout.dto';
 import { AuthLoginModel } from '../models/auth-login.model';
-import { BadRequestException } from '../../../global/domain/exceptions/bad-request.exception';
 
 @Injectable()
 export class AuthLoginService {
@@ -73,9 +72,18 @@ export class AuthLoginService {
 
   async getOneBy(dto: Partial<AuthLoginModel>) {
     const loginModel = await this.authLoginRepository.getOneBy(dto);
-    if (!loginModel || loginModel.isLogout) {
-      throw new BadRequestException('Данная авторизация не доступна');
-    }
+    this.checkExistLogin(loginModel);
     return loginModel;
+  }
+
+  async checkLastBy(dto: Partial<AuthLoginModel>) {
+    const loginModel = await this.authLoginRepository.getLastBy(dto);
+    this.checkExistLogin(loginModel);
+  }
+
+  checkExistLogin(model: AuthLoginModel) {
+    if (!model || model.isLogout) {
+      throw new UnauthorizedException('Данная авторизация не доступна');
+    }
   }
 }

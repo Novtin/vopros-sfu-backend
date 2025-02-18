@@ -23,4 +23,11 @@ export class AuthLoginRepository implements IAuthLoginRepository {
       relations: ['user'],
     });
   }
+
+  getLastBy(dto: Partial<AuthLoginModel>) {
+    return this.dbRepository.findOne({
+      where: dto,
+      order: { createdAt: 'DESC' },
+    });
+  }
 }

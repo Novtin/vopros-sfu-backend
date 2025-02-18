@@ -2,15 +2,15 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IJwtPayload } from '../../domain/interfaces/i-jwt-payload-interface';
-import { UserService } from '../../../user/domain/services/user.service';
 import { IConfigService } from '../../../global/domain/interfaces/i-config-service';
+import { AuthLoginService } from '../../domain/services/auth-login.service';
 
 export const JWT_STRATEGY = 'jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, JWT_STRATEGY) {
   constructor(
-    private readonly userService: UserService,
+    private readonly authLoginService: AuthLoginService,
     @Inject(IConfigService)
     private readonly configService: IConfigService,
   ) {
@@ -22,12 +22,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, JWT_STRATEGY) {
   }
 
   async validate(payload: IJwtPayload): Promise<IJwtPayload> {
-    const isUserExists = await this.userService.existBy({
-      email: payload.email,
+    await this.authLoginService.checkLastBy({
+      userId: payload.userId,
     });
-    if (!isUserExists) {
-      throw new UnauthorizedException('Пользователя с таким email нет');
-    }
 
     return payload;
   }
