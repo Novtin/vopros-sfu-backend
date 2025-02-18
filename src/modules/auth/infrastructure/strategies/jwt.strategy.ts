@@ -4,7 +4,6 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IJwtPayload } from '../../domain/interfaces/i-jwt-payload-interface';
 import { UserService } from '../../../user/domain/services/user.service';
 import { IConfigService } from '../../../global/domain/interfaces/i-config-service';
-import { ContextDto } from '../../domain/dtos/context.dto';
 
 export const JWT_STRATEGY = 'jwt';
 
@@ -22,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, JWT_STRATEGY) {
     });
   }
 
-  async validate(payload: IJwtPayload): Promise<ContextDto> {
+  async validate(payload: IJwtPayload): Promise<IJwtPayload> {
     const isUserExists = await this.userService.existBy({
       email: payload.email,
     });
@@ -30,10 +29,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, JWT_STRATEGY) {
       throw new UnauthorizedException('Пользователя с таким email нет');
     }
 
-    return {
-      userId: payload.userId,
-      email: payload.email,
-      roles: payload.roles,
-    };
+    return payload;
   }
 }

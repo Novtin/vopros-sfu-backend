@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeAll } from '@jest/globals';
-import { TokenService } from '../../modules/auth/domain/services/token.service';
+import { AuthTokenService } from '../../modules/auth/domain/services/auth-token.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from '../../config/jwt.config';
@@ -13,7 +13,7 @@ import { IConfigService } from '../../modules/global/domain/interfaces/i-config-
 import { UnauthorizedException } from '../../modules/global/domain/exceptions/unauthorized.exception';
 
 describe('TokenService', () => {
-  let tokenService: TokenService;
+  let tokenService: AuthTokenService;
   let jwtService: JwtService;
   let configService: IConfigService;
 
@@ -40,13 +40,13 @@ describe('TokenService', () => {
           provide: IJwtService,
           useClass: JwtService,
         },
-        TokenService,
+        AuthTokenService,
       ],
     }).compile();
 
     jwtService = module.get(IJwtService);
     configService = module.get<IConfigService>(IConfigService);
-    tokenService = module.get<TokenService>(TokenService);
+    tokenService = module.get<AuthTokenService>(AuthTokenService);
 
     payload = {
       email: 'test@example.com',

@@ -1,15 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../../modules/auth/domain/services/auth.service';
 import { UserService } from '../../modules/user/domain/services/user.service';
-import { TokenService } from '../../modules/auth/domain/services/token.service';
+import { AuthTokenService } from '../../modules/auth/domain/services/auth-token.service';
 import { RoleService } from '../../modules/user/domain/services/role.service';
-import { LoginDto } from '../../modules/auth/domain/dtos/login.dto';
 import { UserModel } from '../../modules/user/domain/models/user.model';
 import { describe, expect, it, beforeAll } from '@jest/globals';
 import { RoleEnum } from '../../modules/user/domain/enum/role.enum';
 import { JwtDto } from '../../modules/auth/domain/dtos/jwt.dto';
 import { RegisterDto } from '../../modules/auth/domain/dtos/register.dto';
-import { RefreshJwtDto } from '../../modules/auth/domain/dtos/refresh-jwt.dto';
+import { RefreshDto } from '../../modules/auth/domain/dtos/refresh.dto';
 import { IJwtPayload } from '../../modules/auth/domain/interfaces/i-jwt-payload-interface';
 import { RoleModel } from '../../modules/user/domain/models/role.model';
 import { IEventEmitterService } from '../../modules/global/domain/interfaces/i-event-emitter-service';
@@ -17,11 +16,12 @@ import { IConfigService } from '../../modules/global/domain/interfaces/i-config-
 import { IHashService } from '../../modules/auth/domain/interfaces/i-hash-service';
 import { ForbiddenException } from '../../modules/global/domain/exceptions/forbidden.exception';
 import { UnauthorizedException } from '../../modules/global/domain/exceptions/unauthorized.exception';
+import { IAuthLogin } from '../../modules/auth/domain/interfaces/i-auth-login';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let userService: UserService;
-  let tokenService: TokenService;
+  let tokenService: AuthTokenService;
   let hashService: IHashService;
   let roleService: RoleService;
   let configService: IConfigService;
@@ -60,7 +60,7 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: UserService, useValue: mockUserService },
-        { provide: TokenService, useValue: mockTokenService },
+        { provide: AuthTokenService, useValue: mockTokenService },
         { provide: IHashService, useValue: mockHashService },
         { provide: RoleService, useValue: mockRoleService },
         { provide: IEventEmitterService, useValue: mockEventEmitterService },
@@ -70,7 +70,7 @@ describe('AuthService', () => {
 
     authService = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
-    tokenService = module.get<TokenService>(TokenService);
+    tokenService = module.get<AuthTokenService>(AuthTokenService);
     hashService = module.get<IHashService>(IHashService);
     roleService = module.get<RoleService>(RoleService);
     eventEmitterService =
@@ -80,9 +80,10 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should throw ForbiddenException if user is not confirmed', async () => {
-      const loginDto: LoginDto = {
+      const loginDto: IAuthLogin = {
         email: 'test@example.com',
         password: 'password',
+        ipAddress: '1',
       };
 
       const user = {
@@ -100,9 +101,10 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException if password is invalid', async () => {
-      const loginDto: LoginDto = {
+      const loginDto: IAuthLogin = {
         email: 'test@example.com',
         password: 'password',
+        ipAddress: '1',
       };
 
       const user = {
@@ -119,9 +121,10 @@ describe('AuthService', () => {
     });
 
     it('should return JwtDto if login is successful', async () => {
-      const loginDto: LoginDto = {
+      const loginDto: IAuthLogin = {
         email: 'test@example.com',
         password: 'password',
+        ipAddress: '1',
       };
 
       const user = {
@@ -179,7 +182,10 @@ describe('AuthService', () => {
 
   describe('refresh', () => {
     it('should throw UnauthorizedException if refresh token is invalid', async () => {
-      const refreshDto: RefreshJwtDto = { refreshToken: 'refreshToken' };
+      const refreshDto: RefreshDto = {
+        loginId: 1,
+        refreshToken: 'refreshToken',
+      };
       tokenService.verify = jest.fn().mockResolvedValue(null);
 
       await expect(authService.refresh(refreshDto)).rejects.toThrowError(
@@ -188,7 +194,10 @@ describe('AuthService', () => {
     });
 
     it('should return new JWT tokens if refresh token is valid', async () => {
-      const refreshDto: RefreshJwtDto = { refreshToken: 'refreshToken' };
+      const refreshDto: RefreshDto = {
+        loginId: 1,
+        refreshToken: 'refreshToken',
+      };
       const payload: IJwtPayload = {
         email: 'test@example.com',
         userId: 1,

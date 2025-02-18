@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateOrUpdateAuthCodeDto } from '../dtos/create-or-update-auth-code.dto';
-import { IAuthCodeRepositories } from '../interfaces/i-auth-code-repositories';
+import { IAuthCodeRepository } from '../interfaces/i-auth-code-repository';
 import { random as _random } from 'lodash';
 import { IConfigService } from '../../../global/domain/interfaces/i-config-service';
 import { ConfirmAuthCodeDto } from '../dtos/confirm-auth-code.dto';
@@ -14,8 +14,8 @@ import { AuthCodeTypeEnumHelper } from '../enums/auth-code-type.enum';
 @Injectable()
 export class AuthCodeService {
   constructor(
-    @Inject(IAuthCodeRepositories)
-    private readonly authCodeRepository: IAuthCodeRepositories,
+    @Inject(IAuthCodeRepository)
+    private readonly authCodeRepository: IAuthCodeRepository,
     @Inject(IConfigService)
     private readonly configService: IConfigService,
     @Inject(IEventEmitterService)

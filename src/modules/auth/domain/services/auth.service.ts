@@ -1,33 +1,29 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserService } from '../../../user/domain/services/user.service';
-import { TokenService } from './token.service';
-import { JwtDto } from '../dtos/jwt.dto';
 import { UserModel } from '../../../user/domain/models/user.model';
-import { LoginDto } from '../dtos/login.dto';
-import { IJwtPayload } from '../interfaces/i-jwt-payload-interface';
 import { RegisterDto } from '../dtos/register.dto';
-import { RefreshJwtDto } from '../dtos/refresh-jwt.dto';
+import { RefreshDto } from '../dtos/refresh.dto';
 import { RoleService } from '../../../user/domain/services/role.service';
 import { RoleEnum } from '../../../user/domain/enum/role.enum';
-import { TokenEnum } from '../enums/token.enum';
-import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
 import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
 import { UnauthorizedException } from '../../../global/domain/exceptions/unauthorized.exception';
 import { IHashService } from '../interfaces/i-hash-service';
+import { AuthLoginService } from './auth-login.service';
+import { AuthLoginModel } from '../models/auth-login.model';
+import { LogoutDto } from '../dtos/logout.dto';
+import { IAuthLogin } from '../interfaces/i-auth-login';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(IEventEmitterService)
-    private readonly eventEmitterService: IEventEmitterService,
     private readonly userService: UserService,
     private readonly roleService: RoleService,
     @Inject(IHashService)
     private readonly hashService: IHashService,
-    private readonly tokenService: TokenService,
+    private readonly authLoginService: AuthLoginService,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<JwtDto> {
+  async login(loginDto: IAuthLogin): Promise<AuthLoginModel> {
     const user: UserModel = await this.userService.getOneBy({
       email: loginDto.email,
     });
@@ -42,11 +38,7 @@ export class AuthService {
       throw new UnauthorizedException('Неверный логин или пароль');
     }
 
-    return await this.tokenService.make({
-      email: user.email,
-      userId: user.id,
-      roles: user.roles.map((role) => role.name),
-    });
+    return this.authLoginService.create(user, loginDto.ipAddress);
   }
 
   async register(registerDto: RegisterDto): Promise<UserModel> {
@@ -57,19 +49,11 @@ export class AuthService {
     });
   }
 
-  async refresh(refreshDto: RefreshJwtDto): Promise<JwtDto> {
-    const payloadFromToken = await this.tokenService.verify(
-      refreshDto.refreshToken,
-      TokenEnum.REFRESH,
-    );
-    if (!payloadFromToken) {
-      throw new UnauthorizedException('JWT истёк');
-    }
-    const newPayload: IJwtPayload = {
-      email: payloadFromToken.email,
-      userId: payloadFromToken.userId,
-      roles: payloadFromToken.roles,
-    };
-    return this.tokenService.make(newPayload);
+  async refresh(dto: RefreshDto) {
+    return this.authLoginService.refresh(dto);
+  }
+
+  async logout(dto: LogoutDto) {
+    return this.authLoginService.logout(dto);
   }
 }

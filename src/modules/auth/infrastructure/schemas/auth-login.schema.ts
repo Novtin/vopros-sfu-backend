@@ -1,7 +1,11 @@
 import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class JwtSchema {
+export class AuthLoginSchema {
+  @Expose({ name: 'id' })
+  @ApiProperty()
+  loginId: number;
+
   @Expose()
   @ApiProperty()
   accessToken: string;

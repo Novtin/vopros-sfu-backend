@@ -1,7 +1,7 @@
 import { forwardRef, Global, Module } from '@nestjs/common';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { TokenService } from '../domain/services/token.service';
+import { AuthTokenService } from '../domain/services/auth-token.service';
 import { AuthController } from './controllers/auth.controller';
 import { UserModule } from '../../user/infrastructure/user.module';
 import { HashService } from './services/hash.service';
@@ -13,10 +13,14 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthCodeController } from './controllers/auth-code.controller';
 import { AuthCodeService } from '../domain/services/auth-code.service';
-import { IAuthCodeRepositories } from '../domain/interfaces/i-auth-code-repositories';
+import { IAuthCodeRepository } from '../domain/interfaces/i-auth-code-repository';
 import { AuthCodeRepository } from './repositories/auth-code.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthCodeEntity } from './entities/auth-code.entity';
+import { AuthLoginEntity } from './entities/auth-login.entity';
+import { AuthLoginService } from '../domain/services/auth-login.service';
+import { IAuthLoginRepository } from '../domain/interfaces/i-auth-login.repository';
+import { AuthLoginRepository } from './repositories/auth-login.repository';
 
 @Global()
 @Module({
@@ -24,7 +28,7 @@ import { AuthCodeEntity } from './entities/auth-code.entity';
     forwardRef(() => UserModule),
     JwtModule,
     PassportModule,
-    TypeOrmModule.forFeature([AuthCodeEntity]),
+    TypeOrmModule.forFeature([AuthCodeEntity, AuthLoginEntity]),
   ],
   controllers: [AuthController, AuthCodeController],
   providers: [
@@ -37,16 +41,21 @@ import { AuthCodeEntity } from './entities/auth-code.entity';
       useClass: HashService,
     },
     {
-      provide: IAuthCodeRepositories,
+      provide: IAuthCodeRepository,
       useClass: AuthCodeRepository,
+    },
+    {
+      provide: IAuthLoginRepository,
+      useClass: AuthLoginRepository,
     },
     JwtAuthGuard,
     JwtStrategy,
-    TokenService,
+    AuthTokenService,
     AuthService,
     AuthCodeService,
     RolesAuthGuard,
+    AuthLoginService,
   ],
-  exports: [JwtAuthGuard, RolesAuthGuard, TokenService, IHashService],
+  exports: [JwtAuthGuard, RolesAuthGuard, AuthTokenService, IHashService],
 })
 export class AuthModule {}

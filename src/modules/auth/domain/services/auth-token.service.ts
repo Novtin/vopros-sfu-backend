@@ -7,7 +7,7 @@ import { IConfigService } from '../../../global/domain/interfaces/i-config-servi
 import { UnauthorizedException } from '../../../global/domain/exceptions/unauthorized.exception';
 
 @Injectable()
-export class TokenService {
+export class AuthTokenService {
   constructor(
     @Inject(IJwtService)
     private readonly jwtService: IJwtService,

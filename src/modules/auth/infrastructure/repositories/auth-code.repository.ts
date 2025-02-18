@@ -3,10 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthCodeModel } from '../../domain/models/auth-code.model';
 import { AuthCodeEntity } from '../entities/auth-code.entity';
-import { IAuthCodeRepositories } from '../../domain/interfaces/i-auth-code-repositories';
+import { IAuthCodeRepository } from '../../domain/interfaces/i-auth-code-repository';
 
 @Injectable()
-export class AuthCodeRepository implements IAuthCodeRepositories {
+export class AuthCodeRepository implements IAuthCodeRepository {
   constructor(
     @InjectRepository(AuthCodeEntity)
     private readonly dbRepository: Repository<AuthCodeModel>,
