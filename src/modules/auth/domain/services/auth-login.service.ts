@@ -59,9 +59,10 @@ export class AuthLoginService {
     });
   }
 
-  async logout(dto: LogoutDto) {
+  async logout(dto: LogoutDto, userId: number) {
     const loginModel = await this.getOneBy({
       id: dto.loginId,
+      userId,
     });
 
     await this.authLoginRepository.save({

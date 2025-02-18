@@ -18,6 +18,9 @@ import { SchemaTransform } from '../../../global/infrastructure/decorators/schem
 import { LogoutDto } from '../../domain/dtos/logout.dto';
 import { Request } from 'express';
 import { getIpAddress } from '../../../global/infrastructure/helpers/getIpAddress';
+import { Authorized } from '../decorators/authorized.decorator';
+import { Context } from '../decorators/context.decorator';
+import { ContextDto } from '../../domain/dtos/context.dto';
 
 @ApiTags('Аутентификация')
 @Controller('auth')
@@ -48,11 +51,12 @@ export class AuthController {
     return this.authService.refresh(dto);
   }
 
-  @ApiOperation({ summary: 'Войти' })
+  @Authorized()
+  @ApiOperation({ summary: 'Выйти' })
   @ApiOkResponse()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('logout')
-  logout(@Body() dto: LogoutDto) {
-    return this.authService.logout(dto);
+  logout(@Body() dto: LogoutDto, @Context() context: ContextDto) {
+    return this.authService.logout(dto, context);
   }
 }

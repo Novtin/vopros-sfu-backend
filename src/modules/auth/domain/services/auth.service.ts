@@ -12,6 +12,7 @@ import { AuthLoginService } from './auth-login.service';
 import { AuthLoginModel } from '../models/auth-login.model';
 import { LogoutDto } from '../dtos/logout.dto';
 import { IAuthLogin } from '../interfaces/i-auth-login';
+import { ContextDto } from '../dtos/context.dto';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +54,7 @@ export class AuthService {
     return this.authLoginService.refresh(dto);
   }
 
-  async logout(dto: LogoutDto) {
-    return this.authLoginService.logout(dto);
+  async logout(dto: LogoutDto, context: ContextDto) {
+    return this.authLoginService.logout(dto, context.userId);
   }
 }
