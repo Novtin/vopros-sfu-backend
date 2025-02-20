@@ -124,8 +124,8 @@ export class UserRepository implements IUserRepository {
           WHERE answer_rating."answerId" = answers.id), 0)`,
         'rating',
       )
-      .take(dto.pageSize)
-      .skip(dto.pageSize * dto.page);
+      .limit(dto.pageSize)
+      .offset(dto.pageSize * dto.page);
 
     switch (dto.filter) {
       case FilterUserEnum.RATING:
