@@ -65,8 +65,8 @@ export class QuestionRepository implements IQuestionRepository {
       .leftJoinAndSelect('question.rating', 'rating')
       .leftJoinAndSelect('question_author.avatar', 'question_author_avatar')
       .orderBy('question."createdAt"', 'DESC')
-      .limit(dto.pageSize)
-      .offset(dto.pageSize * dto.page);
+      .take(dto.pageSize)
+      .skip(dto.pageSize * dto.page);
 
     switch (dto.filter) {
       case FilterQuestionEnum.CREATED_AT:

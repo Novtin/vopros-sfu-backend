@@ -15,7 +15,7 @@ export class RoleRepository implements IRoleRepository {
   ) {}
 
   getOneBy(dto: SearchRoleDto): Promise<RoleModel> {
-    return this.dbRepository.createQueryBuilder().where(dto).limit(1).getOne();
+    return this.dbRepository.createQueryBuilder().where(dto).take(1).getOne();
   }
 
   existBy(dto: ExistRoleDto): Promise<boolean> {

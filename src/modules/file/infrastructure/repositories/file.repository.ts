@@ -20,7 +20,7 @@ export class FileRepository implements IFileRepository {
   }
 
   getOneBy(dto: SearchFileDto): Promise<FileModel> {
-    return this.dbRepository.createQueryBuilder().where(dto).limit(1).getOne();
+    return this.dbRepository.createQueryBuilder().where(dto).take(1).getOne();
   }
 
   async delete(id: number): Promise<void> {

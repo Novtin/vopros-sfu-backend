@@ -28,7 +28,7 @@ export class AnswerRepository implements IAnswerRepository {
       .leftJoinAndSelect('answer.question', 'question')
       .leftJoinAndSelect('answer.rating', 'rating')
       .where(dto)
-      .limit(1)
+      .take(1)
       .getOne();
   }
 
@@ -60,8 +60,8 @@ export class AnswerRepository implements IAnswerRepository {
       query.andWhere({ isSolution: dto.isSolution });
     }
 
-    query.limit(dto.pageSize);
-    query.offset(dto.pageSize * dto.page);
+    query.take(dto.pageSize);
+    query.skip(dto.pageSize * dto.page);
 
     return query.getManyAndCount();
   }

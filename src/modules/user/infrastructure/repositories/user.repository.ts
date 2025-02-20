@@ -56,7 +56,7 @@ export class UserRepository implements IUserRepository {
   async getOneBy(dto: Partial<UserModel>): Promise<UserModel> {
     const { entities, raw } = await this.getUserQueryBuilder()
       .where(dto)
-      .limit(1)
+      .take(1)
       .getRawAndEntities();
 
     return {
@@ -124,8 +124,8 @@ export class UserRepository implements IUserRepository {
           WHERE answer_rating."answerId" = answers.id), 0)`,
         'rating',
       )
-      .limit(dto.pageSize)
-      .offset(dto.pageSize * dto.page);
+      .take(dto.pageSize)
+      .skip(dto.pageSize * dto.page);
 
     switch (dto.filter) {
       case FilterUserEnum.RATING:

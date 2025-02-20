@@ -26,9 +26,9 @@ export class TagRepository implements ITagRepository {
     }
 
     if (dto?.pageSize) {
-      query.limit(dto.pageSize);
+      query.take(dto.pageSize);
       if (dto?.page) {
-        query.offset(dto.pageSize * dto.page);
+        query.skip(dto.pageSize * dto.page);
       }
     }
     return query.getManyAndCount();
@@ -39,6 +39,6 @@ export class TagRepository implements ITagRepository {
   }
 
   getOneBy(dto: SearchTagDto): Promise<TagModel> {
-    return this.dbRepository.createQueryBuilder().where(dto).limit(1).getOne();
+    return this.dbRepository.createQueryBuilder().where(dto).take(1).getOne();
   }
 }
