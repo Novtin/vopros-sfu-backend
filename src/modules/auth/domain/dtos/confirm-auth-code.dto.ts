@@ -1,24 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { AuthCodeTypeEnum } from '../enums/auth-code-type.enum';
 import { ConfirmPayloadAuthCodeDto } from './confirm-payload-auth-code.dto';
 
 export class ConfirmAuthCodeDto {
   @ApiProperty({
-    type: Number,
-    description: 'ID пользователя',
+    type: String,
+    description: 'Email пользователя',
     required: true,
   })
-  @IsNumber()
-  @Type(() => Number)
-  userId: number;
+  @IsString()
+  @Type(() => String)
+  email: string;
 
   @ApiProperty({
     enum: AuthCodeTypeEnum,

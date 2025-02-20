@@ -10,6 +10,7 @@ import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-
 import { EventEnum } from '../../../global/domain/enums/event.enum';
 import { isBefore, setHours } from 'date-fns';
 import { AuthCodeTypeEnumHelper } from '../enums/auth-code-type.enum';
+import { UserService } from '../../../user/domain/services/user.service';
 
 @Injectable()
 export class AuthCodeService {
@@ -20,11 +21,13 @@ export class AuthCodeService {
     private readonly configService: IConfigService,
     @Inject(IEventEmitterService)
     private readonly eventEmitterService: IEventEmitterService,
+    private readonly userService: UserService,
   ) {}
 
   async createOrUpdate(dto: CreateOrUpdateAuthCodeDto) {
+    const user = await this.userService.getOneBy({ email: dto.email });
     let model = await this.authCodeRepository.getOneBy({
-      userId: dto.userId,
+      userId: user.id,
       type: dto.type,
     });
     const today = new Date(new Date().toISOString());
@@ -57,8 +60,9 @@ export class AuthCodeService {
     isConfirmed: boolean;
     availableAttempts: number;
   }> {
+    const user = await this.userService.getOneBy({ email: dto.email });
     const model = await this.authCodeRepository.getOneBy({
-      userId: dto.userId,
+      userId: user.id,
       type: dto.type,
     });
 
@@ -93,7 +97,7 @@ export class AuthCodeService {
       AuthCodeTypeEnumHelper.toEventEnum(dto.type),
       {
         ...dto.payload,
-        userId: dto.userId,
+        userId: user.id,
       },
     );
     return {
