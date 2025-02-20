@@ -45,6 +45,7 @@ export class AuthCodeService {
         })
       : await this.authCodeRepository.save({
           ...dto,
+          userId: user.id,
           code: this.generateCode(),
         });
 
