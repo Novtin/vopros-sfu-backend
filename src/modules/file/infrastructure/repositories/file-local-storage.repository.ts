@@ -22,8 +22,8 @@ export class FileLocalStorageRepository implements IFileStorageRepository {
     .storageExamplePath.split('/');
 
   delete(fileName: string): void {
-    fs.unlink(join(...this.pathToStorage, fileName), (error) => {
-      throw new NotFoundException(error.message);
+    fs.unlink(join(...this.pathToStorage, fileName), () => {
+      console.error('File not found');
     });
   }
 
