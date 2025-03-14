@@ -6,10 +6,8 @@ import { RoleService } from '../../modules/user/domain/services/role.service';
 import { UserModel } from '../../modules/user/domain/models/user.model';
 import { describe, expect, it, beforeAll } from '@jest/globals';
 import { RoleEnum } from '../../modules/user/domain/enum/role.enum';
-import { JwtDto } from '../../modules/auth/domain/dtos/jwt.dto';
 import { RegisterDto } from '../../modules/auth/domain/dtos/register.dto';
 import { RefreshDto } from '../../modules/auth/domain/dtos/refresh.dto';
-import { IJwtPayload } from '../../modules/auth/domain/interfaces/i-jwt-payload-interface';
 import { RoleModel } from '../../modules/user/domain/models/role.model';
 import { IEventEmitterService } from '../../modules/global/domain/interfaces/i-event-emitter-service';
 import { IConfigService } from '../../modules/global/domain/interfaces/i-config-service';
@@ -17,21 +15,37 @@ import { IHashService } from '../../modules/auth/domain/interfaces/i-hash-servic
 import { ForbiddenException } from '../../modules/global/domain/exceptions/forbidden.exception';
 import { UnauthorizedException } from '../../modules/global/domain/exceptions/unauthorized.exception';
 import { IAuthLogin } from '../../modules/auth/domain/interfaces/i-auth-login';
+import { AuthLoginService } from '../../modules/auth/domain/services/auth-login.service';
+import { AuthCodeService } from '../../modules/auth/domain/services/auth-code.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ConfigService } from '@nestjs/config';
+import { AuthLoginModel } from '../../modules/auth/domain/models/auth-login.model';
+import { LogoutDto } from '../../modules/auth/domain/dtos/logout.dto';
+import { ContextDto } from '../../modules/auth/domain/dtos/context.dto';
 
 describe('AuthService', () => {
   let authService: AuthService;
+  let authLoginService: AuthLoginService;
   let userService: UserService;
-  let tokenService: AuthTokenService;
   let hashService: IHashService;
   let roleService: RoleService;
-  let configService: IConfigService;
-  let eventEmitterService: IEventEmitterService;
 
   beforeAll(async () => {
     const mockUserService = {
       getOneBy: jest.fn(),
       create: jest.fn(),
       confirmEmail: jest.fn(),
+    };
+
+    const mockAuthLoginService = {
+      create: jest.fn(),
+      refresh: jest.fn(),
+      logout: jest.fn(),
+    };
+
+    const mockAuthCodeService = {
+      createOrUpdate: jest.fn(),
+      confirm: jest.fn(),
     };
 
     const mockTokenService = {
@@ -48,14 +62,6 @@ describe('AuthService', () => {
       getOneBy: jest.fn(),
     };
 
-    const mockConfigService = {
-      get: jest.fn(),
-    };
-
-    const mockEventEmitterService = {
-      emit: jest.fn(),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -63,19 +69,18 @@ describe('AuthService', () => {
         { provide: AuthTokenService, useValue: mockTokenService },
         { provide: IHashService, useValue: mockHashService },
         { provide: RoleService, useValue: mockRoleService },
-        { provide: IEventEmitterService, useValue: mockEventEmitterService },
-        { provide: IConfigService, useValue: mockConfigService },
+        { provide: IEventEmitterService, useClass: EventEmitter2 },
+        { provide: IConfigService, useValue: ConfigService },
+        { provide: AuthLoginService, useValue: mockAuthLoginService },
+        { provide: AuthCodeService, useValue: mockAuthCodeService },
       ],
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
-    tokenService = module.get<AuthTokenService>(AuthTokenService);
     hashService = module.get<IHashService>(IHashService);
     roleService = module.get<RoleService>(RoleService);
-    eventEmitterService =
-      module.get<IEventEmitterService>(IEventEmitterService);
-    configService = module.get<IConfigService>(IConfigService);
+    authLoginService = module.get<AuthLoginService>(AuthLoginService);
   });
 
   describe('login', () => {
@@ -120,7 +125,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('should return JwtDto if login is successful', async () => {
+    it('should return AuthLoginModel if login is successful', async () => {
       const loginDto: IAuthLogin = {
         email: 'test@example.com',
         password: 'password',
@@ -140,19 +145,20 @@ describe('AuthService', () => {
       } as UserModel;
       userService.getOneBy = jest.fn().mockResolvedValue(user);
       hashService.compareTextAndHash = jest.fn().mockResolvedValue(true);
-      const jwtDto: JwtDto = {
+      const authLoginModel = {
+        userId: 1,
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
-      };
-      tokenService.make = jest.fn().mockResolvedValue(jwtDto);
+      } as AuthLoginModel;
+      authLoginService.create = jest.fn().mockResolvedValue(authLoginModel);
 
       const result = await authService.login(loginDto);
-      expect(result).toEqual(jwtDto);
+      expect(result).toEqual(authLoginModel);
     });
   });
 
   describe('register', () => {
-    it('should create a user and send a confirmation email', async () => {
+    it('should create a user', async () => {
       const registerDto: RegisterDto = {
         email: 'test@example.com',
         password: 'test',
@@ -170,49 +176,38 @@ describe('AuthService', () => {
         email: 'test@example.com',
         password: 'test',
         nickname: 'test',
-        emailHash: 'hashedEmail',
       });
-      configService.get = jest.fn().mockReturnValue('http://test.com');
 
       const result = await authService.register(registerDto);
       expect(result.email).toBe('test@example.com');
-      expect(eventEmitterService.emit).toHaveBeenCalled();
+      expect(hashService.makeHash).toHaveBeenCalled();
+      expect(roleService.getOneBy).toHaveBeenCalled();
     });
   });
 
   describe('refresh', () => {
-    it('should throw UnauthorizedException if refresh token is invalid', async () => {
+    it('should call AuthLoginService.refresh', async () => {
       const refreshDto: RefreshDto = {
         loginId: 1,
         refreshToken: 'refreshToken',
       };
-      tokenService.verify = jest.fn().mockResolvedValue(null);
-
-      await expect(authService.refresh(refreshDto)).rejects.toThrowError(
-        UnauthorizedException,
-      );
+      await authService.refresh(refreshDto);
+      expect(authLoginService.refresh).toHaveBeenCalled();
     });
+  });
 
-    it('should return new JWT tokens if refresh token is valid', async () => {
-      const refreshDto: RefreshDto = {
+  describe('logout', () => {
+    it('should call AuthLoginService.logout', async () => {
+      const logoutDto: LogoutDto = {
         loginId: 1,
-        refreshToken: 'refreshToken',
       };
-      const payload: IJwtPayload = {
-        email: 'test@example.com',
+      const contextDto: ContextDto = {
+        email: 'test@test.com',
         userId: 1,
-        roles: [RoleEnum.USER],
+        roles: ['user'],
       };
-      const jwtDto: JwtDto = {
-        accessToken: 'newAccessToken',
-        refreshToken: 'newRefreshToken',
-      };
-
-      tokenService.verify = jest.fn().mockResolvedValue(payload);
-      tokenService.make = jest.fn().mockResolvedValue(jwtDto);
-
-      const result = await authService.refresh(refreshDto);
-      expect(result).toEqual(jwtDto);
+      await authService.logout(logoutDto, contextDto);
+      expect(authLoginService.logout).toHaveBeenCalled();
     });
   });
 });
