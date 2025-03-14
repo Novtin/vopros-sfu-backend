@@ -94,9 +94,10 @@ export class UserController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateUserDto,
+    @Context() context: ContextDto,
   ): Promise<UserModel> {
     dto.avatarId = undefined;
-    return this.userService.update(id, dto);
+    return this.userService.updateThis(id, context.userId, dto);
   }
 
   @Authorized()
@@ -108,8 +109,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Context() context: ContextDto,
   ) {
-    this.userService.throwForbiddenExceptionIfNotThisOrAdmin(context, id);
-    await this.userService.delete(id);
+    await this.userService.delete(id, context);
   }
 
   @Roles(RoleEnum.ADMIN)

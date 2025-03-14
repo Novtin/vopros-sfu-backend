@@ -1,4 +1,5 @@
 import {
+  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
@@ -12,11 +13,13 @@ export class UniqueUserNicknameValidator
 {
   constructor(@Inject(UserService) private readonly userService: UserService) {}
 
-  async validate(text: string): Promise<boolean> {
+  async validate(text: string, args: ValidationArguments): Promise<boolean> {
+    const userId = (args.object as { id: number }).id;
     const isUserExistsByNickname: boolean = await this.userService.existBy({
+      id: userId,
       nickname: text,
     });
-    return !isUserExistsByNickname;
+    return userId ? isUserExistsByNickname : !isUserExistsByNickname;
   }
 
   defaultMessage(): string {

@@ -53,8 +53,18 @@ export class UserService {
     }
   }
 
+  async updateThis(
+    userId: number,
+    contextUserId: number,
+    dto: Partial<UserModel>,
+  ) {
+    this.throwForbiddenExceptionIfNotThis(userId, contextUserId);
+    return this.update(userId, dto);
+  }
+
   async update(id: number, dto: Partial<UserModel>) {
     await this.throwNotFoundExceptionIfNotExist({ id });
+    delete dto.id;
     return this.userRepository.update(id, dto);
   }
 
@@ -103,8 +113,8 @@ export class UserService {
     return this.userRepository.search(dto);
   }
 
-  async delete(id: number) {
-    await this.throwNotFoundExceptionIfNotExist({ id });
+  async delete(id: number, context: ContextDto) {
+    this.throwForbiddenExceptionIfNotThisOrAdmin(context, id);
     await this.userRepository.delete(id);
   }
 
