@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SaveFileDto } from '../dtos/save-file.dto';
 import { SearchFileDto } from '../dtos/search-file.dto';
-import { ExistQuestionDto } from '../../../question/domain/dtos/exist-question.dto';
 import { ExistFileDto } from '../dtos/exist-file.dto';
 import { IFileRepository } from '../interfaces/i-file-repository';
 import { FileModel } from '../models/file.model';
@@ -35,7 +34,7 @@ export class FileService {
 
   async getReadStreamByFileId(id: number, dto: StreamFileDto) {
     const fileModel: FileModel = await this.getOneBy({ id });
-    return this.fileStorageRepository.getReadStream(fileModel, dto.isExample);
+    return this.fileStorageRepository.getReadStream(fileModel, dto);
   }
 
   async delete(id: number): Promise<void> {
@@ -46,7 +45,7 @@ export class FileService {
     }
   }
 
-  async throwNotFoundExceptionIfNotExist(dto: ExistQuestionDto) {
+  async throwNotFoundExceptionIfNotExist(dto: SearchFileDto) {
     if (!(await this.existBy(dto))) {
       throw new NotFoundException();
     }

@@ -1,6 +1,5 @@
 import { EntitySchema } from 'typeorm';
 import { FileModel } from '../../domain/models/file.model';
-import { AbstractTimeEntity } from '../../../global/infrastructure/entities/abstract-time.entity';
 
 export const FileEntity = new EntitySchema<FileModel>({
   name: 'file',
@@ -20,6 +19,10 @@ export const FileEntity = new EntitySchema<FileModel>({
     mimetype: {
       type: String,
     },
-    ...AbstractTimeEntity,
+    createdAt: {
+      name: 'createdAt',
+      createDate: true,
+      type: 'timestamp with time zone',
+    },
   },
 });

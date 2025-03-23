@@ -5,4 +5,5 @@ export default registerAs('fileLocal', () => ({
   storagePath: process.env.FILE_SAVE_PATH,
   storageExamplePath: process.env.FILE_EXAMPLES_SAVE_PATH,
   maxSize: process.env.FILE_MAX_SIZE,
+  miniatureSizes: JSON.parse(process.env.FILE_MINIMATURE_SIZES),
 }));

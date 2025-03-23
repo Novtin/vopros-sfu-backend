@@ -1,6 +1,4 @@
-import { AbstractTimeModel } from '../../../global/domain/models/abstract-time.model';
-
-export class FileModel extends AbstractTimeModel {
+export class FileModel {
   id: number;
 
   name: string;
@@ -8,4 +6,6 @@ export class FileModel extends AbstractTimeModel {
   size: number;
 
   mimetype: string;
+
+  createdAt: Date;
 }

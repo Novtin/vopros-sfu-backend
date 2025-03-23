@@ -24,7 +24,7 @@ export class FileRepository implements IFileRepository {
   }
 
   async delete(id: number): Promise<void> {
-    await this.dbRepository.softDelete({ id });
+    await this.dbRepository.delete({ id });
   }
 
   existBy(dto: ExistFileDto): Promise<boolean> {
