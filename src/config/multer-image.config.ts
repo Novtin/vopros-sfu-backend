@@ -40,7 +40,7 @@ const getMulterImageOptions = (): MulterOptions => {
       }
     },
     limits: {
-      fileSize: Math.pow(1024, 2) * 10, // 10 МБ
+      fileSize: +process.env.FILE_MAX_SIZE,
     },
   };
 };
