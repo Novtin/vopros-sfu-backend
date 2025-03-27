@@ -7,16 +7,16 @@ import {
   IsString,
 } from 'class-validator';
 import { PaginationDto } from '../../../global/domain/dtos/pagination.dto';
-import { FilterQuestionEnum } from '../enums/filter-question.enum';
+import { SortQuestionEnum } from '../enums/sort-question.enum';
 import { Type } from 'class-transformer';
 
 export class SearchQuestionDto extends PaginationDto {
   @ApiProperty({
-    enum: FilterQuestionEnum,
+    enum: SortQuestionEnum,
     required: true,
   })
-  @IsEnum(FilterQuestionEnum)
-  filter: FilterQuestionEnum;
+  @IsEnum(SortQuestionEnum)
+  sort: SortQuestionEnum;
 
   @ApiProperty({
     type: Number,

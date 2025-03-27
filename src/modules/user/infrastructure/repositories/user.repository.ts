@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 import { ExistUserDto } from '../../domain/dtos/exist-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
-import { FilterUserEnum } from '../../domain/enum/filter-user.enum';
+import { SortUserEnum } from '../../domain/enum/sort-user.enum';
 import { IUserRepository } from '../../domain/interfaces/i-user-repository';
 import { UserEntity } from '../entities/user.entity';
 
@@ -127,8 +127,8 @@ export class UserRepository implements IUserRepository {
       .limit(dto.pageSize)
       .offset(dto.pageSize * dto.page);
 
-    switch (dto.filter) {
-      case FilterUserEnum.RATING:
+    switch (dto.sort) {
+      case SortUserEnum.RATING:
         query.orderBy('rating', 'DESC');
         break;
       default:

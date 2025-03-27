@@ -7,8 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { FilterUserEnum } from '../enum/filter-user.enum';
-import { FilterQuestionEnum } from '../../../question/domain/enums/filter-question.enum';
+import { SortUserEnum } from '../enum/sort-user.enum';
 import { PaginationDto } from '../../../global/domain/dtos/pagination.dto';
 
 export class SearchUserDto extends PaginationDto {
@@ -23,11 +22,11 @@ export class SearchUserDto extends PaginationDto {
   id?: number;
 
   @ApiProperty({
-    enum: FilterUserEnum,
+    enum: SortUserEnum,
     required: true,
   })
-  @IsEnum(FilterQuestionEnum)
-  filter: FilterUserEnum;
+  @IsEnum(SortUserEnum)
+  sort: SortUserEnum;
 
   @ApiProperty({
     type: String,

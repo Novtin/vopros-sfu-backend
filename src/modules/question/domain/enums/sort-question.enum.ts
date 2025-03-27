@@ -1,4 +1,4 @@
-export enum FilterQuestionEnum {
+export enum SortQuestionEnum {
   CREATED_AT = 'createdAt',
   RATING = 'rating',
   VIEWS = 'views',

@@ -5,7 +5,7 @@ import { QuestionModel } from '../../domain/models/question.model';
 import { SearchQuestionDto } from '../../domain/dtos/search-question.dto';
 import { ExistQuestionDto } from '../../domain/dtos/exist-question.dto';
 import { CreateQuestionDto } from '../../domain/dtos/create-question.dto';
-import { FilterQuestionEnum } from '../../domain/enums/filter-question.enum';
+import { SortQuestionEnum } from '../../domain/enums/sort-question.enum';
 import { IQuestionRepository } from '../../domain/interfaces/i-question-repository';
 import { QuestionEntity } from '../entities/question.entity';
 import { IQuestionCount } from '../../domain/interfaces/i-question-count';
@@ -68,10 +68,10 @@ export class QuestionRepository implements IQuestionRepository {
       .limit(dto.pageSize)
       .offset(dto.pageSize * dto.page);
 
-    switch (dto.filter) {
-      case FilterQuestionEnum.CREATED_AT:
+    switch (dto.sort) {
+      case SortQuestionEnum.CREATED_AT:
         break;
-      case FilterQuestionEnum.RATING:
+      case SortQuestionEnum.RATING:
         query
           .addSelect(
             (subQuery) =>
@@ -83,7 +83,7 @@ export class QuestionRepository implements IQuestionRepository {
           )
           .orderBy(`"sumRating"`, 'DESC');
         break;
-      case FilterQuestionEnum.VIEWS:
+      case SortQuestionEnum.VIEWS:
         query
           .addSelect(
             (subQuery) =>
