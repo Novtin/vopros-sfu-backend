@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsBoolean,
   IsEnum,
   IsInt,
@@ -26,6 +28,16 @@ export class SearchQuestionDto extends PaginationDto {
   @IsOptional()
   @Type(() => Number)
   authorId?: number;
+
+  @ApiProperty({
+    type: [Number],
+    required: false,
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsOptional()
+  @IsInt({ each: true })
+  tagIds?: number[];
 
   @ApiProperty({
     type: Number,
@@ -84,6 +96,26 @@ export class SearchQuestionDto extends PaginationDto {
   @Type(() => Boolean)
   @IsOptional()
   isWithoutAnswer?: boolean;
+
+  @ApiProperty({
+    type: Boolean,
+    description: 'Без просмотров?',
+    required: false,
+  })
+  @IsBoolean()
+  @Type(() => Boolean)
+  @IsOptional()
+  isWithoutView?: boolean;
+
+  @ApiProperty({
+    type: Boolean,
+    description: 'Без голосов?',
+    required: false,
+  })
+  @IsBoolean()
+  @Type(() => Boolean)
+  @IsOptional()
+  isWithoutRating?: boolean;
 
   @ApiProperty({
     type: Number,

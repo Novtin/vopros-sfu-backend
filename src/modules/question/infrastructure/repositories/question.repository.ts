@@ -99,47 +99,57 @@ export class QuestionRepository implements IQuestionRepository {
         throw new NotFoundException();
     }
 
-    if (dto?.authorId) {
-      query.andWhere({ authorId: dto.authorId });
+    if (dto.tagIds) {
+      query.andWhere('tags.id IN (:...tagIds)', { tagIds: dto.tagIds });
     }
 
-    if (dto?.isWithoutAnswer) {
-      query.where('answers.id IS NULL');
+    if (dto.isWithoutAnswer) {
+      query.andWhere('answers.id IS NULL');
     }
 
-    if (dto?.favoriteUserId) {
+    if (dto.isWithoutView) {
+      query.andWhere('views.id IS NULL');
+    }
+
+    if (dto.isWithoutRating) {
+      query.andWhere('rating.id IS NULL');
+    }
+
+    if (dto.favoriteUserId) {
       query.andWhere(
         'question.id IN (SELECT "questionId" FROM question_favorite WHERE question_favorite."userId" = :favoriteUserId)',
         { favoriteUserId: dto.favoriteUserId },
       );
     }
 
-    if (dto?.answeredUserId) {
+    if (dto.answeredUserId) {
       query.andWhere(
         'answers.id IN (SELECT id FROM answer WHERE answer."authorId" = :answeredUserId)',
         { answeredUserId: dto.answeredUserId },
       );
     }
 
-    if (dto?.title) {
-      query.where('question.title ILIKE :title', { title: `%${dto.title}%` });
+    if (dto.title) {
+      query.andWhere('question.title ILIKE :title', {
+        title: `%${dto.title}%`,
+      });
     }
 
-    if (dto?.id) {
+    if (dto.id) {
       query.andWhere({ id: dto.id });
     }
 
-    if (dto?.authorId) {
+    if (dto.authorId) {
       query.andWhere({ authorId: dto.authorId });
     }
 
-    if (dto?.description) {
+    if (dto.description) {
       query.andWhere('question.description ILIKE :description', {
         description: `%${dto.description}%`,
       });
     }
 
-    if (dto?.isResolved) {
+    if (dto.isResolved) {
       query.andWhere(
         'answers.id IN (SELECT id FROM answer WHERE answer."isSolution" = TRUE)',
       );
