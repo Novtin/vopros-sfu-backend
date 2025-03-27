@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PaginationDto } from '../../../global/domain/dtos/pagination.dto';
+import { SortTagEnum } from '../enums/sort-tag.enum';
 
 export class SearchTagDto extends PaginationDto {
   @ApiProperty({
@@ -23,4 +24,12 @@ export class SearchTagDto extends PaginationDto {
   @IsOptional()
   @Type(() => String)
   name?: string;
+
+  @ApiProperty({
+    enum: SortTagEnum,
+    required: false,
+  })
+  @IsEnum(SortTagEnum)
+  @IsOptional()
+  sort?: SortTagEnum;
 }
