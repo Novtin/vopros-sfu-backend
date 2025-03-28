@@ -108,11 +108,15 @@ export class QuestionRepository implements IQuestionRepository {
     }
 
     if (dto.isWithoutView) {
-      query.andWhere('views.id IS NULL');
+      query.andWhere(
+        'NOT EXISTS (SELECT 1 FROM question_view v WHERE v."questionId" = question.id)',
+      );
     }
 
     if (dto.isWithoutRating) {
-      query.andWhere('rating.id IS NULL');
+      query.andWhere(
+        'NOT EXISTS (SELECT 1 FROM question_rating r WHERE r."questionId" = question.id)',
+      );
     }
 
     if (dto.favoriteUserId) {
