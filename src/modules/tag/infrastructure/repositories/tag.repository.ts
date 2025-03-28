@@ -18,7 +18,11 @@ export class TagRepository implements ITagRepository {
   async search(dto: SearchTagDto): Promise<[TagModel[], number]> {
     const query = this.dbRepository
       .createQueryBuilder('tag')
-      .leftJoinAndSelect('tag.questions', 'questions');
+      .select([
+        'tag.id',
+        'tag.name',
+        '(SELECT COUNT(*) FROM question_tag qt WHERE qt."tagId" = tag.id) AS "questionCount"',
+      ]);
     if (dto.id) {
       query.andWhere({ id: dto.id });
     }
@@ -29,24 +33,15 @@ export class TagRepository implements ITagRepository {
     }
     switch (dto.sort) {
       case SortTagEnum.CREATED_AT: {
-        query.orderBy('createdAt', 'DESC');
+        query.orderBy('tag.createdAt', 'DESC');
         break;
       }
       case SortTagEnum.NAME: {
-        query.orderBy('name', 'ASC');
+        query.orderBy('tag.name', 'ASC');
         break;
       }
       case SortTagEnum.POPULAR: {
-        query
-          .addSelect(
-            (subQuery) =>
-              subQuery
-                .select('COUNT(questions.id)')
-                .from('question', 'questions')
-                .where('questions.tagId = tag.id'),
-            'questionCount',
-          )
-          .orderBy('questionCount', 'DESC');
+        query.orderBy('"questionCount"', 'DESC');
         break;
       }
     }

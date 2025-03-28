@@ -17,10 +17,4 @@ export const TagEntity = new EntitySchema<TagModel>({
     },
     ...AbstractTimeEntity,
   },
-  relations: {
-    questions: {
-      type: 'many-to-many',
-      target: 'question',
-    },
-  },
 });
