@@ -153,6 +153,8 @@ export class QuestionRepository implements IQuestionRepository {
       });
     }
 
+    console.log();
+    console.log(dto.isResolved);
     if (dto.isResolved) {
       query.andWhere(
         'answers.id IN (SELECT id FROM answer WHERE answer."isSolution" = TRUE)',

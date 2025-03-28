@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { PaginationDto } from '../../../global/domain/dtos/pagination.dto';
 import { SortQuestionEnum } from '../enums/sort-question.enum';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class SearchQuestionDto extends PaginationDto {
   @ApiProperty({
@@ -83,7 +83,7 @@ export class SearchQuestionDto extends PaginationDto {
     required: false,
   })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsOptional()
   isResolved?: boolean;
 
@@ -93,7 +93,7 @@ export class SearchQuestionDto extends PaginationDto {
     required: false,
   })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsOptional()
   isWithoutAnswer?: boolean;
 
@@ -103,7 +103,7 @@ export class SearchQuestionDto extends PaginationDto {
     required: false,
   })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsOptional()
   isWithoutView?: boolean;
 
@@ -113,7 +113,7 @@ export class SearchQuestionDto extends PaginationDto {
     required: false,
   })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsOptional()
   isWithoutRating?: boolean;
 

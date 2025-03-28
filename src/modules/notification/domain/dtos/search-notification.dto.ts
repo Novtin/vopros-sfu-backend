@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { PaginationDto } from '../../../global/domain/dtos/pagination.dto';
 
 export class SearchNotificationDto extends PaginationDto {
@@ -30,7 +30,7 @@ export class SearchNotificationDto extends PaginationDto {
     required: false,
   })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsOptional()
   isViewed?: boolean;
 }

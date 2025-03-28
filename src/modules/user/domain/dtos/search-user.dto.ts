@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { SortUserEnum } from '../enum/sort-user.enum';
 import { PaginationDto } from '../../../global/domain/dtos/pagination.dto';
 
@@ -45,6 +45,6 @@ export class SearchUserDto extends PaginationDto {
   })
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true' || value === true)
   withDeleted?: boolean;
 }
