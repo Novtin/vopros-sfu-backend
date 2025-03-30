@@ -21,7 +21,7 @@ import { AuthLoginEntity } from './entities/auth-login.entity';
 import { AuthLoginService } from '../domain/services/auth-login.service';
 import { IAuthLoginRepository } from '../domain/interfaces/i-auth-login.repository';
 import { AuthLoginRepository } from './repositories/auth-login.repository';
-import { OptionalJwtAuthGuard } from './guards/optional-jwt-auth-guard.service';
+import { OptionalJwtAuthGuard } from './guards/optional-jwt-auth.guard';
 
 @Global()
 @Module({
