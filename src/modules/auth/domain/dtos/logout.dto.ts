@@ -1,14 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString } from 'class-validator';
 
 export class LogoutDto {
   @ApiProperty({
-    type: Number,
+    type: String,
     description: 'Id входа',
     required: true,
   })
-  @IsNumber()
-  @Type(() => Number)
-  loginId: number;
+  @IsString()
+  loginId: string;
 }

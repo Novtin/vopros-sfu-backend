@@ -6,9 +6,9 @@ export const AuthLoginEntity = new EntitySchema<AuthLoginModel>({
   tableName: 'auth_login',
   columns: {
     id: {
-      type: 'int',
+      type: 'uuid',
       primary: true,
-      generated: true,
+      generated: 'uuid',
     },
     accessToken: {
       type: 'varchar',

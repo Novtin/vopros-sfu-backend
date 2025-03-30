@@ -1,7 +1,7 @@
 import { UserModel } from '../../../user/domain/models/user.model';
 
 export class AuthLoginModel {
-  id: number;
+  id: string;
 
   userId: number;
 

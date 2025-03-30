@@ -100,7 +100,16 @@ export class QuestionRepository implements IQuestionRepository {
     }
 
     if (dto.tagIds) {
-      query.andWhere('tags.id IN (:...tagIds)', { tagIds: dto.tagIds });
+      query.andWhere(
+        `EXISTS (
+            SELECT 1 FROM question_tag qt
+            WHERE qt."tagId" IN (:...tagIds)
+            AND qt."questionId" = question.id
+            GROUP BY qt."questionId"
+            HAVING COUNT(DISTINCT qt."tagId") = :tagCount
+          )`,
+        { tagIds: dto.tagIds, tagCount: dto.tagIds.length },
+      );
     }
 
     if (dto.isWithoutAnswer) {

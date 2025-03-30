@@ -188,7 +188,7 @@ describe('AuthService', () => {
   describe('refresh', () => {
     it('should call AuthLoginService.refresh', async () => {
       const refreshDto: RefreshDto = {
-        loginId: 1,
+        loginId: 'uuid',
         refreshToken: 'refreshToken',
       };
       await authService.refresh(refreshDto);
@@ -199,7 +199,7 @@ describe('AuthService', () => {
   describe('logout', () => {
     it('should call AuthLoginService.logout', async () => {
       const logoutDto: LogoutDto = {
-        loginId: 1,
+        loginId: 'uuid',
       };
       const contextDto: ContextDto = {
         email: 'test@test.com',

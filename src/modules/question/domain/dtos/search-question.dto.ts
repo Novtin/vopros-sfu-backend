@@ -37,6 +37,9 @@ export class SearchQuestionDto extends PaginationDto {
   @ArrayNotEmpty()
   @IsOptional()
   @IsInt({ each: true })
+  @Transform(({ value }) =>
+    Array.isArray(value) ? value.map(Number) : [parseInt(value, 10)],
+  )
   tagIds?: number[];
 
   @ApiProperty({
