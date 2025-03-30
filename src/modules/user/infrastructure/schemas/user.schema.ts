@@ -55,7 +55,7 @@ export class UserSchema {
           questionFavorite.questionId,
       ) || [],
   )
-  questionFavoriteIds: number[];
+  favoriteQuestionIds: number[];
 
   @Expose()
   @ApiProperty()
