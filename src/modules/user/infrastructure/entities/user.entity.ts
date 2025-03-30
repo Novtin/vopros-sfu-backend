@@ -75,6 +75,11 @@ export const UserEntity = new EntitySchema<UserModel>({
       target: 'question',
       inverseSide: 'author',
     },
+    questionsFavorite: {
+      type: 'one-to-many',
+      target: 'question_favorite',
+      inverseSide: 'user',
+    },
     answers: {
       type: 'one-to-many',
       target: 'answer',

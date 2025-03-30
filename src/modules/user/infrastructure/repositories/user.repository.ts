@@ -40,6 +40,7 @@ export class UserRepository implements IUserRepository {
       .leftJoinAndSelect('user.avatar', 'avatar')
       .leftJoinAndSelect('user.roles', 'roles')
       .leftJoinAndSelect('user.questions', 'questions')
+      .leftJoinAndSelect('user.questionsFavorite', 'questionsFavorite')
       .leftJoinAndSelect('user.answers', 'answers')
       .addSelect(
         `COALESCE(

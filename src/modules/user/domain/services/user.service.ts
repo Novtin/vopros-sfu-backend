@@ -11,7 +11,6 @@ import { NotFoundException } from '../../../global/domain/exceptions/not-found.e
 import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
 import { BadRequestException } from '../../../global/domain/exceptions/bad-request.exception';
 import { UnprocessableEntityException } from '../../../global/domain/exceptions/unprocessable-entity.exception';
-import { IEventEmitterService } from '../../../global/domain/interfaces/i-event-emitter-service';
 import { IHashService } from '../../../auth/domain/interfaces/i-hash-service';
 import { UpdatePasswordUserDto } from '../dtos/update-password-user.dto';
 import { sample as _sample } from 'lodash';
@@ -21,8 +20,6 @@ export class UserService {
   constructor(
     @Inject(IUserRepository)
     private readonly userRepository: IUserRepository,
-    @Inject(IEventEmitterService)
-    private readonly eventEmitterService: IEventEmitterService,
     private readonly fileService: FileService,
     @Inject(IHashService)
     private readonly hashService: IHashService,

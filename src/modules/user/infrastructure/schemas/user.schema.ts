@@ -1,6 +1,7 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { FileSchema } from '../../../file/infrastructure/schemas/file.schema';
+import { QuestionFavoriteModel } from '../../../question/domain/models/question-favorite.model';
 
 export class UserSchema {
   @Expose()
@@ -41,6 +42,20 @@ export class UserSchema {
   @ApiProperty({ type: Number })
   @Transform((event) => event.obj.answers?.length ?? 0)
   countAnswers: number;
+
+  @Expose()
+  @ApiProperty({
+    type: Number,
+    isArray: true,
+  })
+  @Transform(
+    (event) =>
+      event.obj.questionsFavorite?.map(
+        (questionFavorite: QuestionFavoriteModel) =>
+          questionFavorite.questionId,
+      ) || [],
+  )
+  questionFavoriteIds: number[];
 
   @Expose()
   @ApiProperty()
