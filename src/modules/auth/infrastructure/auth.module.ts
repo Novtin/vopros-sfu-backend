@@ -21,6 +21,7 @@ import { AuthLoginEntity } from './entities/auth-login.entity';
 import { AuthLoginService } from '../domain/services/auth-login.service';
 import { IAuthLoginRepository } from '../domain/interfaces/i-auth-login.repository';
 import { AuthLoginRepository } from './repositories/auth-login.repository';
+import { OptionalJwtAuthGuard } from './guards/optional-jwt-auth-guard.service';
 
 @Global()
 @Module({
@@ -49,6 +50,7 @@ import { AuthLoginRepository } from './repositories/auth-login.repository';
       useClass: AuthLoginRepository,
     },
     JwtAuthGuard,
+    OptionalJwtAuthGuard,
     JwtStrategy,
     AuthTokenService,
     AuthService,
@@ -56,6 +58,12 @@ import { AuthLoginRepository } from './repositories/auth-login.repository';
     RolesAuthGuard,
     AuthLoginService,
   ],
-  exports: [JwtAuthGuard, RolesAuthGuard, AuthTokenService, IHashService],
+  exports: [
+    JwtAuthGuard,
+    OptionalJwtAuthGuard,
+    RolesAuthGuard,
+    AuthTokenService,
+    IHashService,
+  ],
 })
 export class AuthModule {}

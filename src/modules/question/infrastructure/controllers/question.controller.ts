@@ -35,6 +35,7 @@ import { RatingDto } from '../../../global/domain/dtos/rating.dto';
 import { QuestionCountSchema } from '../schemas/question-count.schema';
 import { IQuestionCount } from '../../domain/interfaces/i-question-count';
 import { SchemaTransform } from '../../../global/infrastructure/decorators/schema-transform';
+import { OptionalAuthorized } from '../../../auth/infrastructure/decorators/optional-authorized';
 
 @ApiTags('Вопрос')
 @Controller('question')
@@ -78,6 +79,7 @@ export class QuestionController {
     return this.questionService.getCountQuestions();
   }
 
+  @OptionalAuthorized()
   @Get('/:id')
   @ApiOperation({ summary: 'Получить вопрос' })
   @SchemaTransform(QuestionSchema)
