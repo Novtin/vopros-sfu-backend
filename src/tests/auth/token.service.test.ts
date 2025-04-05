@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import jwtConfig from '../../config/jwt.config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from '../../modules/auth/domain/interfaces/i-jwt-payload-interface';
-import { RoleEnum } from '../../modules/user/domain/enum/role.enum';
+import { RoleEnum } from '../../modules/user/domain/enums/role.enum';
 import { JwtDto } from '../../modules/auth/domain/dtos/jwt.dto';
 import { TokenEnum } from '../../modules/auth/domain/enums/token.enum';
 import { IJwtService } from '../../modules/auth/domain/interfaces/i-jwt-service';

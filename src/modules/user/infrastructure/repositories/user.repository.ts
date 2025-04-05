@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 import { ExistUserDto } from '../../domain/dtos/exist-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
-import { SortUserEnum } from '../../domain/enum/sort-user.enum';
+import { SortUserEnum } from '../../domain/enums/sort-user.enum';
 import { IUserRepository } from '../../domain/interfaces/i-user-repository';
 import { UserEntity } from '../entities/user.entity';
 

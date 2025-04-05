@@ -3,7 +3,7 @@ import { SaveAnswerDto } from '../dtos/save-answer.dto';
 import { QuestionService } from '../../../question/domain/services/question.service';
 import { ExistAnswerDto } from '../dtos/exist-answer.dto';
 import { SearchAnswerDto } from '../dtos/search-answer.dto';
-import { RoleEnum } from '../../../user/domain/enum/role.enum';
+import { RoleEnum } from '../../../user/domain/enums/role.enum';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
 import { UpdateAnswerDto } from '../dtos/update-answer.dto';
 import { plainToInstance } from 'class-transformer';

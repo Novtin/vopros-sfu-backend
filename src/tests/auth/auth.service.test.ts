@@ -5,7 +5,7 @@ import { AuthTokenService } from '../../modules/auth/domain/services/auth-token.
 import { RoleService } from '../../modules/user/domain/services/role.service';
 import { UserModel } from '../../modules/user/domain/models/user.model';
 import { describe, expect, it, beforeAll } from '@jest/globals';
-import { RoleEnum } from '../../modules/user/domain/enum/role.enum';
+import { RoleEnum } from '../../modules/user/domain/enums/role.enum';
 import { RegisterDto } from '../../modules/auth/domain/dtos/register.dto';
 import { RefreshDto } from '../../modules/auth/domain/dtos/refresh.dto';
 import { RoleModel } from '../../modules/user/domain/models/role.model';

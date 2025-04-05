@@ -7,7 +7,7 @@ import { UpdateQuestionDto } from '../dtos/update-question.dto';
 import { FileService } from '../../../file/domain/services/file.service';
 import { TagService } from '../../../tag/domain/services/tag.service';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
-import { RoleEnum } from '../../../user/domain/enum/role.enum';
+import { RoleEnum } from '../../../user/domain/enums/role.enum';
 import { CreateQuestionViewDto } from '../dtos/create-question-view.dto';
 import { CreateQuestionRatingDto } from '../dtos/create-question-rating.dto';
 import { CreateQuestionFavoriteDto } from '../dtos/create-question-favorite.dto';

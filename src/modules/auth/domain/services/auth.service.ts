@@ -4,7 +4,7 @@ import { UserModel } from '../../../user/domain/models/user.model';
 import { RegisterDto } from '../dtos/register.dto';
 import { RefreshDto } from '../dtos/refresh.dto';
 import { RoleService } from '../../../user/domain/services/role.service';
-import { RoleEnum } from '../../../user/domain/enum/role.enum';
+import { RoleEnum } from '../../../user/domain/enums/role.enum';
 import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
 import { UnauthorizedException } from '../../../global/domain/exceptions/unauthorized.exception';
 import { IHashService } from '../interfaces/i-hash-service';

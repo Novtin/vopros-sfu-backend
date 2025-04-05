@@ -7,7 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { SortUserEnum } from '../enum/sort-user.enum';
+import { SortUserEnum } from '../enums/sort-user.enum';
 import { PaginationDto } from '../../../global/domain/dtos/pagination.dto';
 
 export class SearchUserDto extends PaginationDto {

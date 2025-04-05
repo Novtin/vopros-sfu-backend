@@ -31,7 +31,7 @@ import { Authorized } from '../../../auth/infrastructure/decorators/authorized.d
 import { SearchUserDto } from '../../domain/dtos/search-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
 import { Roles } from '../../../auth/infrastructure/decorators/roles.decorator';
-import { RoleEnum } from '../../domain/enum/role.enum';
+import { RoleEnum } from '../../domain/enums/role.enum';
 import { SchemaTransform } from '../../../global/infrastructure/decorators/schema-transform';
 
 @Controller('/user')

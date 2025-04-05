@@ -6,7 +6,7 @@ import { FileService } from '../../../file/domain/services/file.service';
 import { IUserRepository } from '../interfaces/i-user-repository';
 import { SearchUserDto } from '../dtos/search-user.dto';
 import { ContextDto } from '../../../auth/domain/dtos/context.dto';
-import { RoleEnum } from '../enum/role.enum';
+import { RoleEnum } from '../enums/role.enum';
 import { NotFoundException } from '../../../global/domain/exceptions/not-found.exception';
 import { ForbiddenException } from '../../../global/domain/exceptions/forbidden.exception';
 import { BadRequestException } from '../../../global/domain/exceptions/bad-request.exception';
