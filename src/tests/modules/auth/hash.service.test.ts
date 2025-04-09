@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, expect, it, beforeAll } from '@jest/globals';
-import { HashService } from '../../modules/auth/infrastructure/services/hash.service';
-import { IHashService } from '../../modules/auth/domain/interfaces/i-hash-service';
+import { HashService } from '../../../modules/auth/infrastructure/services/hash.service';
+import { IHashService } from '../../../modules/auth/domain/interfaces/i-hash-service';
 
 describe('HashService', () => {
   let hashService: HashService;
