@@ -185,15 +185,16 @@ describe('AuthService', () => {
         refreshToken: authLoginModel.refreshToken,
       };
 
-      const newAuthLoginModel = await authService.refresh(refreshDto);
+      const updatedAuthLoginModel = await authService.refresh(refreshDto);
 
-      expect(newAuthLoginModel.refreshToken).not.toBe(
+      expect(updatedAuthLoginModel.id).toBe(authLoginModel.id);
+      expect(updatedAuthLoginModel.refreshToken).not.toBe(
         authLoginModel.refreshToken,
       );
-      expect(newAuthLoginModel.accessToken).not.toBe(
+      expect(updatedAuthLoginModel.accessToken).not.toBe(
         authLoginModel.accessToken,
       );
-      expect(newAuthLoginModel).toMatchObject({
+      expect(updatedAuthLoginModel).toMatchObject({
         userId: user.id,
         isLogout: false,
         ipAddress: loginDto.ipAddress,
