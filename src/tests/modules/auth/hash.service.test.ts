@@ -2,19 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { describe, expect, it, beforeAll } from '@jest/globals';
 import { HashService } from '../../../modules/auth/infrastructure/services/hash.service';
 import { IHashService } from '../../../modules/auth/domain/interfaces/i-hash-service';
+import { getTestModule } from '../../utils';
 
 describe('HashService', () => {
   let hashService: HashService;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: IHashService,
-          useClass: HashService,
-        },
-      ],
-    }).compile();
+    const module: TestingModule = await getTestModule();
 
     hashService = module.get<IHashService>(IHashService);
   });

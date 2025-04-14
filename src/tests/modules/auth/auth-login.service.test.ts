@@ -1,4 +1,3 @@
-import { Test } from '@nestjs/testing';
 import {
   describe,
   beforeEach,
@@ -7,10 +6,9 @@ import {
   afterAll,
   beforeAll,
 } from '@jest/globals';
-import { clearDatabase } from '../../utils';
+import { clearDatabase, getTestModule } from '../../utils';
 import { DataSource } from 'typeorm';
 import { AuthLoginService } from '../../../modules/auth/domain/services/auth-login.service';
-import { TestAppModule } from '../../test.app.module';
 import { UserService } from '../../../modules/user/domain/services/user.service';
 import { RoleModel } from '../../../modules/user/domain/models/role.model';
 import { IHashService } from '../../../modules/auth/domain/interfaces/i-hash-service';
@@ -46,9 +44,7 @@ describe('AuthLoginService', () => {
   ) => authLoginService.create(user, ipAddress);
 
   beforeAll(async () => {
-    const module = await Test.createTestingModule({
-      imports: [TestAppModule],
-    }).compile();
+    const module = await getTestModule();
 
     authLoginService = module.get(AuthLoginService);
     dataSource = module.get(DataSource);
@@ -61,6 +57,7 @@ describe('AuthLoginService', () => {
 
   afterAll(async () => {
     await clearDatabase(dataSource);
+    //await dataSource.destroy();
   });
 
   beforeEach(async () => {

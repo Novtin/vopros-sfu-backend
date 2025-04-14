@@ -8,7 +8,6 @@ import {
 } from '@jest/globals';
 import { AuthCodeService } from '../../../modules/auth/domain/services/auth-code.service';
 import { UserService } from '../../../modules/user/domain/services/user.service';
-import { Test } from '@nestjs/testing';
 import { IConfigService } from '../../../modules/global/domain/interfaces/i-config-service';
 import { IEventEmitterService } from '../../../modules/global/domain/interfaces/i-event-emitter-service';
 import { RoleModel } from '../../../modules/user/domain/models/role.model';
@@ -17,8 +16,7 @@ import { CreateOrUpdateAuthCodeDto } from '../../../modules/auth/domain/dtos/cre
 import { AuthCodeTypeEnum } from '../../../modules/auth/domain/enums/auth-code-type.enum';
 import { DataSource } from 'typeorm';
 import { ConfirmAuthCodeDto } from '../../../modules/auth/domain/dtos/confirm-auth-code.dto';
-import { TestAppModule } from '../../test.app.module';
-import { clearDatabase } from '../../utils';
+import { clearDatabase, getTestModule } from '../../utils';
 
 describe('AuthCodeService', () => {
   let authCodeService: AuthCodeService;
@@ -29,14 +27,7 @@ describe('AuthCodeService', () => {
   let user: UserModel;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [TestAppModule],
-    })
-      .overrideProvider(IEventEmitterService)
-      .useValue({
-        emit: jest.fn((event: string, ...values: any[]) => true),
-      })
-      .compile();
+    const moduleRef = await getTestModule();
 
     authCodeService = moduleRef.get(AuthCodeService);
     userService = moduleRef.get(UserService);
@@ -50,6 +41,7 @@ describe('AuthCodeService', () => {
 
   afterAll(async () => {
     await clearDatabase(dataSource);
+    //await dataSource.destroy();
   });
 
   beforeEach(async () => {

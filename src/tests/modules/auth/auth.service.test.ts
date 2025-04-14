@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 import { AuthService } from '../../../modules/auth/domain/services/auth.service';
 import { UserService } from '../../../modules/user/domain/services/user.service';
 import {
@@ -17,8 +17,7 @@ import { ForbiddenException } from '../../../modules/global/domain/exceptions/fo
 import { IAuthLogin } from '../../../modules/auth/domain/interfaces/i-auth-login';
 import { LogoutDto } from '../../../modules/auth/domain/dtos/logout.dto';
 import { ContextDto } from '../../../modules/auth/domain/dtos/context.dto';
-import { TestAppModule } from '../../test.app.module';
-import { clearDatabase } from '../../utils';
+import { clearDatabase, getTestModule } from '../../utils';
 import { DataSource } from 'typeorm';
 import { IUserRepository } from '../../../modules/user/domain/interfaces/i-user-repository';
 import { UnauthorizedException } from '../../../modules/global/domain/exceptions/unauthorized.exception';
@@ -31,9 +30,7 @@ describe('AuthService', () => {
   let userRepository: IUserRepository;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestAppModule],
-    }).compile();
+    const module: TestingModule = await getTestModule();
 
     authService = module.get(AuthService);
     userService = module.get(UserService);
@@ -50,6 +47,7 @@ describe('AuthService', () => {
 
   afterAll(async () => {
     await clearDatabase(dataSource);
+    //await dataSource.destroy();
   });
 
   describe('login', () => {

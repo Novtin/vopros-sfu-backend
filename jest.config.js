@@ -2,8 +2,9 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
+    '^.+\\.ts$': 'ts-jest',
   },
+  transformIgnorePatterns: ['<rootDir>/dist/'],
   moduleFileExtensions: ['ts', 'js', 'json'],
   testMatch: ['**/+(*.)+(spec|test).ts'],
 };

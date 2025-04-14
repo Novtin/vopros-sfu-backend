@@ -4,10 +4,6 @@ import jwtConfig from '../config/jwt.config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import typeOrmConfig from '../config/typeorm.config';
 import httpConfig from '../config/http.config';
-import { MailerModule } from '@nestjs-modules/mailer';
-import mailerConfig from '../config/mailer.config';
-import { ScheduleModule } from '@nestjs/schedule';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import fileLocalConfig from '../config/file-local.config';
 import authCodeConfig from '../config/auth-code.config';
 import { GlobalModule } from '../modules/global/infrastructure/global.module';
@@ -25,7 +21,6 @@ import { NotificationModule } from '../modules/notification/infrastructure/notif
         typeOrmConfig,
         jwtConfig,
         httpConfig,
-        mailerConfig,
         fileLocalConfig,
         authCodeConfig,
       ],
@@ -41,13 +36,6 @@ import { NotificationModule } from '../modules/notification/infrastructure/notif
         logging: false,
       }),
     }),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => configService.get('mailer'),
-    }),
-    ScheduleModule.forRoot(),
-    EventEmitterModule.forRoot(),
     GlobalModule,
     UserModule,
     AuthModule,

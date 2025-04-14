@@ -1,12 +1,12 @@
 import { describe, expect, it, beforeAll } from '@jest/globals';
 import { AuthTokenService } from '../../../modules/auth/domain/services/auth-token.service';
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 import { IJwtPayload } from '../../../modules/auth/domain/interfaces/i-jwt-payload-interface';
 import { RoleEnum } from '../../../modules/user/domain/enums/role.enum';
 import { JwtDto } from '../../../modules/auth/domain/dtos/jwt.dto';
 import { TokenEnum } from '../../../modules/auth/domain/enums/token.enum';
 import { UnauthorizedException } from '../../../modules/global/domain/exceptions/unauthorized.exception';
-import { TestAppModule } from '../../test.app.module';
+import { getTestModule } from '../../utils';
 
 describe('AuthTokenService', () => {
   let tokenService: AuthTokenService;
@@ -18,9 +18,7 @@ describe('AuthTokenService', () => {
   };
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestAppModule],
-    }).compile();
+    const module: TestingModule = await getTestModule();
 
     tokenService = module.get<AuthTokenService>(AuthTokenService);
   });
