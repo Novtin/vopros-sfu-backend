@@ -1,9 +1,9 @@
 import { DataSource } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestAppModule } from './test.app.module';
-import { IEventEmitterService } from '../modules/global/domain/interfaces/i-event-emitter-service';
-import { INotificationMailerService } from '../modules/notification/domain/interfaces/i-notification-mailer-service';
-import { IFileStorageRepository } from '../modules/file/domain/interfaces/i-file-storage-repository';
+import { TestAppModule } from './TestAppModule';
+import { IEventEmitterService } from '../modules/global/domain/interfaces/IEventEmitterService';
+import { INotificationMailerService } from '../modules/notification/domain/interfaces/INotificationMailerService';
+import { IFileStorageRepository } from '../modules/file/domain/interfaces/IFileStorageRepository';
 
 export async function clearDatabase(dataSource: DataSource) {
   for (const entity of dataSource.entityMetadatas) {

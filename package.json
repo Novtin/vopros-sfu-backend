@@ -18,8 +18,8 @@
     "test:cov": "test --coverage",
     "typeorm": "ts-node ./node_modules/typeorm/cli",
     "migration:create": "nest build & npm run typeorm migration:create src/migrations/Migration",
-    "migration:generate": "nest build & npm run typeorm -- -d src/config/orm.datasource.ts migration:generate src/migrations/Migration",
-    "migration:run": "nest build & npm run typeorm migration:run -- -d src/config/orm.datasource.ts"
+    "migration:generate": "nest build & npm run typeorm -- -d src/config/TypeormDatasource.ts migration:generate src/migrations/Migration",
+    "migration:run": "nest build & npm run typeorm migration:run -- -d src/config/TypeormDatasource.ts"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",

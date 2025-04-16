@@ -1,10 +1,10 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { AppModule } from './modules/app.module';
+import { AppModule } from './modules/AppModule';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
-import { HttpAppExceptionFilter } from './modules/global/infrastructure/filters/http-app-exception.filter';
+import { HttpAppExceptionFilter } from './modules/global/infrastructure/filters/HttpAppExceptionFilter';
 
 let url: string;
 
