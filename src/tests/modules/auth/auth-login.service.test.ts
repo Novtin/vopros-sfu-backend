@@ -57,7 +57,6 @@ describe('AuthLoginService', () => {
 
   afterAll(async () => {
     await clearDatabase(dataSource);
-    //await dataSource.destroy();
   });
 
   beforeEach(async () => {

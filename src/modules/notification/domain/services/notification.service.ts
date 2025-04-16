@@ -28,9 +28,10 @@ export class NotificationService {
     await this.notificationRepository.view(dto);
   }
 
-  async createAndSend(dto: SaveNotificationDto): Promise<void> {
+  async createAndSend(dto: SaveNotificationDto): Promise<NotificationModel> {
     const notification = await this.create(dto);
     this.eventEmitterService.emit(EventEnum.SEND_NOTIFICATION, notification);
+    return notification;
   }
 
   async deleteOld() {
