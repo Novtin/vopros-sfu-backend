@@ -3,10 +3,10 @@ import {
   beforeEach,
   it,
   expect,
-  afterAll,
   beforeAll,
+  afterAll,
 } from '@jest/globals';
-import { clearDatabase, getTestModule } from '../utils';
+import { refreshDatabase, getTestModule } from '../utils';
 import { DataSource } from 'typeorm';
 import { AuthLoginService } from '../../modules/auth/domain/services/AuthLoginService';
 import { UserService } from '../../modules/user/domain/services/UserService';
@@ -51,16 +51,14 @@ describe('AuthLoginService', () => {
     userService = module.get(UserService);
     hashService = module.get(IHashService);
     authLoginRepository = module.get(IAuthLoginRepository);
-
-    await dataSource.runMigrations();
   });
 
   afterAll(async () => {
-    await clearDatabase(dataSource);
+    await dataSource.destroy();
   });
 
   beforeEach(async () => {
-    await clearDatabase(dataSource);
+    await refreshDatabase(dataSource);
   });
 
   describe('create', () => {

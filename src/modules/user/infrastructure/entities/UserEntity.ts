@@ -50,7 +50,6 @@ export const UserEntity = new EntitySchema<UserModel>({
       type: 'many-to-many',
       target: 'role',
       inverseSide: 'users',
-      cascade: true,
       joinTable: {
         name: 'user_role',
         joinColumn: {

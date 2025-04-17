@@ -17,7 +17,7 @@ import { ForbiddenException } from '../../modules/global/domain/exceptions/Forbi
 import { IAuthLogin } from '../../modules/auth/domain/interfaces/IAuthLogin';
 import { AuthLogoutDto } from '../../modules/auth/domain/dtos/AuthLogoutDto';
 import { ContextDto } from '../../modules/auth/domain/dtos/ContextDto';
-import { clearDatabase, getTestModule } from '../utils';
+import { refreshDatabase, getTestModule } from '../utils';
 import { DataSource } from 'typeorm';
 import { IUserRepository } from '../../modules/user/domain/interfaces/IUserRepository';
 import { UnauthorizedException } from '../../modules/global/domain/exceptions/UnauthorizedException';
@@ -37,16 +37,14 @@ describe('AuthService', () => {
     hashService = module.get(IHashService);
     dataSource = module.get(DataSource);
     userRepository = module.get(IUserRepository);
-
-    await dataSource.runMigrations();
-  });
-
-  beforeEach(async () => {
-    await clearDatabase(dataSource);
   });
 
   afterAll(async () => {
-    await clearDatabase(dataSource);
+    await dataSource.destroy();
+  });
+
+  beforeEach(async () => {
+    await refreshDatabase(dataSource);
   });
 
   describe('login', () => {

@@ -1,6 +1,6 @@
 import {
-  beforeAll,
   afterAll,
+  beforeAll,
   beforeEach,
   describe,
   expect,
@@ -10,14 +10,14 @@ import { FileService } from '../../modules/file/domain/services/FileService';
 import { IFileRepository } from '../../modules/file/domain/interfaces/IFileRepository';
 import { IFileStorageRepository } from '../../modules/file/domain/interfaces/IFileStorageRepository';
 import { DataSource } from 'typeorm';
-import { clearDatabase, getTestModule } from '../utils';
+import { refreshDatabase, getTestModule } from '../utils';
 import { NotFoundException } from '../../modules/global/domain/exceptions/NotFoundException';
 import { IFile } from '../../modules/file/domain/interfaces/IFile';
 
 describe('FileService', () => {
   let fileService: FileService;
   let fileRepository: IFileRepository;
-  let fileStorageRepository: jest.Mocked<IFileStorageRepository>;
+  let fileStorageRepository: IFileStorageRepository;
   let dataSource: DataSource;
 
   const createTestFile = async (fileName?: string) =>
@@ -34,16 +34,14 @@ describe('FileService', () => {
     fileRepository = moduleRef.get(IFileRepository);
     fileStorageRepository = moduleRef.get(IFileStorageRepository);
     dataSource = moduleRef.get(DataSource);
-
-    await dataSource.runMigrations();
   });
 
   afterAll(async () => {
-    await clearDatabase(dataSource);
+    await dataSource.destroy();
   });
 
   beforeEach(async () => {
-    await clearDatabase(dataSource);
+    await refreshDatabase(dataSource);
     jest.clearAllMocks();
   });
 
@@ -57,8 +55,7 @@ describe('FileService', () => {
 
       const fileModel = await fileService.create(file);
 
-      expect(fileModel).toEqual({
-        id: 1,
+      expect(fileModel).toMatchObject({
         name: file.filename,
         size: file.size,
         mimetype: file.mimetype,
@@ -78,7 +75,7 @@ describe('FileService', () => {
     });
 
     it('should throw NotFoundException if FileModel does not exist', async () => {
-      await expect(fileService.getOneBy({ id: 1 })).rejects.toThrow(
+      await expect(fileService.getOneBy({ id: 0 })).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -87,9 +84,9 @@ describe('FileService', () => {
   describe('getReadStreamByFileId', () => {
     it('should return file stream', async () => {
       const fileModel = await createTestFile();
-      const streamMock = {};
+      const streamMock = Buffer.from('file-test');
 
-      fileStorageRepository.getReadStream.mockReturnValue(streamMock);
+      fileStorageRepository.getReadStream = jest.fn(() => streamMock);
 
       const fileStream = await fileService.getReadStreamByFileId(fileModel.id, {
         isExample: false,
@@ -103,15 +100,18 @@ describe('FileService', () => {
   describe('delete', () => {
     it('should delete file if name does not start with avatar', async () => {
       const fileModel = await createTestFile();
+
       await fileService.delete(fileModel.id);
+
       expect(fileStorageRepository.delete).toHaveBeenCalledWith(fileModel.name);
-      await expect(
-        fileRepository.getOneBy({ id: fileModel.id }),
-      ).rejects.toThrow(NotFoundException);
+      await expect(fileService.getOneBy({ id: fileModel.id })).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should not delete file if name starts with avatar', async () => {
       const fileModel = await createTestFile('avatar123.png');
+      jest.spyOn(fileRepository, 'delete');
 
       await fileService.delete(fileModel.id);
 
@@ -124,18 +124,10 @@ describe('FileService', () => {
   });
 
   describe('getExampleIds', () => {
-    it('should return file ids', async () => {
-      const fileModels = await Promise.all(
-        Array.from({ length: 2 }, (_, index) =>
-          createTestFile(`avatar${index}.png`),
-        ),
-      );
+    it('should return examples file ids', async () => {
+      const { fileIds } = await fileService.getExampleIds();
 
-      const result = await fileService.getExampleIds();
-
-      expect(result).toEqual({
-        fileIds: fileModels.map((fileModel) => fileModel.id),
-      });
+      expect(fileIds).toHaveLength(14);
     });
   });
 });

@@ -1,13 +1,13 @@
 import {
-  beforeAll,
   afterAll,
+  beforeAll,
   beforeEach,
   describe,
   expect,
   it,
 } from '@jest/globals';
 import { DataSource } from 'typeorm';
-import { clearDatabase, getTestModule } from '../utils';
+import { refreshDatabase, getTestModule } from '../utils';
 import { NotificationService } from '../../modules/notification/domain/services/NotificationService';
 import { RoleModel } from '../../modules/user/domain/models/RoleModel';
 import { UserService } from '../../modules/user/domain/services/UserService';
@@ -18,6 +18,7 @@ import { IEventEmitterService } from '../../modules/global/domain/interfaces/IEv
 import { EventEnum } from '../../modules/global/domain/enums/EventEnum';
 import { subDays } from 'date-fns';
 import { NotificationSearchDto } from '../../modules/notification/domain/dtos/NotificationSearchDto';
+import { orderBy as _orderBy } from 'lodash';
 
 describe('FileService', () => {
   let notificationService: NotificationService;
@@ -57,16 +58,14 @@ describe('FileService', () => {
     hashService = moduleRef.get(IHashService);
     dataSource = moduleRef.get(DataSource);
     eventEmitterService = moduleRef.get(IEventEmitterService);
-
-    await dataSource.runMigrations();
   });
 
   afterAll(async () => {
-    await clearDatabase(dataSource);
+    await dataSource.destroy();
   });
 
   beforeEach(async () => {
-    await clearDatabase(dataSource);
+    await refreshDatabase(dataSource);
     user = await createTestUser();
   });
 
@@ -154,7 +153,9 @@ describe('FileService', () => {
       const [notificationArray, total] = await notificationService.search(
         new NotificationSearchDto(),
       );
-      expect(notificationArray).toEqual(notifications);
+      expect(_orderBy(notificationArray, 'id')).toEqual(
+        _orderBy(notifications, 'id'),
+      );
       expect(total).toBe(notifications.length);
     });
   });

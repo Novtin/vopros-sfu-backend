@@ -1,10 +1,10 @@
 import {
-  afterAll,
   beforeAll,
   beforeEach,
   describe,
   expect,
   it,
+  afterAll,
 } from '@jest/globals';
 import { AuthCodeService } from '../../modules/auth/domain/services/AuthCodeService';
 import { UserService } from '../../modules/user/domain/services/UserService';
@@ -16,7 +16,7 @@ import { AuthCodeCreateOrUpdateDto } from '../../modules/auth/domain/dtos/AuthCo
 import { AuthCodeTypeEnum } from '../../modules/auth/domain/enums/AuthCodeTypeEnum';
 import { DataSource } from 'typeorm';
 import { AuthCodeConfirmDto } from '../../modules/auth/domain/dtos/AuthCodeConfirmDto';
-import { clearDatabase, getTestModule } from '../utils';
+import { refreshDatabase, getTestModule } from '../utils';
 
 describe('AuthCodeService', () => {
   let authCodeService: AuthCodeService;
@@ -35,16 +35,10 @@ describe('AuthCodeService', () => {
     configService = moduleRef.get(IConfigService);
     dataSource = moduleRef.get(DataSource);
     eventEmitterService = moduleRef.get(IEventEmitterService);
-
-    await dataSource.runMigrations();
-  });
-
-  afterAll(async () => {
-    await clearDatabase(dataSource);
   });
 
   beforeEach(async () => {
-    await clearDatabase(dataSource);
+    await refreshDatabase(dataSource);
     user = await userService.create({
       email: 'email@email.com',
       nickname: 'nickname',
@@ -57,6 +51,10 @@ describe('AuthCodeService', () => {
         } as RoleModel,
       ],
     });
+  });
+
+  afterAll(async () => {
+    await dataSource.destroy();
   });
 
   describe('createOrUpdate', () => {
