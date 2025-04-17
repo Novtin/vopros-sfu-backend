@@ -6,11 +6,10 @@ import {
   beforeAll,
   afterAll,
 } from '@jest/globals';
-import { refreshDatabase, getTestModule } from '../utils';
+import { refreshDatabase, getTestModule, createTestUser } from '../utils';
 import { DataSource } from 'typeorm';
 import { AuthLoginService } from '../../modules/auth/domain/services/AuthLoginService';
 import { UserService } from '../../modules/user/domain/services/UserService';
-import { RoleModel } from '../../modules/user/domain/models/RoleModel';
 import { IHashService } from '../../modules/auth/domain/interfaces/IHashService';
 import { AuthLoginModel } from '../../modules/auth/domain/models/AuthLoginModel';
 import { UnauthorizedException } from '../../modules/global/domain/exceptions/UnauthorizedException';
@@ -23,20 +22,7 @@ describe('AuthLoginService', () => {
   let dataSource: DataSource;
   let userService: UserService;
   let hashService: IHashService;
-
-  const createTestUser = async () =>
-    userService.create({
-      email: 'email@email.com',
-      nickname: 'nickname',
-      passwordHash: await hashService.makeHash('1'),
-      description: 'description',
-      roles: [
-        {
-          id: 1,
-          name: 'user',
-        } as RoleModel,
-      ],
-    });
+  let user: UserModel;
 
   const createTestLogin = async (
     user: UserModel,
@@ -59,11 +45,11 @@ describe('AuthLoginService', () => {
 
   beforeEach(async () => {
     await refreshDatabase(dataSource);
+    user = await createTestUser(userService, hashService);
   });
 
   describe('create', () => {
     it('should create AuthLoginModel', async () => {
-      const user = await createTestUser();
       const ipAddress = '127.0.0.1';
 
       const authLoginModel = await authLoginService.create(user, ipAddress);
@@ -78,7 +64,6 @@ describe('AuthLoginService', () => {
 
   describe('refresh', () => {
     it('should refresh tokens', async () => {
-      const user = await createTestUser();
       const ipAddress = '127.0.0.1';
       const authLoginModel = await createTestLogin(user, ipAddress);
 
@@ -102,7 +87,6 @@ describe('AuthLoginService', () => {
     });
 
     it('should throw UnauthorizedException if refresh token is invalid', async () => {
-      const user = await createTestUser();
       const authLoginModel = await createTestLogin(user);
 
       await expect(
@@ -116,7 +100,6 @@ describe('AuthLoginService', () => {
 
   describe('logout', () => {
     it('should login mark as isLogout', async () => {
-      const user = await createTestUser();
       const authLoginModel = await createTestLogin(user);
 
       await authLoginService.logout(

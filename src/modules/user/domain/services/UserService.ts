@@ -9,11 +9,11 @@ import { RoleEnum } from '../enums/RoleEnum';
 import { NotFoundException } from '../../../global/domain/exceptions/NotFoundException';
 import { ForbiddenException } from '../../../global/domain/exceptions/ForbiddenException';
 import { BadRequestException } from '../../../global/domain/exceptions/BadRequestException';
-import { UnprocessableEntityException } from '../../../global/domain/exceptions/UnprocessableEntityException';
 import { IHashService } from '../../../auth/domain/interfaces/IHashService';
 import { UserPasswordUpdateDto } from '../dtos/UserPasswordUpdateDto';
 import { sample as _sample } from 'lodash';
 import { IFile } from '../../../file/domain/interfaces/IFile';
+import { ConflictException } from '../../../global/domain/exceptions/ConflictException';
 
 @Injectable()
 export class UserService {
@@ -43,9 +43,7 @@ export class UserService {
       });
     } catch (error) {
       if (error?.code === '23505') {
-        throw new UnprocessableEntityException(
-          'Пользователь с таким email забанен',
-        );
+        throw new ConflictException('Пользователь с таким email удалён');
       }
     }
   }
@@ -88,15 +86,15 @@ export class UserService {
       throw new BadRequestException('Файл не найден');
     }
     await this.throwNotFoundExceptionIfNotExist({ id });
-    let userEntity: UserModel = await this.getOneBy({ id });
-    const fileIdForDelete: number = userEntity.avatarId;
-    userEntity = await this.update(userEntity.id, {
+    let user: UserModel = await this.getOneBy({ id });
+    const fileIdForDelete: number = user.avatarId;
+    user = await this.update(user.id, {
       avatarId: (await this.fileService.create(avatarFile)).id,
     });
     if (fileIdForDelete) {
       await this.fileService.delete(fileIdForDelete);
     }
-    return userEntity;
+    return user;
   }
 
   async search(dto: UserSearchDto) {

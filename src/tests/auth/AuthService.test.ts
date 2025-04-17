@@ -11,23 +11,22 @@ import {
 } from '@jest/globals';
 import { AuthRegisterDto } from '../../modules/auth/domain/dtos/AuthRegisterDto';
 import { AuthRefreshDto } from '../../modules/auth/domain/dtos/AuthRefreshDto';
-import { RoleModel } from '../../modules/user/domain/models/RoleModel';
 import { IHashService } from '../../modules/auth/domain/interfaces/IHashService';
 import { ForbiddenException } from '../../modules/global/domain/exceptions/ForbiddenException';
 import { IAuthLogin } from '../../modules/auth/domain/interfaces/IAuthLogin';
 import { AuthLogoutDto } from '../../modules/auth/domain/dtos/AuthLogoutDto';
 import { ContextDto } from '../../modules/auth/domain/dtos/ContextDto';
-import { refreshDatabase, getTestModule } from '../utils';
+import { refreshDatabase, getTestModule, createTestUser } from '../utils';
 import { DataSource } from 'typeorm';
-import { IUserRepository } from '../../modules/user/domain/interfaces/IUserRepository';
 import { UnauthorizedException } from '../../modules/global/domain/exceptions/UnauthorizedException';
+import { UserModel } from '../../modules/user/domain/models/UserModel';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let userService: UserService;
   let hashService: IHashService;
   let dataSource: DataSource;
-  let userRepository: IUserRepository;
+  let user: UserModel;
 
   beforeAll(async () => {
     const module: TestingModule = await getTestModule();
@@ -36,7 +35,6 @@ describe('AuthService', () => {
     userService = module.get(UserService);
     hashService = module.get(IHashService);
     dataSource = module.get(DataSource);
-    userRepository = module.get(IUserRepository);
   });
 
   afterAll(async () => {
@@ -45,23 +43,11 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     await refreshDatabase(dataSource);
+    user = await createTestUser(userService, hashService);
   });
 
   describe('login', () => {
     it('should throw ForbiddenException if user is not confirmed', async () => {
-      const user = await userService.create({
-        email: 'email@email.com',
-        nickname: 'nickname',
-        passwordHash: await hashService.makeHash('1'),
-        description: 'description',
-        roles: [
-          {
-            id: 1,
-            name: 'user',
-          } as RoleModel,
-        ],
-      });
-
       const loginDto: IAuthLogin = {
         email: user.email,
         password: '1',
@@ -74,19 +60,6 @@ describe('AuthService', () => {
     });
 
     it('should throw exception if password is invalid', async () => {
-      const user = await userRepository.create({
-        email: 'email@email.com',
-        nickname: 'nickname',
-        passwordHash: await hashService.makeHash('1'),
-        description: 'description',
-        isConfirmed: true,
-        roles: [
-          {
-            id: 1,
-            name: 'user',
-          } as RoleModel,
-        ],
-      });
       const loginDto: IAuthLogin = {
         email: user.email,
         password: 'password',
@@ -99,20 +72,6 @@ describe('AuthService', () => {
     });
 
     it('should return AuthLoginModel if login is successful', async () => {
-      const user = await userRepository.create({
-        email: 'email@email.com',
-        nickname: 'nickname',
-        passwordHash: await hashService.makeHash('1'),
-        description: 'description',
-        isConfirmed: true,
-        roles: [
-          {
-            id: 1,
-            name: 'user',
-          } as RoleModel,
-        ],
-      });
-
       const loginDto: IAuthLogin = {
         email: user.email,
         password: '1',
@@ -154,19 +113,6 @@ describe('AuthService', () => {
 
   describe('refresh', () => {
     it('should call AuthLoginService.refresh', async () => {
-      const user = await userRepository.create({
-        email: 'email@email.com',
-        nickname: 'nickname',
-        passwordHash: await hashService.makeHash('1'),
-        description: 'description',
-        isConfirmed: true,
-        roles: [
-          {
-            id: 1,
-            name: 'user',
-          } as RoleModel,
-        ],
-      });
       const loginDto: IAuthLogin = {
         email: user.email,
         password: '1',
@@ -199,19 +145,6 @@ describe('AuthService', () => {
 
   describe('logout', () => {
     it('should call AuthLoginService.logout', async () => {
-      const user = await userRepository.create({
-        email: 'email@email.com',
-        nickname: 'nickname',
-        passwordHash: await hashService.makeHash('1'),
-        description: 'description',
-        isConfirmed: true,
-        roles: [
-          {
-            id: 1,
-            name: 'user',
-          } as RoleModel,
-        ],
-      });
       const loginDto: IAuthLogin = {
         email: user.email,
         password: '1',

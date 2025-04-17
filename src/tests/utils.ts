@@ -4,6 +4,10 @@ import { TestAppModule } from './TestAppModule';
 import { IEventEmitterService } from '../modules/global/domain/interfaces/IEventEmitterService';
 import { INotificationMailerService } from '../modules/notification/domain/interfaces/INotificationMailerService';
 import { IFileStorageRepository } from '../modules/file/domain/interfaces/IFileStorageRepository';
+import { RoleModel } from '../modules/user/domain/models/RoleModel';
+import { UserService } from '../modules/user/domain/services/UserService';
+import { IHashService } from '../modules/auth/domain/interfaces/IHashService';
+import { RoleEnum } from '../modules/user/domain/enums/RoleEnum';
 
 export async function refreshDatabase(dataSource: DataSource): Promise<void> {
   await dataSource.query(`DROP SCHEMA public CASCADE`);
@@ -36,3 +40,19 @@ export const getTestModule = async () => {
   }
   return testModule;
 };
+
+export const createTestUser = async (
+  userService: UserService,
+  hashService: IHashService,
+) =>
+  userService.create({
+    email: 'email@email.com',
+    nickname: 'nickname',
+    passwordHash: await hashService.makeHash('1'),
+    description: 'description',
+    roles: [
+      {
+        name: RoleEnum.USER,
+      } as RoleModel,
+    ],
+  });

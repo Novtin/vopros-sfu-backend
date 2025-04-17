@@ -10,13 +10,13 @@ import { AuthCodeService } from '../../modules/auth/domain/services/AuthCodeServ
 import { UserService } from '../../modules/user/domain/services/UserService';
 import { IConfigService } from '../../modules/global/domain/interfaces/IConfigService';
 import { IEventEmitterService } from '../../modules/global/domain/interfaces/IEventEmitterService';
-import { RoleModel } from '../../modules/user/domain/models/RoleModel';
 import { UserModel } from '../../modules/user/domain/models/UserModel';
 import { AuthCodeCreateOrUpdateDto } from '../../modules/auth/domain/dtos/AuthCodeCreateOrUpdateDto';
 import { AuthCodeTypeEnum } from '../../modules/auth/domain/enums/AuthCodeTypeEnum';
 import { DataSource } from 'typeorm';
 import { AuthCodeConfirmDto } from '../../modules/auth/domain/dtos/AuthCodeConfirmDto';
-import { refreshDatabase, getTestModule } from '../utils';
+import { refreshDatabase, getTestModule, createTestUser } from '../utils';
+import { IHashService } from '../../modules/auth/domain/interfaces/IHashService';
 
 describe('AuthCodeService', () => {
   let authCodeService: AuthCodeService;
@@ -24,6 +24,7 @@ describe('AuthCodeService', () => {
   let configService: IConfigService;
   let dataSource: DataSource;
   let eventEmitterService: IEventEmitterService;
+  let hashService: IHashService;
   let user: UserModel;
 
   beforeAll(async () => {
@@ -35,22 +36,12 @@ describe('AuthCodeService', () => {
     configService = moduleRef.get(IConfigService);
     dataSource = moduleRef.get(DataSource);
     eventEmitterService = moduleRef.get(IEventEmitterService);
+    hashService = moduleRef.get(IHashService);
   });
 
   beforeEach(async () => {
     await refreshDatabase(dataSource);
-    user = await userService.create({
-      email: 'email@email.com',
-      nickname: 'nickname',
-      passwordHash: 'password',
-      description: 'description',
-      roles: [
-        {
-          id: 1,
-          name: 'user',
-        } as RoleModel,
-      ],
-    });
+    user = await createTestUser(userService, hashService);
   });
 
   afterAll(async () => {

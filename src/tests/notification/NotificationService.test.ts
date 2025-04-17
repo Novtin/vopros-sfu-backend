@@ -7,7 +7,7 @@ import {
   it,
 } from '@jest/globals';
 import { DataSource } from 'typeorm';
-import { refreshDatabase, getTestModule } from '../utils';
+import { refreshDatabase, getTestModule, createTestUser } from '../utils';
 import { NotificationService } from '../../modules/notification/domain/services/NotificationService';
 import { RoleModel } from '../../modules/user/domain/models/RoleModel';
 import { UserService } from '../../modules/user/domain/services/UserService';
@@ -27,20 +27,6 @@ describe('FileService', () => {
   let userService: UserService;
   let hashService: IHashService;
   let user: UserModel;
-
-  const createTestUser = async () =>
-    userService.create({
-      email: 'email@email.com',
-      nickname: 'nickname',
-      passwordHash: await hashService.makeHash('1'),
-      description: 'description',
-      roles: [
-        {
-          id: 1,
-          name: 'user',
-        } as RoleModel,
-      ],
-    });
 
   const createTestNotification = async () =>
     notificationService.createAndSend({
@@ -66,7 +52,7 @@ describe('FileService', () => {
 
   beforeEach(async () => {
     await refreshDatabase(dataSource);
-    user = await createTestUser();
+    user = await createTestUser(userService, hashService);
   });
 
   describe('createAndSend', () => {

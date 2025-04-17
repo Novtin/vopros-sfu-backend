@@ -65,7 +65,7 @@ export class UserRepository implements IUserRepository {
       .createQueryBuilder('user')
       .select('COUNT(*)', 'total')
       .getRawOne();
-    return query.total;
+    return +query.total;
   }
 
   async search(dto: UserSearchDto): Promise<[UserModel[], number]> {
@@ -93,11 +93,8 @@ export class UserRepository implements IUserRepository {
     }
 
     if (dto.query) {
-      query.orWhere('user.nickname ILIKE :nickname', {
-        nickname: `%${dto.query}%`,
-      });
-      query.orWhere('user.email ILIKE :email', {
-        email: `%${dto.query}%`,
+      query.andWhere('user.nickname ILIKE :query OR user.email ILIKE :query', {
+        query: `%${dto.query}%`,
       });
     }
 
