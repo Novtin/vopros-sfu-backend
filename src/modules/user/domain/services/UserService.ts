@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserModel } from '../models/UserModel';
-import { UserExistDto } from '../dtos/UserExistDto';
 import { UserSaveDto } from '../dtos/UserSaveDto';
 import { FileService } from '../../../file/domain/services/FileService';
 import { IUserRepository } from '../interfaces/IUserRepository';
@@ -31,7 +30,7 @@ export class UserService {
     return this.userRepository.getOneBy(dto);
   }
 
-  existBy(dto: UserExistDto): Promise<boolean> {
+  existBy(dto: Partial<UserModel>): Promise<boolean> {
     return this.userRepository.existBy(dto);
   }
 
@@ -66,11 +65,7 @@ export class UserService {
     return this.userRepository.update(id, dto);
   }
 
-  async confirmEmail(id: number) {
-    return this.userRepository.confirmEmail(id);
-  }
-
-  async throwNotFoundExceptionIfNotExist(dto: UserExistDto) {
+  async throwNotFoundExceptionIfNotExist(dto: Partial<UserModel>) {
     if (!(await this.existBy(dto))) {
       throw new NotFoundException();
     }

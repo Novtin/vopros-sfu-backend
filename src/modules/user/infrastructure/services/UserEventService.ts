@@ -22,7 +22,7 @@ export class UserEventService {
 
   @OnEvent(EventEnum.REGISTER_USER)
   async onRegisterUser(payload: { userId: number }) {
-    await this.userService.confirmEmail(payload.userId);
+    await this.userService.update(payload.userId, { isConfirmed: true });
   }
 
   @OnEvent(EventEnum.RESET_PASSWORD_USER)

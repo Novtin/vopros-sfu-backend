@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { UserModel } from '../../domain/models/UserModel';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserSearchDto } from '../../domain/dtos/UserSearchDto';
-import { UserExistDto } from '../../domain/dtos/UserExistDto';
 import { UserUpdateDto } from '../../domain/dtos/UserUpdateDto';
 import { UserSortEnum } from '../../domain/enums/UserSortEnum';
 import { IUserRepository } from '../../domain/interfaces/IUserRepository';
@@ -16,7 +15,7 @@ export class UserRepository implements IUserRepository {
     private readonly dbRepository: Repository<UserModel>,
   ) {}
 
-  existBy(dto: UserExistDto): Promise<boolean> {
+  existBy(dto: Partial<UserModel>): Promise<boolean> {
     return this.dbRepository.existsBy({ ...dto });
   }
 
@@ -26,11 +25,6 @@ export class UserRepository implements IUserRepository {
 
   async update(id: number, dto: UserUpdateDto) {
     await this.dbRepository.update(id, { ...dto });
-    return this.getOneBy({ id });
-  }
-
-  async confirmEmail(id: number) {
-    await this.dbRepository.update(id, { isConfirmed: true });
     return this.getOneBy({ id });
   }
 
