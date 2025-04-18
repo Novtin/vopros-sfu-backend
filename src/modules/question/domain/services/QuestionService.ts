@@ -42,7 +42,7 @@ export class QuestionService {
     private readonly tagService: TagService,
   ) {}
 
-  async view(dto: QuestionViewCreateDto) {
+  private async view(dto: QuestionViewCreateDto) {
     const questionView = await this.questionViewRepository.getOneBy(dto);
     if (!questionView) {
       await this.questionViewRepository.create(dto);
@@ -144,7 +144,7 @@ export class QuestionService {
 
   async throwNotFoundExceptionIfNotExist(dto: QuestionExistDto) {
     if (!(await this.existBy(dto))) {
-      throw new NotFoundException('ddd');
+      throw new NotFoundException();
     }
   }
 
@@ -202,7 +202,7 @@ export class QuestionService {
     return this.questionRepository.search(dto);
   }
 
-  getCountQuestions() {
-    return this.questionRepository.getCountQuestions();
+  getCount() {
+    return this.questionRepository.getCount();
   }
 }

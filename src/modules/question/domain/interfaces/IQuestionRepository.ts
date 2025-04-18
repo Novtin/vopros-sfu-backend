@@ -12,6 +12,6 @@ export interface IQuestionRepository {
   existBy(dto: QuestionExistDto): Promise<boolean>;
   update(id: number, dto: Partial<QuestionModel>): Promise<QuestionModel>;
   search(dto: QuestionSearchDto): Promise<[QuestionModel[], number]>;
-  getCountQuestions(): Promise<IQuestionCount>;
+  getCount(): Promise<IQuestionCount>;
   delete(id: number): Promise<void>;
 }

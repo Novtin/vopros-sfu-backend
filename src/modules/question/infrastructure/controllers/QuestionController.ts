@@ -75,8 +75,8 @@ export class QuestionController {
   @SchemaTransform(QuestionCountSchema)
   @ApiOperation({ summary: 'Получить количество вопросов' })
   @Get('/count')
-  getCountQuestions(): Promise<IQuestionCount> {
-    return this.questionService.getCountQuestions();
+  getCount(): Promise<IQuestionCount> {
+    return this.questionService.getCount();
   }
 
   @OptionalAuthorized()

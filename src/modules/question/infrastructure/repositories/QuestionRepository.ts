@@ -48,7 +48,6 @@ export class QuestionRepository implements IQuestionRepository {
     dto: Partial<QuestionModel>,
   ): Promise<QuestionModel> {
     await this.dbRepository.save({ id, ...dto });
-    console.log(await this.getOneBy({ id }));
     return this.getOneBy({ id });
   }
 
@@ -162,8 +161,6 @@ export class QuestionRepository implements IQuestionRepository {
       });
     }
 
-    console.log();
-    console.log(dto.isResolved);
     if (dto.isResolved) {
       query.andWhere(
         'answers.id IN (SELECT id FROM answer WHERE answer."isSolution" = TRUE)',
@@ -172,7 +169,7 @@ export class QuestionRepository implements IQuestionRepository {
     return query.getManyAndCount();
   }
 
-  async getCountQuestions(): Promise<IQuestionCount> {
+  async getCount(): Promise<IQuestionCount> {
     return { count: await this.dbRepository.count() };
   }
 

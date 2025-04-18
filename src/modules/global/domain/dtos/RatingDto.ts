@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsInt, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
+import { RatingValueEnum } from '../enums/RatingValueEnum';
 
 export class RatingDto {
   @ApiProperty({
-    type: Number,
+    enum: RatingValueEnum,
     description: 'Значение -1 или 1',
     required: true,
   })
-  @IsIn([-1, 1])
-  @IsInt()
+  @IsEnum(RatingValueEnum)
   @Type(() => Number)
   @IsNotEmpty()
-  value: number;
+  value: RatingValueEnum;
 }
