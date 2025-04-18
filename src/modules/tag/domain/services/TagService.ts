@@ -32,7 +32,7 @@ export class TagService {
     return this.tagRepository.getOneBy(dto);
   }
 
-  create(dto: TagSaveDto) {
+  private create(dto: TagSaveDto) {
     return this.tagRepository.create(dto);
   }
 }
