@@ -11,6 +11,8 @@ import { NotificationService } from '../../domain/services/NotificationService';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EventEnum } from '../../../global/domain/enums/EventEnum';
 import { IEventEmitterService } from '../../../global/domain/interfaces/IEventEmitterService';
+import { plainToInstance } from 'class-transformer';
+import { NotificationSearchDto } from '../../domain/dtos/NotificationSearchDto';
 
 @Injectable()
 @WebSocketGateway()
@@ -37,10 +39,12 @@ export class NotificationGateway
     const userId = client.handshake.query.userId;
     if (userId) {
       client.join(userId);
-      const [notifications] = await this.notificationService.search({
-        userId: +userId,
-        isViewed: false,
-      });
+      const [notifications] = await this.notificationService.search(
+        plainToInstance(NotificationSearchDto, {
+          userId: +userId,
+          isViewed: false,
+        }),
+      );
       notifications?.forEach(this.send);
       this.eventEmitterService.emit(EventEnum.ONLINE_USER, +userId);
     }
