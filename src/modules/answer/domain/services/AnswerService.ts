@@ -6,7 +6,6 @@ import { AnswerSearchDto } from '../dtos/AnswerSearchDto';
 import { RoleEnum } from '../../../user/domain/enums/RoleEnum';
 import { ContextDto } from '../../../auth/domain/dtos/ContextDto';
 import { AnswerUpdateDto } from '../dtos/AnswerUpdateDto';
-import { plainToInstance } from 'class-transformer';
 import { IEventEmitterService } from '../../../global/domain/interfaces/IEventEmitterService';
 import { EventEnum } from '../../../global/domain/enums/EventEnum';
 import { NotFoundException } from '../../../global/domain/exceptions/NotFoundException';
@@ -16,6 +15,7 @@ import { IAnswerRepository } from '../interfaces/IAnswerRepository';
 import { IAnswerRatingRepository } from '../interfaces/IAnswerRatingRepository';
 import { AnswerRatingDeleteDto } from '../dtos/AnswerRatingDeleteDto';
 import { AnswerRatingCreateDto } from '../dtos/AnswerRatingCreateDto';
+import { AnswerModel } from '../models/AnswerModel';
 
 @Injectable()
 export class AnswerService {
@@ -96,15 +96,15 @@ export class AnswerService {
       questionId,
     );
 
-    const solutionAnswer = (
-      await this.search(
-        plainToInstance(AnswerSearchDto, { questionId, isSolution: true }),
-      )
-    )[0][0];
-    if (solutionAnswer) {
-      throw new ConflictException('Вопрос уже решён');
+    try {
+      await this.getOneBy({
+        questionId,
+        isSolution: true,
+      });
+    } catch (e) {
+      return this.setSolution(answerId);
     }
-    await this.setSolution(answerId);
+    throw new ConflictException('Вопрос уже решён');
   }
 
   async deleteResolveQuestion(userId: number, questionId: number) {
@@ -115,23 +115,26 @@ export class AnswerService {
       userId,
       questionId,
     );
-    const solutionAnswer = (
-      await this.search(
-        plainToInstance(AnswerSearchDto, { questionId, isSolution: true }),
-      )
-    )[0][0];
-    if (!solutionAnswer) {
+
+    let solutionAnswer: AnswerModel;
+
+    try {
+      solutionAnswer = await this.getOneBy({
+        questionId,
+        isSolution: true,
+      });
+    } catch (e) {
       throw new ConflictException('Вопрос ещё не решён');
     }
     await this.deleteSolution(solutionAnswer.id);
   }
 
-  async setSolution(id: number) {
+  private async setSolution(id: number) {
     await this.throwNotFoundExceptionIfNotExist({ id });
     await this.answerRepository.setSolution(id);
   }
 
-  async deleteSolution(id: number) {
+  private async deleteSolution(id: number) {
     await this.throwNotFoundExceptionIfNotExist({ id });
     return this.answerRepository.deleteSolution(id);
   }

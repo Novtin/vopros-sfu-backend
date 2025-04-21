@@ -7,7 +7,12 @@ import {
   it,
 } from '@jest/globals';
 import { DataSource } from 'typeorm';
-import { createTestUser, getTestModule, refreshDatabase } from '../utils';
+import {
+  createTestQuestion,
+  createTestUser,
+  getTestModule,
+  refreshDatabase,
+} from '../utils';
 import { UserService } from '../../modules/user/domain/services/UserService';
 import { UserModel } from '../../modules/user/domain/models/UserModel';
 import { IHashService } from '../../modules/auth/domain/interfaces/IHashService';
@@ -43,13 +48,6 @@ describe('QuestionService', () => {
   let user: UserModel;
   let question: QuestionModel;
 
-  const createTestQuestion = () =>
-    questionService.create(user.id, {
-      title: 'test title',
-      description: 'test description',
-      tagNames: ['tag', 'otherTag'],
-    });
-
   beforeAll(async () => {
     const moduleRef = await getTestModule();
 
@@ -69,7 +67,7 @@ describe('QuestionService', () => {
   beforeEach(async () => {
     await refreshDatabase(dataSource);
     user = await createTestUser(userService, hashService);
-    question = await createTestQuestion();
+    question = await createTestQuestion(user.id, questionService);
     jest.clearAllMocks();
   });
 

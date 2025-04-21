@@ -9,7 +9,6 @@ import {
 import { DataSource } from 'typeorm';
 import { refreshDatabase, getTestModule, createTestUser } from '../utils';
 import { NotificationService } from '../../modules/notification/domain/services/NotificationService';
-import { RoleModel } from '../../modules/user/domain/models/RoleModel';
 import { UserService } from '../../modules/user/domain/services/UserService';
 import { UserModel } from '../../modules/user/domain/models/UserModel';
 import { IHashService } from '../../modules/auth/domain/interfaces/IHashService';

@@ -8,6 +8,8 @@ import { RoleModel } from '../modules/user/domain/models/RoleModel';
 import { UserService } from '../modules/user/domain/services/UserService';
 import { IHashService } from '../modules/auth/domain/interfaces/IHashService';
 import { RoleEnum } from '../modules/user/domain/enums/RoleEnum';
+import { QuestionService } from '../modules/question/domain/services/QuestionService';
+import { AnswerService } from '../modules/answer/domain/services/AnswerService';
 
 export async function refreshDatabase(dataSource: DataSource): Promise<void> {
   await dataSource.query(`DROP SCHEMA public CASCADE`);
@@ -55,4 +57,14 @@ export const createTestUser = async (
         name: RoleEnum.USER,
       } as RoleModel,
     ],
+  });
+
+export const createTestQuestion = (
+  userId: number,
+  questionService: QuestionService,
+) =>
+  questionService.create(userId, {
+    title: 'test title',
+    description: 'test description',
+    tagNames: ['tag', 'otherTag'],
   });
