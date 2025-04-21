@@ -26,6 +26,6 @@ import { FileLocalStorageRepository } from './repositories/FileLocalStorageRepos
     },
     FileService,
   ],
-  exports: [FileService],
+  exports: [FileService, IFileStorageRepository],
 })
 export class FileModule {}

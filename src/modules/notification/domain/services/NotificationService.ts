@@ -6,6 +6,9 @@ import { NotificationSearchDto } from '../dtos/NotificationSearchDto';
 import { NotificationViewDto } from '../dtos/NotificationViewDto';
 import { IEventEmitterService } from '../../../global/domain/interfaces/IEventEmitterService';
 import { EventEnum } from '../../../global/domain/enums/EventEnum';
+import { NotificationSendFeedbackDto } from '../dtos/NotificationSendFeedbackDto';
+import { IFile } from '../../../file/domain/interfaces/IFile';
+import { IFileStorageRepository } from '../../../file/domain/interfaces/IFileStorageRepository';
 
 @Injectable()
 export class NotificationService {
@@ -14,6 +17,8 @@ export class NotificationService {
     private readonly notificationRepository: INotificationRepository,
     @Inject(IEventEmitterService)
     private readonly eventEmitterService: IEventEmitterService,
+    @Inject(IFileStorageRepository)
+    private readonly fileStorageRepository: IFileStorageRepository,
   ) {}
 
   private create(dto: NotificationSaveDto): Promise<NotificationModel> {
@@ -36,5 +41,15 @@ export class NotificationService {
 
   async deleteOld() {
     await this.notificationRepository.deleteOld();
+  }
+
+  async sendFeedback(dto: NotificationSendFeedbackDto, images: IFile[]) {
+    await this.eventEmitterService.emitAsync(EventEnum.SEND_FEEDBACK, {
+      ...dto,
+      filePaths: images?.map((image) => image.filename),
+    });
+    images?.forEach((image) => {
+      this.fileStorageRepository.delete(image.filename);
+    });
   }
 }

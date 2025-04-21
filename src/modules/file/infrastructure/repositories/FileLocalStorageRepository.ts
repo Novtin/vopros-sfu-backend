@@ -15,26 +15,29 @@ export class FileLocalStorageRepository implements IFileStorageRepository {
     private readonly configService: IConfigService,
   ) {}
 
-  private readonly pathToStorage: string[] = this.configService
-    .get('fileLocal')
-    .storagePath.split('/');
+  private readonly pathToStorage: string = this.configService.get(
+    'fileLocal.storagePath',
+  );
 
-  private readonly pathToStorageExample: string[] = this.configService
-    .get('fileLocal')
-    .storageExamplePath.split('/');
+  private readonly pathToStorageExample: string = this.configService.get(
+    'fileLocal.storageExamplePath',
+  );
 
-  private readonly miniatureSizes: [number, number] =
-    this.configService.get('fileLocal').miniatureSizes;
+  private readonly miniatureSizes: [number, number] = this.configService.get<
+    [number, number]
+  >('fileLocal.miniatureSizes');
 
   delete(fileName: string): void {
-    fs.unlink(join(...this.pathToStorage, fileName), () => {
-      console.error('File not found');
+    fs.unlink(join(this.pathToStorage, fileName), (err) => {
+      if (err) {
+        console.error('File not found');
+      }
     });
   }
 
   getReadStream(fileModel: FileModel, dto: FileStreamDto): any {
     const path: string = join(
-      ...(dto.isExample ? this.pathToStorageExample : this.pathToStorage),
+      dto.isExample ? this.pathToStorageExample : this.pathToStorage,
       fileModel.name,
     );
 

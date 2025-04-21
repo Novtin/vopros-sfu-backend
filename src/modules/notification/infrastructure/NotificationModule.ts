@@ -11,9 +11,10 @@ import { NotificationEventService } from './services/NotificationEventService';
 import { NotificationMailEventService } from './services/NotificationMailEventService';
 import { MailerService } from '@nestjs-modules/mailer';
 import { INotificationMailerService } from '../domain/interfaces/INotificationMailerService';
+import { FileModule } from '../../file/infrastructure/FileModule';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NotificationEntity])],
+  imports: [TypeOrmModule.forFeature([NotificationEntity]), FileModule],
   providers: [
     {
       provide: INotificationRepository,

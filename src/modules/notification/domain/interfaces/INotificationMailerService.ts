@@ -5,7 +5,12 @@ export interface INotificationMailerService {
     from: any;
     to: any;
     subject: string;
-    template: string;
-    context: { [key: string]: any };
+    template?: string;
+    text?: string;
+    context?: { [key: string]: any };
+    attachments?: {
+      filename: string;
+      path: string;
+    }[];
   }): Promise<any>;
 }
