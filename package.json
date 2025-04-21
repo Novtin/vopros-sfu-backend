@@ -16,7 +16,7 @@
     "test": "jest --runInBand --config jest.config.js",
     "test:debug": "jest --runInBand --config jest.config.js --detectOpenHandles",
     "test:watch": "test --watch",
-    "test:cov": "test --coverage",
+    "test:cov": "jest --runInBand --config jest.config.js --coverage",
     "typeorm": "ts-node ./node_modules/typeorm/cli",
     "migration:create": "nest build & npm run typeorm migration:create src/migrations/Migration",
     "migration:generate": "nest build & npm run typeorm -- -d src/config/MigrationConfig.ts migration:generate src/migrations/Migration",

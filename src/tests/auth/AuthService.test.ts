@@ -60,6 +60,7 @@ describe('AuthService', () => {
     });
 
     it('should throw exception if password is invalid', async () => {
+      await userService.update(user.id, { isConfirmed: true });
       const loginDto: IAuthLogin = {
         email: user.email,
         password: 'password',
@@ -72,6 +73,7 @@ describe('AuthService', () => {
     });
 
     it('should return AuthLoginModel if login is successful', async () => {
+      await userService.update(user.id, { isConfirmed: true });
       const loginDto: IAuthLogin = {
         email: user.email,
         password: '1',
@@ -113,6 +115,8 @@ describe('AuthService', () => {
 
   describe('refresh', () => {
     it('should call AuthLoginService.refresh', async () => {
+      await userService.update(user.id, { isConfirmed: true });
+
       const loginDto: IAuthLogin = {
         email: user.email,
         password: '1',
@@ -145,6 +149,8 @@ describe('AuthService', () => {
 
   describe('logout', () => {
     it('should call AuthLoginService.logout', async () => {
+      await userService.update(user.id, { isConfirmed: true });
+
       const loginDto: IAuthLogin = {
         email: user.email,
         password: '1',
