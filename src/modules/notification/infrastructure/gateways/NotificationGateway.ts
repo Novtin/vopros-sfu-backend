@@ -39,6 +39,7 @@ export class NotificationGateway
     const userId = client.handshake.query.userId;
     if (userId) {
       client.join(userId);
+      client.data.userId = userId;
       const [notifications] = await this.notificationService.search(
         plainToInstance(NotificationSearchDto, {
           userId: +userId,
@@ -50,11 +51,11 @@ export class NotificationGateway
     }
   }
 
-  handleDisconnect(client: Socket) {
-    const userId = Array.from(client.rooms.keys()).find(
-      (room) => room !== client.id,
-    );
-    if (userId) {
+  async handleDisconnect(client: Socket) {
+    const userId = client.data.userId;
+    const sockets = await this.server.in(userId).fetchSockets();
+
+    if (!sockets?.length) {
       this.eventEmitterService.emit(EventEnum.OFFLINE_USER, +userId);
     }
   }
