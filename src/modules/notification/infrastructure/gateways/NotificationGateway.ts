@@ -46,7 +46,7 @@ export class NotificationGateway
           isViewed: false,
         }),
       );
-      notifications?.forEach(this.send);
+      notifications?.forEach(this.send.bind(this));
       this.eventEmitterService.emit(EventEnum.ONLINE_USER, +userId);
     }
   }
