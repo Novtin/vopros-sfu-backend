@@ -12,7 +12,7 @@ export class NotificationSchema {
 
   @Expose()
   @ApiProperty()
-  payload: { [key: string]: any };
+  payload: any;
 
   @Expose()
   @ApiProperty()

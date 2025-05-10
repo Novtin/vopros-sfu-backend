@@ -9,7 +9,6 @@ import { UserService } from '../modules/user/domain/services/UserService';
 import { IHashService } from '../modules/auth/domain/interfaces/IHashService';
 import { RoleEnum } from '../modules/user/domain/enums/RoleEnum';
 import { QuestionService } from '../modules/question/domain/services/QuestionService';
-import { AnswerService } from '../modules/answer/domain/services/AnswerService';
 
 export async function refreshDatabase(dataSource: DataSource): Promise<void> {
   await dataSource.query(`DROP SCHEMA public CASCADE`);
