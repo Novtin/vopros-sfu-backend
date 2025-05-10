@@ -36,6 +36,7 @@ export class UserRepository implements IUserRepository {
       .leftJoinAndSelect('user.questions', 'questions')
       .leftJoinAndSelect('user.questionsFavorite', 'questionsFavorite')
       .leftJoinAndSelect('user.answers', 'answers')
+      .leftJoinAndSelect('user.tagsFavorite', 'tagsFavorite')
       .addSelect(
         `COALESCE(
         (SELECT COALESCE(SUM(question_rating.value), 0) 

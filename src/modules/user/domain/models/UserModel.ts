@@ -4,6 +4,7 @@ import { AbstractTimeModel } from '../../../global/domain/models/AbstractTimeMod
 import { FileModel } from '../../../file/domain/models/FileModel';
 import { QuestionFavoriteModel } from '../../../question/domain/models/QuestionFavoriteModel';
 import { AnswerModel } from '../../../answer/domain/models/AnswerModel';
+import { TagFavoriteModel } from '../../../tag/domain/models/TagFavoriteModel';
 
 export class UserModel extends AbstractTimeModel {
   id: number;
@@ -27,6 +28,8 @@ export class UserModel extends AbstractTimeModel {
   questions: QuestionModel[];
 
   questionsFavorite: QuestionFavoriteModel[];
+
+  tagsFavorite: TagFavoriteModel[];
 
   answers: AnswerModel[];
 

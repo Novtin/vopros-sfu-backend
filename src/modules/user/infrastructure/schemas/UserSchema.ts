@@ -2,6 +2,7 @@ import { Expose, Transform, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { FileSchema } from '../../../file/infrastructure/schemas/FileSchema';
 import { QuestionFavoriteModel } from '../../../question/domain/models/QuestionFavoriteModel';
+import { TagFavoriteModel } from '../../../tag/domain/models/TagFavoriteModel';
 
 export class UserSchema {
   @Expose()
@@ -56,6 +57,19 @@ export class UserSchema {
       ) || [],
   )
   favoriteQuestionIds: number[];
+
+  @Expose()
+  @ApiProperty({
+    type: Number,
+    isArray: true,
+  })
+  @Transform(
+    (event) =>
+      event.obj.tagsFavorite?.map(
+        (tagFavorite: TagFavoriteModel) => tagFavorite.tagId,
+      ) || [],
+  )
+  favoriteTagIds: number[];
 
   @Expose()
   @ApiProperty()
