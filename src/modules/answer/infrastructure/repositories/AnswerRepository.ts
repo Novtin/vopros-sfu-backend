@@ -25,6 +25,7 @@ export class AnswerRepository implements IAnswerRepository {
     return this.dbRepository
       .createQueryBuilder('answer')
       .leftJoinAndSelect('answer.author', 'author')
+      .leftJoinAndSelect('author.avatar', 'authorAvatar')
       .leftJoinAndSelect('answer.question', 'question')
       .leftJoinAndSelect('answer.rating', 'rating')
       .where(dto)
@@ -39,7 +40,8 @@ export class AnswerRepository implements IAnswerRepository {
   async search(dto: AnswerSearchDto) {
     const query = this.dbRepository
       .createQueryBuilder('answer')
-      .leftJoinAndSelect('answer.author', 'author');
+      .leftJoinAndSelect('answer.author', 'author')
+      .leftJoinAndSelect('author.avatar', 'authorAvatar');
     if (dto?.text) {
       query.where('answer.text ILIKE :text', { text: `%${dto.text}%` });
     }
