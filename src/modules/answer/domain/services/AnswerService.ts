@@ -138,30 +138,4 @@ export class AnswerService {
     await this.throwNotFoundExceptionIfNotExist({ id });
     return this.answerRepository.deleteSolution(id);
   }
-
-  async rate(dto: AnswerRatingCreateDto) {
-    await this.throwNotFoundExceptionIfNotExist({ id: dto.answerId });
-    const rate = await this.answerRatingRepository.getOneBy({
-      answerId: dto.answerId,
-      userId: dto.userId,
-    });
-    if (rate?.value === dto.value) {
-      throw new ConflictException('Ответ уже так оценён пользователем');
-    }
-    await this.answerRatingRepository.create(dto);
-    return this.getOneBy({ id: dto.answerId });
-  }
-
-  async deleteRate(dto: AnswerRatingDeleteDto) {
-    await this.throwNotFoundExceptionIfNotExist({ id: dto.answerId });
-    const rate = await this.answerRatingRepository.getOneBy({
-      answerId: dto.answerId,
-      userId: dto.userId,
-      value: dto.value,
-    });
-    if (!rate) {
-      throw new NotFoundException('Оценка не найдена');
-    }
-    await this.answerRatingRepository.delete(dto);
-  }
 }

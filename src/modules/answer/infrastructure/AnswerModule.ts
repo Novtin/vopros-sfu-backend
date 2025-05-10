@@ -9,6 +9,8 @@ import { AnswerRatingEntity } from './entities/AnswerRatingEntity';
 import { IAnswerRepository } from '../domain/interfaces/IAnswerRepository';
 import { AnswerService } from '../domain/services/AnswerService';
 import { IAnswerRatingRepository } from '../domain/interfaces/IAnswerRatingRepository';
+import { AnswerRatingService } from '../domain/services/AnswerRatingService';
+import { AnswerRatingController } from './controllers/AnswerRatingController';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { IAnswerRatingRepository } from '../domain/interfaces/IAnswerRatingRepos
   ],
   providers: [
     AnswerService,
+    AnswerRatingService,
     {
       provide: IAnswerRepository,
       useClass: AnswerRepository,
@@ -26,7 +29,7 @@ import { IAnswerRatingRepository } from '../domain/interfaces/IAnswerRatingRepos
       useClass: AnswerRatingRepository,
     },
   ],
-  controllers: [AnswerController],
+  controllers: [AnswerController, AnswerRatingController],
   exports: [AnswerService],
 })
 export class AnswerModule {}

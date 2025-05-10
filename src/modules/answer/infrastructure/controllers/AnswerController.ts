@@ -21,7 +21,6 @@ import { AnswerSearchDto } from '../../domain/dtos/AnswerSearchDto';
 import { AnswerSchema } from '../schemas/AnswerSchema';
 import { AnswerUpdateDto } from '../../domain/dtos/AnswerUpdateDto';
 import { QuestionResolveDto } from '../../../question/domain/dtos/QuestionResolveDto';
-import { RatingDto } from '../../../global/domain/dtos/RatingDto';
 import { SchemaTransform } from '../../../global/infrastructure/decorators/SchemaTransform';
 import { AnswerService } from '../../domain/services/AnswerService';
 import { AnswerModel } from '../../domain/models/AnswerModel';
@@ -107,38 +106,5 @@ export class AnswerController {
     @Context() context: ContextDto,
   ) {
     return this.answerService.deleteResolveQuestion(context.userId, questionId);
-  }
-
-  @SchemaTransform(AnswerSchema)
-  @Authorized()
-  @ApiOperation({ summary: 'Оценить ответ' })
-  @Post('/:id/rate')
-  rate(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: RatingDto,
-    @Context() context: ContextDto,
-  ) {
-    return this.answerService.rate({
-      answerId: id,
-      userId: context.userId,
-      value: dto.value,
-    });
-  }
-
-  @ApiOkResponse()
-  @Authorized()
-  @ApiOperation({ summary: 'Убрать оценку ответа' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('/:id/rate')
-  deleteRate(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: RatingDto,
-    @Context() context: ContextDto,
-  ) {
-    return this.answerService.deleteRate({
-      answerId: id,
-      userId: context.userId,
-      value: dto.value,
-    });
   }
 }

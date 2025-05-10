@@ -27,8 +27,6 @@ import { RoleEnum } from '../../modules/user/domain/enums/RoleEnum';
 import { ForbiddenException } from '../../modules/global/domain/exceptions/ForbiddenException';
 import { AnswerUpdateDto } from '../../modules/answer/domain/dtos/AnswerUpdateDto';
 import { ConflictException } from '../../modules/global/domain/exceptions/ConflictException';
-import { RatingValueEnum } from '../../modules/global/domain/enums/RatingValueEnum';
-import { AnswerRatingCreateDto } from '../../modules/answer/domain/dtos/AnswerRatingCreateDto';
 import { NotFoundException } from '../../modules/global/domain/exceptions/NotFoundException';
 import { plainToInstance } from 'class-transformer';
 import { AnswerSearchDto } from '../../modules/answer/domain/dtos/AnswerSearchDto';
@@ -245,80 +243,6 @@ describe('AnswerService', () => {
       await expect(
         answerService.deleteResolveQuestion(user.id, question.id),
       ).rejects.toThrow(ConflictException);
-    });
-  });
-
-  describe('rate', () => {
-    it('should rate AnswerModel', async () => {
-      const rateDto: AnswerRatingCreateDto = {
-        answerId: answer.id,
-        userId: user.id,
-        value: RatingValueEnum.LIKE,
-      };
-      const ratedAnswer = await answerService.rate(rateDto);
-
-      expect(ratedAnswer.rating).toHaveLength(1);
-      expect(ratedAnswer.rating[0]).toMatchObject(
-        rateDto as Record<string, any>,
-      );
-    });
-
-    it('should throw ConflictException if this rating is exists', async () => {
-      const rateDto: AnswerRatingCreateDto = {
-        answerId: answer.id,
-        userId: user.id,
-        value: RatingValueEnum.LIKE,
-      };
-      await answerService.rate(rateDto);
-
-      await expect(answerService.rate(rateDto)).rejects.toThrow(
-        ConflictException,
-      );
-    });
-
-    it('should throw NotFoundException if answer is not exists', async () => {
-      await expect(
-        answerService.rate({
-          answerId: 0,
-          userId: user.id,
-          value: RatingValueEnum.LIKE,
-        }),
-      ).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('deleteRate', () => {
-    it('should delete rating AnswerModel', async () => {
-      const dto: AnswerRatingCreateDto = {
-        answerId: answer.id,
-        userId: user.id,
-        value: RatingValueEnum.LIKE,
-      };
-      await answerService.rate(dto);
-      await answerService.deleteRate(dto);
-      const updatedAnswer = await answerService.getOneBy({ id: answer.id });
-
-      expect(updatedAnswer.rating).toHaveLength(0);
-    });
-
-    it('should throw NotFoundException if answer is not exists', async () => {
-      await expect(
-        answerService.deleteRate({
-          answerId: 0,
-          userId: user.id,
-          value: RatingValueEnum.LIKE,
-        }),
-      ).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw NotFoundException if rating is not exists', async () => {
-      await expect(
-        answerService.deleteRate({
-          answerId: question.id,
-          userId: user.id,
-          value: RatingValueEnum.LIKE,
-        }),
-      ).rejects.toThrow(NotFoundException);
     });
   });
 });

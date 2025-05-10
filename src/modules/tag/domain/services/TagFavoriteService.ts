@@ -1,7 +1,8 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { TagService } from './TagService';
 import { TagSetFavoritesDto } from '../dtos/TagSetFavoritesDto';
 import { ITagFavoriteRepository } from '../interfaces/ITagFavoriteRepository';
+import { NotFoundException } from '../../../global/domain/exceptions/NotFoundException';
 
 @Injectable()
 export class TagFavoriteService {

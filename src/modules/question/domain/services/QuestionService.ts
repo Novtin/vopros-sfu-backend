@@ -9,20 +9,13 @@ import { TagService } from '../../../tag/domain/services/TagService';
 import { ContextDto } from '../../../auth/domain/dtos/ContextDto';
 import { RoleEnum } from '../../../user/domain/enums/RoleEnum';
 import { QuestionViewCreateDto } from '../dtos/QuestionViewCreateDto';
-import { QuestionRatingCreateDto } from '../dtos/QuestionRatingCreateDto';
-import { QuestionFavoriteCreateDto } from '../dtos/QuestionFavoriteCreateDto';
-import { QuestionFavoriteDeleteDto } from '../dtos/QuestionFavoriteDeleteDto';
-import { QuestionRatingDeleteDto } from '../dtos/QuestionRatingDeleteDto';
 import { IQuestionRepository } from '../interfaces/IQuestionRepository';
-import { IQuestionFavoriteRepository } from '../interfaces/IQuestionFavoriteRepository';
 import { IQuestionViewRepository } from '../interfaces/IQuestionViewRepository';
-import { IQuestionRatingRepository } from '../interfaces/IQuestionRatingRepository';
 import { IEventEmitterService } from '../../../global/domain/interfaces/IEventEmitterService';
 import { EventEnum } from '../../../global/domain/enums/EventEnum';
 import { BadRequestException } from '../../../global/domain/exceptions/BadRequestException';
 import { ForbiddenException } from '../../../global/domain/exceptions/ForbiddenException';
 import { NotFoundException } from '../../../global/domain/exceptions/NotFoundException';
-import { ConflictException } from '../../../global/domain/exceptions/ConflictException';
 import { IFile } from '../../../file/domain/interfaces/IFile';
 
 @Injectable()
@@ -32,10 +25,6 @@ export class QuestionService {
     private readonly questionRepository: IQuestionRepository,
     @Inject(IQuestionViewRepository)
     private readonly questionViewRepository: IQuestionViewRepository,
-    @Inject(IQuestionRatingRepository)
-    private readonly questionRateRepository: IQuestionRatingRepository,
-    @Inject(IQuestionFavoriteRepository)
-    private readonly questionFavoriteRepository: IQuestionFavoriteRepository,
     @Inject(IEventEmitterService)
     private readonly evenEmitterService: IEventEmitterService,
     private readonly fileService: FileService,
@@ -146,56 +135,6 @@ export class QuestionService {
     if (!(await this.existBy(dto))) {
       throw new NotFoundException();
     }
-  }
-
-  async rate(dto: QuestionRatingCreateDto) {
-    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
-    const rate = await this.questionRateRepository.getOneBy({
-      questionId: dto.questionId,
-      userId: dto.userId,
-    });
-    if (rate?.value === dto.value) {
-      throw new ConflictException('Вопрос уже так оценён пользователем');
-    }
-    await this.questionRateRepository.create(dto);
-    return this.questionRepository.getOneBy({ id: dto.questionId });
-  }
-
-  async deleteRate(dto: QuestionRatingDeleteDto) {
-    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
-    const rate = await this.questionRateRepository.getOneBy({
-      questionId: dto.questionId,
-      userId: dto.userId,
-      value: dto.value,
-    });
-    if (!rate) {
-      throw new NotFoundException('Оценка не найдена');
-    }
-    await this.questionRateRepository.delete(dto);
-  }
-
-  async setFavorite(dto: QuestionFavoriteCreateDto) {
-    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
-    const favorite = await this.questionFavoriteRepository.getOneBy({
-      questionId: dto.questionId,
-      userId: dto.userId,
-    });
-    if (favorite) {
-      throw new ConflictException('Вопрос уже добавлен в избранное');
-    }
-    await this.questionFavoriteRepository.create(dto);
-  }
-
-  async deleteFavorite(dto: QuestionFavoriteDeleteDto) {
-    await this.throwNotFoundExceptionIfNotExist({ id: dto.questionId });
-    const favorite = await this.questionFavoriteRepository.getOneBy({
-      questionId: dto.questionId,
-      userId: dto.userId,
-    });
-    if (!favorite) {
-      throw new NotFoundException('Вопрос не найден в избранном');
-    }
-    await this.questionFavoriteRepository.delete(dto);
   }
 
   search(dto: QuestionSearchDto) {

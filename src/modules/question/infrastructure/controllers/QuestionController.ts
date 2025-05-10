@@ -31,7 +31,6 @@ import { ContextDto } from '../../../auth/domain/dtos/ContextDto';
 import { Authorized } from '../../../auth/infrastructure/decorators/Authorized';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { multerImageOptions } from '../../../../config/MulterImageConfig';
-import { RatingDto } from '../../../global/domain/dtos/RatingDto';
 import { QuestionCountSchema } from '../schemas/QuestionCountSchema';
 import { IQuestionCount } from '../../domain/interfaces/IQuestionCount';
 import { SchemaTransform } from '../../../global/infrastructure/decorators/SchemaTransform';
@@ -128,68 +127,5 @@ export class QuestionController {
     @Context() context: ContextDto,
   ) {
     return this.questionService.uploadImages(context, id, imageFiles);
-  }
-
-  @Authorized()
-  @ApiOperation({ summary: 'Оценить вопрос' })
-  @SchemaTransform(QuestionSchema)
-  @Post('/:id/rate')
-  rate(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: RatingDto,
-    @Context() context: ContextDto,
-  ) {
-    return this.questionService.rate({
-      questionId: id,
-      userId: context.userId,
-      value: dto.value,
-    });
-  }
-
-  @Authorized()
-  @ApiOkResponse()
-  @ApiOperation({ summary: 'Убрать оценку вопроса' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('/:id/rate')
-  deleteRate(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: RatingDto,
-    @Context() context: ContextDto,
-  ) {
-    return this.questionService.deleteRate({
-      questionId: id,
-      userId: context.userId,
-      value: dto.value,
-    });
-  }
-
-  @Authorized()
-  @ApiOkResponse()
-  @ApiOperation({ summary: 'Добавить вопрос в избранное' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Post('/:id/favorite')
-  setFavorite(
-    @Param('id', ParseIntPipe) id: number,
-    @Context() context: ContextDto,
-  ) {
-    return this.questionService.setFavorite({
-      questionId: id,
-      userId: context.userId,
-    });
-  }
-
-  @Authorized()
-  @ApiOkResponse()
-  @ApiOperation({ summary: 'Удалить вопрос из избранного' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('/:id/favorite')
-  deleteFavorite(
-    @Param('id', ParseIntPipe) id: number,
-    @Context() context: ContextDto,
-  ) {
-    return this.questionService.deleteFavorite({
-      questionId: id,
-      userId: context.userId,
-    });
   }
 }

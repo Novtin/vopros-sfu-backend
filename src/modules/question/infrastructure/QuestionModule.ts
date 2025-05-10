@@ -3,7 +3,6 @@ import { QuestionService } from '../domain/services/QuestionService';
 import { QuestionController } from './controllers/QuestionController';
 import { QuestionRepository } from './repositories/QuestionRepository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from '../../user/infrastructure/UserModule';
 import { FileModule } from '../../file/infrastructure/FileModule';
 import { TagModule } from '../../tag/infrastructure/TagModule';
 import { QuestionViewRepository } from './repositories/QuestionViewRepository';
@@ -18,6 +17,10 @@ import { QuestionViewEntity } from './entities/QuestionViewEntity';
 import { QuestionRatingEntity } from './entities/QuestionRatingEntity';
 import { QuestionFavoriteEntity } from './entities/QuestionFavoriteEntity';
 import { NotificationModule } from '../../notification/infrastructure/NotificationModule';
+import { QuestionRatingService } from '../domain/services/QuestionRatingService';
+import { QuestionFavoriteService } from '../domain/services/QuestionFavoriteService';
+import { QuestionFavoriteController } from './controllers/QuestionFavoriteController';
+import { QuestionRatingController } from './controllers/QuestionRatingController';
 
 @Module({
   imports: [
@@ -31,7 +34,11 @@ import { NotificationModule } from '../../notification/infrastructure/Notificati
     TagModule,
     NotificationModule,
   ],
-  controllers: [QuestionController],
+  controllers: [
+    QuestionController,
+    QuestionFavoriteController,
+    QuestionRatingController,
+  ],
   providers: [
     {
       provide: IQuestionRepository,
@@ -50,6 +57,8 @@ import { NotificationModule } from '../../notification/infrastructure/Notificati
       useClass: QuestionRatingRepository,
     },
     QuestionService,
+    QuestionRatingService,
+    QuestionFavoriteService,
   ],
   exports: [QuestionService],
 })
