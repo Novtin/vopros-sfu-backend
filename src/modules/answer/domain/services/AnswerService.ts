@@ -12,9 +12,6 @@ import { NotFoundException } from '../../../global/domain/exceptions/NotFoundExc
 import { ForbiddenException } from '../../../global/domain/exceptions/ForbiddenException';
 import { ConflictException } from '../../../global/domain/exceptions/ConflictException';
 import { IAnswerRepository } from '../interfaces/IAnswerRepository';
-import { IAnswerRatingRepository } from '../interfaces/IAnswerRatingRepository';
-import { AnswerRatingDeleteDto } from '../dtos/AnswerRatingDeleteDto';
-import { AnswerRatingCreateDto } from '../dtos/AnswerRatingCreateDto';
 import { AnswerModel } from '../models/AnswerModel';
 
 @Injectable()
@@ -22,8 +19,6 @@ export class AnswerService {
   constructor(
     @Inject(IAnswerRepository)
     private readonly answerRepository: IAnswerRepository,
-    @Inject(IAnswerRatingRepository)
-    private readonly answerRatingRepository: IAnswerRatingRepository,
     @Inject(IEventEmitterService)
     private readonly eventEmitterService: IEventEmitterService,
     private readonly questionService: QuestionService,

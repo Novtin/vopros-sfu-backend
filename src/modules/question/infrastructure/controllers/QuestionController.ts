@@ -8,7 +8,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
+  Patch,
   Query,
   UploadedFiles,
   UseInterceptors,
@@ -55,7 +55,7 @@ export class QuestionController {
   @Authorized()
   @ApiOperation({ summary: 'Обновить вопрос' })
   @SchemaTransform(QuestionSchema)
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: QuestionUpdateDto,

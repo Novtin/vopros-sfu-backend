@@ -8,7 +8,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
+  Patch,
   Query,
   UploadedFile,
   UseInterceptors,
@@ -88,7 +88,7 @@ export class UserController {
   }
 
   @Authorized()
-  @Put('/:id')
+  @Patch('/:id')
   @ApiOperation({ summary: 'Обновить пользователя' })
   @SchemaTransform(UserSchema)
   update(

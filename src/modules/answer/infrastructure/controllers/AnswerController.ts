@@ -8,7 +8,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
+  Patch,
   Query,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -70,7 +70,7 @@ export class AnswerController {
   @Authorized()
   @ApiOperation({ summary: 'Обновить ответ' })
   @SchemaTransform(AnswerDetailSchema)
-  @Put('/:id')
+  @Patch('/:id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: AnswerUpdateDto,

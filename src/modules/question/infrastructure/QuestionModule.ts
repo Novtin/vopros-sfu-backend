@@ -16,7 +16,6 @@ import { QuestionEntity } from './entities/QuestionEntity';
 import { QuestionViewEntity } from './entities/QuestionViewEntity';
 import { QuestionRatingEntity } from './entities/QuestionRatingEntity';
 import { QuestionFavoriteEntity } from './entities/QuestionFavoriteEntity';
-import { NotificationModule } from '../../notification/infrastructure/NotificationModule';
 import { QuestionRatingService } from '../domain/services/QuestionRatingService';
 import { QuestionFavoriteService } from '../domain/services/QuestionFavoriteService';
 import { QuestionFavoriteController } from './controllers/QuestionFavoriteController';
@@ -32,7 +31,6 @@ import { QuestionRatingController } from './controllers/QuestionRatingController
     ]),
     FileModule,
     TagModule,
-    NotificationModule,
   ],
   controllers: [
     QuestionController,

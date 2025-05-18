@@ -31,6 +31,5 @@ import { FileModule } from '../../file/infrastructure/FileModule';
     NotificationGateway,
   ],
   controllers: [NotificationController],
-  exports: [NotificationService],
 })
 export class NotificationModule {}
