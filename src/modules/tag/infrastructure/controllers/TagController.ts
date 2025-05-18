@@ -21,7 +21,7 @@ import { Authorized } from '../../../auth/infrastructure/decorators/Authorized';
 import { Context } from '../../../auth/infrastructure/decorators/Context';
 import { ContextDto } from '../../../auth/domain/dtos/ContextDto';
 
-@ApiTags('Тэг')
+@ApiTags('Тег')
 @Controller('tag')
 export class TagController {
   constructor(
@@ -30,13 +30,13 @@ export class TagController {
   ) {}
 
   @Get('/:id')
-  @ApiOperation({ summary: 'Получить тэг' })
+  @ApiOperation({ summary: 'Получить тег' })
   @SchemaTransform(TagSchema)
   getOneById(@Param('id', ParseIntPipe) id: number): Promise<TagModel> {
     return this.tagService.getOneBy({ id });
   }
 
-  @ApiOperation({ summary: 'Получить тэги' })
+  @ApiOperation({ summary: 'Получить теги' })
   @SchemaTransform(TagSchema, { isPagination: true })
   @Get()
   search(@Query() dto: TagSearchDto): Promise<[TagModel[], number]> {
@@ -45,7 +45,7 @@ export class TagController {
 
   @Authorized()
   @Post('/favorites')
-  @ApiOperation({ summary: 'Поставить пользователю избранные тэги' })
+  @ApiOperation({ summary: 'Поставить пользователю избранные теги' })
   @HttpCode(HttpStatus.NO_CONTENT)
   setFavorites(
     @Body() dto: TagSetFavoritesDto,
