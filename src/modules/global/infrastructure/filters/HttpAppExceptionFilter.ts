@@ -36,9 +36,6 @@ export class HttpAppExceptionFilter
       case ExceptionEnum.UNAUTHORIZED:
         httpException = new UnauthorizedException(exception.message);
         break;
-      case ExceptionEnum.UNPROCESSABLE_ENTITY:
-        httpException = new UnauthorizedException(exception.message);
-        break;
       default:
         throw exception;
     }

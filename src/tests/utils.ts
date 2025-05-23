@@ -11,8 +11,8 @@ import { RoleEnum } from '../modules/user/domain/enums/RoleEnum';
 import { QuestionService } from '../modules/question/domain/services/QuestionService';
 
 export async function refreshDatabase(dataSource: DataSource): Promise<void> {
-  await dataSource.query(`DROP SCHEMA public CASCADE`);
-  await dataSource.query(`CREATE SCHEMA public`);
+  await dataSource.query(`DROP SCHEMA IF EXISTS public CASCADE`);
+  await dataSource.query(`CREATE SCHEMA IF NOT EXISTS public`);
   await dataSource.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
   await dataSource.runMigrations();
 }

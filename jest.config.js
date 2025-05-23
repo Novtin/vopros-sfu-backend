@@ -7,8 +7,9 @@ module.exports = {
   transformIgnorePatterns: ['<rootDir>/dist/'],
   moduleFileExtensions: ['ts', 'js', 'json'],
   testMatch: ['<rootDir>/src/tests/**/*.test.ts'],
-
+  slowTestThreshold: 999999,
   collectCoverage: true,
+  coverageReporters: ['text-summary'],
   coverageProvider: 'babel',
   collectCoverageFrom: ['<rootDir>/src/modules/**/*.ts'],
   coveragePathIgnorePatterns: [
